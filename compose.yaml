@@ -1,0 +1,5 @@
+services:
+  php:
+    build: app
+    volumes:
+      - ./app:/code
