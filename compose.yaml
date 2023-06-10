@@ -4,3 +4,4 @@ services:
     volumes:
       - ./app:/code
       - ./dist:/dist
+      - ./sample:/sample

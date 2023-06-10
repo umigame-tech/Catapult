@@ -1,0 +1,30 @@
+{
+  "entities": [
+    {
+      "name": "my_great_entity",
+      "attributes": [
+        {
+          "name": "great_attribute",
+          "type": "string"
+        },
+        {
+          "name": "great_attribute2",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "my_great_entity2",
+      "attributes": [
+        {
+          "name": "great_attribute",
+          "type": "string"
+        },
+        {
+          "name": "great_attribute2",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}
