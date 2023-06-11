@@ -1,11 +1,6 @@
 {
-    "name": "newnakashima/catapult",
+    "name": "umigame-tech/catapult",
     "type": "project",
-    "autoload": {
-        "psr-4": {
-            "Newnakashima\\Catapult\\": "app/"
-        }
-    },
     "authors": [
         {
             "name": "newnakashima",
