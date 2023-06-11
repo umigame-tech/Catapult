@@ -166,7 +166,6 @@ EOF;
             explode('_', $entity['name'])
         )) . 'Controller';
 
-        // TODO: CRUD用のメソッドを良い感じに最初から定義しておく
         $controller = <<<EOF
 <?php
 
@@ -176,7 +175,16 @@ use Illuminate\Http\Request;
 
 class {$controllerName} extends Controller
 {
-    //
+    public function index() { }
+    public function show() { }
+    public function new() { }
+    public function createConfirm() { }
+    public function create() { }
+    public function edit() { }
+    public function editConfirm() { }
+    public function update() { }
+    public function deleteConfirm() { }
+    public function delete() { }
 }
 
 EOF;
