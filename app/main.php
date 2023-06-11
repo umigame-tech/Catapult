@@ -11,7 +11,9 @@ class Main
         return str_repeat(self::INDENT, $level);
     }
 
-    private $targetDir = '/dist/project';
+    private $projectName = 'project';
+
+    private $targetDir = '/dist';
 
     private function setupEnvFile()
     {
@@ -25,19 +27,6 @@ class Main
 
     public function handle($argv)
     {
-        $skipInstallation = !empty($argv[2]) && $argv[2] === '--skip-installation';
-
-        if (! $skipInstallation) {
-            if (file_exists($this->targetDir . '/composer.json')) {
-                exec("composer install --working-dir={$this->targetDir}");
-            } else {
-                exec("composer create-project --prefer-dist laravel/laravel {$this->targetDir}");
-            }
-        }
-
-        $this->setupEnvFile();
-        $this->setupDatabase();
-
         if (empty($argv[1])) {
             echo "Usage: php main.php <path/to/file>\n";
             exit(1);
@@ -49,12 +38,28 @@ class Main
         }
 
         $json = json_decode($inputFile, true);
+        if (!empty($json['project_name'])) {
+            $this->projectName = $json['project_name'];
+        }
+        $this->targetDir .= '/' . $this->projectName;
+
+        $skipInstallation = !empty($argv[2]) && $argv[2] === '--skip-installation';
+        if (! $skipInstallation) {
+            if (file_exists($this->targetDir . '/composer.json')) {
+                exec("composer install --working-dir={$this->targetDir}");
+            } else {
+                exec("composer create-project --prefer-dist laravel/laravel {$this->targetDir}");
+            }
+        }
+
+        $this->setupEnvFile();
+        $this->setupDatabase();
+
         foreach ($json['entities'] as $entity) {
             $this->generateModel($entity);
             $this->generateMigration($entity);
         }
     }
-
 
     private function generateModel($entity) {
         $modelName = implode('', array_map(
