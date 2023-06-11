@@ -58,6 +58,7 @@ class Main
         foreach ($json['entities'] as $entity) {
             $this->generateModel($entity);
             $this->generateMigration($entity);
+            $this->generateController($entity);
         }
     }
 
@@ -83,7 +84,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class $modelName extends Authenticatable
+class {$modelName} extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -93,7 +94,7 @@ class $modelName extends Authenticatable
      * @var array<int, string>
      */
     protected \$fillable = [
-        $fillable,
+        {$fillable},
     ];
 }
 
@@ -131,7 +132,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('$tableName', function (Blueprint \$table) {
+        Schema::create('{$tableName}', function (Blueprint \$table) {
             \$table->id();
             $columns
             \$table->timestamps();
@@ -143,7 +144,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('$tableName');
+        Schema::dropIfExists('{$tableName}');
     }
 };
 
@@ -158,6 +159,40 @@ EOF;
 
         file_put_contents($migrationPath, $migration);
     }
+
+    private function generateController($entity) {
+        $controllerName = implode('', array_map(
+            fn ($word) => ucfirst($word),
+            explode('_', $entity['name'])
+        )) . 'Controller';
+
+        // TODO: CRUD用のメソッドを良い感じに最初から定義しておく
+        $controller = <<<EOF
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class {$controllerName} extends Controller
+{
+    //
+}
+
+EOF;
+
+        $controllerPath = $this->targetDir . '/app/Http/Controllers/' . $controllerName . '.php';
+        // 既にファイルがある場合は削除してから生成する
+        if (file_exists($controllerPath)) {
+            unlink($controllerPath);
+        }
+
+        file_put_contents($controllerPath, $controller);
+    }
+
+    // web.php CRUD用のRoute
+
+    // view CRUD用のBladeテンプレート
 }
 
 (new Main())->handle($argv);
