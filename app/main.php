@@ -13,6 +13,16 @@ class Main
 
     private $targetDir = '/dist/project';
 
+    private function setupEnvFile()
+    {
+        copy('./default.env', $this->targetDir . '/.env');
+    }
+
+    private function setupDatabase()
+    {
+        touch($this->targetDir . '/database/database.sqlite');
+    }
+
     public function handle($argv)
     {
         $skipInstallation = !empty($argv[2]) && $argv[2] === '--skip-installation';
@@ -24,6 +34,9 @@ class Main
                 exec("composer create-project --prefer-dist laravel/laravel {$this->targetDir}");
             }
         }
+
+        $this->setupEnvFile();
+        $this->setupDatabase();
 
         if (empty($argv[1])) {
             echo "Usage: php main.php <path/to/file>\n";
