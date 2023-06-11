@@ -1,0 +1,16 @@
+{
+    "name": "newnakashima/catapult",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Newnakashima\\Catapult\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "newnakashima",
+            "email": "newnakashima2014@gmail.com"
+        }
+    ],
+    "require": {}
+}
