@@ -2,6 +2,8 @@
 
 namespace UmigameTech\Catapult;
 
+use SplFileObject;
+
 class Main
 {
     const INDENT = '    ';
@@ -14,6 +16,19 @@ class Main
     private $projectName = 'project';
 
     private $targetDir = '/dist';
+
+    private $actions = [
+        'index' => 'get',
+        'show' => 'get',
+        'new' => 'get',
+        'createConfirm' => 'post',
+        'create' => 'post',
+        'edit' => 'get',
+        'editConfirm' => 'post',
+        'update' => 'post',
+        'deleteConfirm' => 'get',
+        'delete' => 'post', // HTMLフォームからの送信だとDELETEメソッドは使えないので
+    ];
 
     private function setupEnvFile()
     {
@@ -54,11 +69,13 @@ class Main
 
         $this->setupEnvFile();
         $this->setupDatabase();
+        $this->removeDefaultRoute();
 
         foreach ($json['entities'] as $entity) {
             $this->generateModel($entity);
             $this->generateMigration($entity);
             $this->generateController($entity);
+            $this->routesOf($entity);
         }
     }
 
@@ -160,11 +177,17 @@ EOF;
         file_put_contents($migrationPath, $migration);
     }
 
-    private function generateController($entity) {
-        $controllerName = implode('', array_map(
+    private function controllerName($entity)
+    {
+        return implode('', array_map(
             fn ($word) => ucfirst($word),
             explode('_', $entity['name'])
         )) . 'Controller';
+    }
+
+    private function generateController($entity)
+    {
+        $controllerName = $this->controllerName($entity);
 
         $controller = <<<EOF
 <?php
@@ -199,6 +222,39 @@ EOF;
     }
 
     // web.php CRUD用のRoute
+
+    // デフォルトのRouteを削除する
+    private function removeDefaultRoute()
+    {
+        $webRoutePath = $this->targetDir . '/routes/web.php';
+        $file = new SplFileObject($webRoutePath, 'r+');
+        while ($file->eof() === false) {
+            $line = $file->fgets();
+            if (strpos($line, 'Route::get(\'/\',') !== false) {
+                $file->ftruncate($file->ftell() - strlen($line));
+                break;
+            }
+        }
+    }
+
+    private function routesOf($entity)
+    {
+        $controllerName = $this->controllerName($entity);
+        $routes = array_map(
+            function ($action, $method) use ($entity, $controllerName) {
+                $path = match ($action) {
+                    'index' =>  '',
+                    default => '/' . $action,
+                };
+
+                return "Route::{$method}('/{$entity['name']}{$path}', [{$controllerName}::class, '{$action}']);";
+            },
+            array_keys($this->actions),
+            array_values($this->actions)
+        );
+
+        var_dump($routes);
+    }
 
     // view CRUD用のBladeテンプレート
 }
