@@ -10,5 +10,5 @@ RUN apt-get update && apt-get install -y \
     unzip \
     libzip-dev \
     && docker-php-ext-install zip
-COPY . /code
-# CMD ["php", "/code/main.php", "input.json"] # コマンドの例
+COPY . /app
+# CMD ["php", "/app/main.php", "input.json"] # コマンドの例

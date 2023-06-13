@@ -2,6 +2,9 @@ services:
   php:
     build: app
     volumes:
-      - ./app:/code
+      - ./app:/app
       - ./dist:/dist
       - ./sample:/sample
+    ports:
+      - 8000:8000
+    tty: true
