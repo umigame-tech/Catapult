@@ -3,13 +3,13 @@
 ## 実行方法
 
 ```sh
-docker compose run php php /app/main.php /sample/001.json
+docker compose run php php /app/src/main.php /sample/001.json
 ```
 
 Laravel の install をスキップしたい場合
 
 ```sh
-docker compose run php php /app/main.php /sample/001.json --skip-installation
+docker compose run php php /app/src/main.php /sample/001.json --skip-installation
 ```
 
 ## 生成されたページを確認
