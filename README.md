@@ -20,7 +20,7 @@ cd dist/my_great_project
 
 ```sh
 # ホスト側にも PHP がインストールされている前提
-php artisan serve --host 0.0.0.0 --port 8000
+php artisan serve --host 0.0.0.0 --port 8080
 ```
 
-ブラウザで http://localhost:8000/my_great_entity を開く
+ブラウザで http://localhost:8080/admin/my_great_entity を開く
