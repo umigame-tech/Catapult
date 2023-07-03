@@ -43,7 +43,8 @@ class {$modelName} extends Authenticatable
 
 EOF;
 
-        $modelPath = "{$this->targetDir}/{$this->projectName}" . '/app/Models/' . $modelName . '.php';
+        $projectPath = $this->projectPath();
+        $modelPath = "{$projectPath}" . '/app/Models/' . $modelName . '.php';
         // 既にファイルがある場合は削除してから生成する
         if (file_exists($modelPath)) {
             unlink($modelPath);

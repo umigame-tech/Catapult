@@ -47,11 +47,12 @@ return new class extends Migration
 EOF;
 
         // /_create_{$tableName}_table/ というパターンに一致するファイル名で既にファイルがある場合は削除してから生成する
-        foreach (glob($this->targetDir . '/database/migrations/*_create_' . $tableName . '_table.php') as $file) {
+        $projectPath = $this->projectPath();
+        foreach (glob($projectPath . '/database/migrations/*_create_' . $tableName . '_table.php') as $file) {
             unlink($file);
         }
         
-        $migrationPath = "{$this->targetDir}/{$this->projectName}/database/migrations/"
+        $migrationPath = "{$projectPath}/database/migrations/"
             . date('Y_m_d_His')
             . "_create_{$tableName}_table.php";
 

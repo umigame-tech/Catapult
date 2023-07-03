@@ -18,4 +18,9 @@ abstract class Generator
     {
         return str_repeat(self::INDENT, $level);
     }
+
+    protected function projectPath(): string
+    {
+        return "{$this->targetDir}/{$this->projectName}";
+    }
 }

@@ -6,6 +6,7 @@ use SplFileObject;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
+use UmigameTech\Catapult\Generators\ViewGenerator;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
@@ -88,12 +89,13 @@ class Main
         $modelGenerator = new ModelGenerator($this->projectName);
         $migrationGenerator = new MigrationGenerator($this->projectName);
         $controllerGenerator = new ControllerGenerator($this->projectName);
+        $viewGenerator = new ViewGenerator($this->projectName);
 
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
             $controllerGenerator->generate($entity);
-            $this->generateViews($entity);
+            $viewGenerator->generate($entity);
             $this->routesOf($entity, $indent);
         }
 
@@ -180,28 +182,6 @@ EOF;
         $webRoutePath = $this->targetDir . '/routes/web.php';
         $file = new SplFileObject($webRoutePath, 'a+');
         $file->fwrite("\n\n{$routes}\n");
-    }
-
-    // view CRUD用のBladeテンプレート
-    private function generateViews($entity)
-    {
-        $this->generateIndexView($entity);
-    }
-
-    private function generateIndexView($entity)
-    {
-        // 前回のディレクトリが残っている場合は削除する
-        if (file_exists($this->targetDir . '/resources/views/' . $entity['name'])) {
-            exec("rm -rf {$this->targetDir}/resources/views/{$entity['name']}");
-        }
-
-        mkdir($this->targetDir . '/resources/views/' . $entity['name'], 0755, true);
-        $viewPath = $this->targetDir . '/resources/views/' . $entity['name'] . '/index.blade.php';
-        $view = <<<EOF
-<h1>index of {$entity['name']}</h1>
-EOF;
-
-        file_put_contents($viewPath, $view);
     }
 }
 

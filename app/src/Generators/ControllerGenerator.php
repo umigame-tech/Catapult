@@ -43,7 +43,8 @@ class {$controllerName} extends Controller
 
 EOF;
 
-        $controllerPath = "{$this->targetDir}/{$this->projectName}/app/Http/Controllers/{$controllerName}.php";
+        $projectPath = $this->projectPath();
+        $controllerPath = "{$projectPath}/app/Http/Controllers/{$controllerName}.php";
         // 既にファイルがある場合は削除してから生成する
         if (file_exists($controllerPath)) {
             unlink($controllerPath);
