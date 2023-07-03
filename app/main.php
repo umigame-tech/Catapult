@@ -8,6 +8,9 @@ class Main
 {
     const INDENT = '    ';
 
+    const METHOD_GET = 'get';
+    const METHOD_POST = 'post';
+
     private function indents(int $level): string
     {
         return str_repeat(self::INDENT, $level);
@@ -18,21 +21,21 @@ class Main
     private $targetDir = '/dist';
 
     private $actions = [
-        'index' => 'get',
-        'show' => 'get',
-        'new' => 'get',
-        'createConfirm' => 'post',
-        'create' => 'post',
-        'edit' => 'get',
-        'editConfirm' => 'post',
-        'update' => 'post',
-        'deleteConfirm' => 'get',
-        'delete' => 'post', // HTMLフォームからの送信だとDELETEメソッドは使えないので
+        'index' => self::METHOD_GET,
+        'show' => self::METHOD_GET,
+        'new' => self::METHOD_GET,
+        'createConfirm' => self::METHOD_POST,
+        'create' => self::METHOD_POST,
+        'edit' => self::METHOD_GET,
+        'editConfirm' => self::METHOD_POST,
+        'update' => self::METHOD_POST,
+        'deleteConfirm' => self::METHOD_GET,
+        'delete' => self::METHOD_POST, // HTMLフォームからの送信だとDELETEメソッドは使えないので
     ];
 
     private function setupEnvFile()
     {
-        copy('./default.env', $this->targetDir . '/.env');
+        copy('app/default.env', $this->targetDir . '/.env');
     }
 
     private function setupDatabase()
@@ -75,6 +78,7 @@ class Main
             $this->generateModel($entity);
             $this->generateMigration($entity);
             $this->generateController($entity);
+            $this->generateViews($entity);
             $this->routesOf($entity);
         }
     }
@@ -198,7 +202,11 @@ use Illuminate\Http\Request;
 
 class {$controllerName} extends Controller
 {
-    public function index() { }
+    public function index()
+    {
+        return view('{$entity['name']}.index');
+    }
+
     public function show() { }
     public function new() { }
     public function createConfirm() { }
@@ -239,8 +247,8 @@ EOF;
 
     private function routesOf($entity)
     {
-        $controllerName = $this->controllerName($entity);
-        $routes = array_map(
+        $controllerName = '\App\Http\Controllers\\' . $this->controllerName($entity);
+        $routes = implode("\n", array_map(
             function ($action, $method) use ($entity, $controllerName) {
                 $path = match ($action) {
                     'index' =>  '',
@@ -251,12 +259,34 @@ EOF;
             },
             array_keys($this->actions),
             array_values($this->actions)
-        );
+        ));
 
-        var_dump($routes);
+        $webRoutePath = $this->targetDir . '/routes/web.php';
+        $file = new SplFileObject($webRoutePath, 'a+');
+        $file->fwrite("\n\n{$routes}\n");
     }
 
     // view CRUD用のBladeテンプレート
+    private function generateViews($entity)
+    {
+        $this->generateIndexView($entity);
+    }
+
+    private function generateIndexView($entity)
+    {
+        // 前回のディレクトリが残っている場合は削除する
+        if (file_exists($this->targetDir . '/resources/views/' . $entity['name'])) {
+            exec("rm -rf {$this->targetDir}/resources/views/{$entity['name']}");
+        }
+
+        mkdir($this->targetDir . '/resources/views/' . $entity['name'], 0755, true);
+        $viewPath = $this->targetDir . '/resources/views/' . $entity['name'] . '/index.blade.php';
+        $view = <<<EOF
+<h1>index of {$entity['name']}</h1>
+EOF;
+
+        file_put_contents($viewPath, $view);
+    }
 }
 
 (new Main())->handle($argv);
