@@ -1,13 +1,13 @@
 <?php
 
 namespace UmigameTech\Catapult;
-use Illuminate\Database\Migrations\MigrationCreator;
-
-require_once(__DIR__ . '/../vendor/autoload.php');
 
 use SplFileObject;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
+use UmigameTech\Catapult\Generators\ControllerGenerator;
+
+require_once(__DIR__ . '/../vendor/autoload.php');
 
 class Main
 {
@@ -87,11 +87,12 @@ class Main
 
         $modelGenerator = new ModelGenerator($this->projectName);
         $migrationGenerator = new MigrationGenerator($this->projectName);
+        $controllerGenerator = new ControllerGenerator($this->projectName);
 
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
-            $this->generateController($entity);
+            $controllerGenerator->generate($entity);
             $this->generateViews($entity);
             $this->routesOf($entity, $indent);
         }
@@ -106,48 +107,6 @@ class Main
             explode('_', $entity['name'])
         )) . 'Controller';
     }
-
-    private function generateController($entity)
-    {
-        $controllerName = $this->controllerName($entity);
-
-        $controller = <<<EOF
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-
-class {$controllerName} extends Controller
-{
-    public function index()
-    {
-        return view('{$entity['name']}.index');
-    }
-
-    public function show() { }
-    public function new() { }
-    public function createConfirm() { }
-    public function create() { }
-    public function edit() { }
-    public function editConfirm() { }
-    public function update() { }
-    public function deleteConfirm() { }
-    public function delete() { }
-}
-
-EOF;
-
-        $controllerPath = $this->targetDir . '/app/Http/Controllers/' . $controllerName . '.php';
-        // 既にファイルがある場合は削除してから生成する
-        if (file_exists($controllerPath)) {
-            unlink($controllerPath);
-        }
-
-        file_put_contents($controllerPath, $controller);
-    }
-
-    // web.php CRUD用のRoute
 
     // 古いRouteを削除する
     private function refreshRoutes()
