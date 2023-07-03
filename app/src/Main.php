@@ -4,6 +4,7 @@ namespace UmigameTech\Catapult;
 
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
+use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
 use UmigameTech\Catapult\Generators\ViewGenerator;
@@ -60,6 +61,7 @@ class Main
 
         $modelGenerator = new ModelGenerator($this->projectName);
         $migrationGenerator = new MigrationGenerator($this->projectName);
+        $factoryGenerator = new FactoryGenerator($this->projectName);
         $controllerGenerator = new ControllerGenerator($this->projectName);
         $viewGenerator = new ViewGenerator($this->projectName);
         $routeGenerator = new RouteGenerator($this->projectName);
@@ -73,6 +75,7 @@ class Main
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
+            $factoryGenerator->generate($entity);
             $controllerGenerator->generate($entity);
             $viewGenerator->generate($entity);
             $routeGenerator->generate($entity, $indent);
