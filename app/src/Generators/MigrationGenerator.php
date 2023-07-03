@@ -2,6 +2,8 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Doctrine\Inflector\InflectorFactory;
+
 class MigrationGenerator extends Generator
 {
     public function generate($entity)
@@ -13,6 +15,10 @@ class MigrationGenerator extends Generator
             $entity['attributes']
         );
         $columns = implode("\n" . $this->indents(3), $columnList);
+
+        $inflector = InflectorFactory::create()->build();
+        $tableName = $inflector->tableize($tableName);
+        $pluralTableName = $inflector->pluralize($tableName);
 
         $migration = <<<EOF
 <?php
@@ -28,7 +34,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('{$tableName}', function (Blueprint \$table) {
+        Schema::create('{$pluralTableName}', function (Blueprint \$table) {
             \$table->id();
             $columns
             \$table->timestamps();

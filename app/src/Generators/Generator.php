@@ -2,8 +2,12 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\Traits\ProjectPath;
+
 abstract class Generator
 {
+    use ProjectPath;
+
     const INDENT = '    ';
 
     protected $targetDir = '/dist';
@@ -17,10 +21,5 @@ abstract class Generator
     protected function indents(int $level): string
     {
         return str_repeat(self::INDENT, $level);
-    }
-
-    protected function projectPath(): string
-    {
-        return "{$this->targetDir}/{$this->projectName}";
     }
 }
