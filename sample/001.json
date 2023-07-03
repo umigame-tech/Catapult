@@ -1,5 +1,6 @@
 {
   "project_name": "my_great_project",
+  "sealed_prefix": "admin",
   "entities": [
     {
       "name": "my_great_entity",

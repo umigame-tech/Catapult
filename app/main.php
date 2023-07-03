@@ -72,15 +72,21 @@ class Main
 
         $this->setupEnvFile();
         $this->setupDatabase();
-        $this->removeDefaultRoute();
+        $this->refreshRoutes();
+
+        $prefix = $json['sealed_prefix'] ?? "";
+        $indent = empty($prefix) ? 0 : 1;
+        $this->sealedRoutesOpen($prefix);
 
         foreach ($json['entities'] as $entity) {
             $this->generateModel($entity);
             $this->generateMigration($entity);
             $this->generateController($entity);
             $this->generateViews($entity);
-            $this->routesOf($entity);
+            $this->routesOf($entity, $indent);
         }
+
+        $this->sealedRoutesClose($prefix);
     }
 
     private function generateModel($entity) {
@@ -231,31 +237,70 @@ EOF;
 
     // web.php CRUD用のRoute
 
-    // デフォルトのRouteを削除する
-    private function removeDefaultRoute()
+    // 古いRouteを削除する
+    private function refreshRoutes()
     {
         $webRoutePath = $this->targetDir . '/routes/web.php';
         $file = new SplFileObject($webRoutePath, 'r+');
-        while ($file->eof() === false) {
-            $line = $file->fgets();
-            if (strpos($line, 'Route::get(\'/\',') !== false) {
-                $file->ftruncate($file->ftell() - strlen($line));
-                break;
-            }
-        }
+        $file->ftruncate(0);
+
+        $template = <<<EOF
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+EOF;
+
+        $file->fwrite($template);
     }
 
-    private function routesOf($entity)
+    private function sealedRoutesOpen($prefix = "")
+    {
+        if (empty($prefix)) {
+            return;
+        }
+
+        $route = "Route::prefix('{$prefix}')->group(function () {";
+
+        $webRoutePath = $this->targetDir . '/routes/web.php';
+        $file = new SplFileObject($webRoutePath, 'a+');
+        $file->fwrite("\n\n{$route}\n");
+    }
+
+    private function sealedRoutesClose($prefix = "")
+    {
+        if (empty($prefix)) {
+            return;
+        }
+
+        $webRoutePath = $this->targetDir . '/routes/web.php';
+        $file = new SplFileObject($webRoutePath, 'a+');
+        $file->fwrite("\n\n});\n");
+    }
+
+    private function routesOf($entity, $indent = 0)
     {
         $controllerName = '\App\Http\Controllers\\' . $this->controllerName($entity);
+        $indentString = $this->indents($indent);
         $routes = implode("\n", array_map(
-            function ($action, $method) use ($entity, $controllerName) {
+            function ($action, $method) use ($entity, $controllerName, $indentString) {
                 $path = match ($action) {
                     'index' =>  '',
                     default => '/' . $action,
                 };
 
-                return "Route::{$method}('/{$entity['name']}{$path}', [{$controllerName}::class, '{$action}']);";
+                return "{$indentString}Route::{$method}('/{$entity['name']}{$path}', [{$controllerName}::class, '{$action}']);";
             },
             array_keys($this->actions),
             array_values($this->actions)
