@@ -11,5 +11,7 @@
         "psr-4": {
             "UmigameTech\\Catapult\\": "src/"
         }},
-    "require": {}
+    "require": {
+        "doctrine/inflector": "^2.0"
+    }
 }

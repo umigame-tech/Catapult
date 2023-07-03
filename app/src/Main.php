@@ -2,31 +2,48 @@
 
 namespace UmigameTech\Catapult;
 
+use SplFileObject;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
+use UmigameTech\Catapult\Generators\SeederGenerator;
 use UmigameTech\Catapult\Generators\ViewGenerator;
+use UmigameTech\Catapult\Traits\ProjectPath;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
 
 class Main
 {
+    use ProjectPath;
+
     private $projectName = 'project';
 
     private $targetDir = '/dist';
 
-    private function setupEnvFile()
+    private function setupEnvFile($projectPath)
     {
         $fileDir = __DIR__ . '/../../app';
         $envFile = preg_replace('/\/$/', '', $fileDir) . '/default.env';
-        copy($envFile, $this->targetDir . '/.env');
+        copy($envFile, $projectPath . '/.env');
     }
 
-    private function setupDatabase()
+    private function setupDatabase($projectPath)
     {
-        touch($this->targetDir . '/database/database.sqlite');
+        $file = new SplFileObject("{$projectPath}/.env", 'r+');
+        $isSqlite = false;
+        while ($line = $file->fgets()) {
+            if (preg_match('/^DB_CONNECTION=sqlite$/', $line)) {
+                $isSqlite = true;
+            }
+        }
+
+        if ($isSqlite) {
+            $sqlitePath = "{$projectPath}/database/database.sqlite";
+            touch($sqlitePath);
+            $file->fwrite("DB_DATABASE={$sqlitePath}\n");
+        }
     }
 
     public function handle($argv)
@@ -45,23 +62,24 @@ class Main
         if (!empty($json['project_name'])) {
             $this->projectName = $json['project_name'];
         }
-        $this->targetDir .= '/' . $this->projectName;
+        $projectPath = $this->projectPath();
 
         $skipInstallation = !empty($argv[2]) && $argv[2] === '--skip-installation';
         if (! $skipInstallation) {
-            if (file_exists($this->targetDir . '/composer.json')) {
-                exec("composer install --working-dir={$this->targetDir}");
+            if (file_exists($projectPath . '/composer.json')) {
+                exec("composer install --working-dir={$projectPath}");
             } else {
                 exec("composer create-project --prefer-dist laravel/laravel {$this->targetDir}");
             }
         }
 
-        $this->setupEnvFile();
-        $this->setupDatabase();
+        $this->setupEnvFile($projectPath);
+        $this->setupDatabase($projectPath);
 
         $modelGenerator = new ModelGenerator($this->projectName);
         $migrationGenerator = new MigrationGenerator($this->projectName);
         $factoryGenerator = new FactoryGenerator($this->projectName);
+        $seederGenerator = new SeederGenerator($this->projectName);
         $controllerGenerator = new ControllerGenerator($this->projectName);
         $viewGenerator = new ViewGenerator($this->projectName);
         $routeGenerator = new RouteGenerator($this->projectName);
@@ -76,11 +94,13 @@ class Main
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
             $factoryGenerator->generate($entity);
+            $seederGenerator->generate($entity);
             $controllerGenerator->generate($entity);
             $viewGenerator->generate($entity);
             $routeGenerator->generate($entity, $indent);
         }
 
+        $seederGenerator->generateDatabaseSeeder($json['entities']);
         $routeGenerator->sealedRoutesClose($prefix);
     }
 }
