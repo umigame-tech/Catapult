@@ -23,8 +23,30 @@ class ViewGenerator extends Generator
 
         mkdir($projectPath . '/resources/views/' . $entity['name'], 0755, true);
         $viewPath = $projectPath . '/resources/views/' . $entity['name'] . '/index.blade.php';
+
+        $modelName = ModelGenerator::modelName($entity);
+        $camelCase = lcfirst($modelName);
+
+        $attributesList = array_map(
+            fn ($attribute) => "<dt>{$attribute['name']}</dt>\n<dd>{{ \${$camelCase}->{$attribute['name']} }}</dd>",
+            $entity['attributes']
+        );
+        $attributes = implode("\n" . $this->indents(3), $attributesList);
+
         $view = <<<EOF
+@php
+   use App\Models\\{$modelName};
+@endphp
 <h1>index of {$entity['name']}</h1>
+<ul>
+@foreach ({$modelName}::get() as \${$camelCase})
+    <li>
+        <dl>
+            {$attributes}
+        </dl>
+    </li>
+@endforeach
+</ul>
 EOF;
 
         file_put_contents($viewPath, $view);
