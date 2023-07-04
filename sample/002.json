@@ -3,7 +3,7 @@
   "sealed_prefix": "admin",
   "entities": [
     {
-      "name": "user",
+      "name": "person",
       "attributes": [
         {
           "name": "name",
