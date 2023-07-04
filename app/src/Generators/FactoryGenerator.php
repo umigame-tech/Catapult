@@ -2,18 +2,27 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\Datatypes\AttributeType;
+
 class FactoryGenerator extends Generator
 {
-    private $DatatypeFakerMethodMap = [
-        'string' => 'realText',
-        'integer' => 'randomNumber',
-        'boolean' => 'boolean',
-        'date' => 'date',
-        'datetime' => 'dateTime',
-        'time' => 'time',
-        'decimal' => 'randomFloat',
-        'text' => 'realText',
-    ];
+    private function attributeTypeMap(string $type): string
+    {
+        return match ($type) {
+            AttributeType::String->value => 'realText',
+            AttributeType::Username->value => 'userName',
+            AttributeType::Email->value => 'email',
+            AttributeType::Tel->value => 'phoneNumber',
+            AttributeType::Integer->value => 'randomNumber',
+            AttributeType::Boolean->value => 'boolean',
+            AttributeType::Date->value => 'date',
+            AttributeType::Datetime->value => 'dateTime',
+            AttributeType::Time->value => 'time',
+            AttributeType::Decimal->value => 'randomFloat',
+            AttributeType::Text->value => 'realText',
+            default => throw new \Exception('Invalid attribute type'),
+        };
+    }
 
     public function generate($entity)
     {
@@ -23,7 +32,7 @@ class FactoryGenerator extends Generator
         )) . 'Factory';
 
         $fakerList = array_map(
-            fn ($attribute) => "'{$attribute['name']}' => \$this->faker->{$this->DatatypeFakerMethodMap[$attribute['type']]}()",
+            fn ($attribute) => "'{$attribute['name']}' => \$this->faker->{$this->attributeTypeMap($attribute['type'])}()",
             $entity['attributes']
         );
 

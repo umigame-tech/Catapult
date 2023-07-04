@@ -4,12 +4,16 @@ namespace UmigameTech\Catapult\Generators;
 
 class ModelGenerator extends Generator
 {
-
-    public function generate($entity) {
-        $modelName = implode('', array_map(
+    static public function modelName($entity)
+    {
+        return implode('', array_map(
             fn ($word) => ucfirst($word),
             explode('_', $entity['name'])
         ));
+    }
+
+    public function generate($entity) {
+        $modelName = self::modelName($entity);
 
         $fillableList = array_map(
             fn ($attribute) => "'{$attribute['name']}'",
