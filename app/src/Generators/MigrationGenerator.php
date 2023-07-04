@@ -72,21 +72,6 @@ return new class extends Migration
 EOF;
 
         $projectPath = $this->projectPath();
-        // Laravelインストール時に生成されるマイグレーションファイルは、すべて削除する
-        foreach (glob($projectPath . '/database/migrations/*_create_users_table.php') as $file) {
-            unlink($file);
-        }
-        foreach (glob($projectPath . '/database/migrations/*_create_password_resets_table.php') as $file) {
-            unlink($file);
-        }
-        foreach (glob($projectPath . '/database/migrations/*_create_failed_jobs_table.php') as $file) {
-            unlink($file);
-        }
-        foreach (glob($projectPath . '/database/migrations/*_create_personal_access_tokens_table.php') as $file) {
-            // ここで消してもLaravel自体にcreate_personal_access_tokens_table.phpがあるのでテーブルが作成される
-            // ひとまず様子見
-            unlink($file);
-        }
 
         // /_create_{$tableName}_table/ というパターンに一致するファイル名で既にファイルがある場合は削除してから生成する
         foreach (glob($projectPath . '/database/migrations/*_create_' . $tableName . '_table.php') as $file) {

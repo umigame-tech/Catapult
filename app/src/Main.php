@@ -88,6 +88,11 @@ class Main
 
         $routeGenerator->refreshRoutes();
 
+        // 将来的に使うかも
+        // chdir($projectPath);
+        // exec('composer require laravel/breeze --dev');
+        // exec('php artisan breeze:install api --dark --typescript');
+
         $prefix = $json['sealed_prefix'] ?? "";
         $indent = empty($prefix) ? 0 : 1;
         $routeGenerator->sealedRoutesOpen($prefix);
