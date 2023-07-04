@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "title": "Catapult",
+  "description": "Schema of Catapult input data",
+  "type": "object",
+  "properties": {
+    "project_name": {
+      "description": "Name of the project",
+      "type": "string"
+    },
+    "sealed_prefix": {
+      "description": "Prefix of path of login needed pages",
+      "type": "string"
+    },
+    "entities": {
+      "description": "List of entities",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "Name of the entity",
+            "type": "string"
+          },
+          "attributes": {
+            "description": "List of attributes",
+            "type": "array",
+            "items": {
+              "description": "Attribute of the entity",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "Name of the attribute",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Type of the attribute",
+                  "enum": [
+                    "string",
+                    "username",
+                    "email",
+                    "tel",
+                    "integer",
+                    "decimal",
+                    "boolean",
+                    "date",
+                    "datetime",
+                    "time",
+                    "text"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": ["project_name", "entities"]
+}
