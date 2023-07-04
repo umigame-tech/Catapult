@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult;
 
 use SplFileObject;
+use Swaggest\JsonSchema\Schema;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
@@ -58,7 +59,8 @@ class Main
             exit(1);
         }
 
-        $json = json_decode($inputFile, true);
+        $schema = Schema::import(json_decode(file_get_contents(__DIR__ . '/JsonSchemas/schema.json')));
+        $json = $schema->in(json_decode($inputFile));
         if (!empty($json['project_name'])) {
             $this->projectName = $json['project_name'];
         }

@@ -12,6 +12,7 @@
             "UmigameTech\\Catapult\\": "src/"
         }},
     "require": {
-        "doctrine/inflector": "^2.0"
+        "doctrine/inflector": "^2.0",
+        "swaggest/json-schema": "^0.12.41"
     }
 }
