@@ -27,11 +27,21 @@ class ViewGenerator extends Generator
         $modelName = ModelGenerator::modelName($entity);
         $camelCase = lcfirst($modelName);
 
-        $attributesList = array_map(
-            fn ($attribute) => "<dt>{$attribute['name']}</dt>\n<dd>{{ \${$camelCase}->{$attribute['name']} }}</dd>",
-            $entity['attributes']
+        $attributeHeaders = implode(
+            "\n" . $this->indents(3),
+            array_map(
+                fn ($attribute) => "<li>{$attribute['name']}</li>",
+                $entity['attributes']
+            )
         );
-        $attributes = implode("\n" . $this->indents(3), $attributesList);
+
+        $attributes = implode(
+            "\n" . $this->indents(3),
+            array_map(
+                fn ($attribute) => "<li>{{ \${$camelCase}->{$attribute['name']} }}</li>",
+                $entity['attributes']
+            )
+        );
 
         $view = <<<EOF
 @php
@@ -39,11 +49,16 @@ class ViewGenerator extends Generator
 @endphp
 <h1>index of {$entity['name']}</h1>
 <ul>
+    <li>
+        <ul>
+            {$attributeHeaders}
+        </ul>
+    </li>
 @foreach ({$modelName}::get() as \${$camelCase})
     <li>
-        <dl>
+        <ul>
             {$attributes}
-        </dl>
+        </ul>
     </li>
 @endforeach
 </ul>

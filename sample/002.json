@@ -1,0 +1,51 @@
+{
+  "project_name": "data_types",
+  "sealed_prefix": "admin",
+  "entities": [
+    {
+      "name": "user",
+      "attributes": [
+        {
+          "name": "name",
+          "type": "username"
+        },
+        {
+          "name": "email",
+          "type": "email"
+        },
+        {
+          "name": "tel",
+          "type": "tel"
+        },
+        {
+          "name": "age",
+          "type": "integer"
+        },
+        {
+          "name": "is_admin",
+          "type": "boolean"
+        },
+        {
+          "name": "birthday",
+          "type": "date"
+        },
+        {
+          "name": "registered_at",
+          "type": "datetime"
+        },
+        {
+          "name": "start_time",
+          "type": "time"
+        },
+        {
+          "name": "weight",
+          "type": "decimal"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ]
+    }
+  ]
+}

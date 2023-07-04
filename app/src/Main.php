@@ -69,7 +69,7 @@ class Main
             if (file_exists($projectPath . '/composer.json')) {
                 exec("composer install --working-dir={$projectPath}");
             } else {
-                exec("composer create-project --prefer-dist laravel/laravel {$this->targetDir}");
+                exec("composer create-project --prefer-dist laravel/laravel {$projectPath}");
             }
         }
 
