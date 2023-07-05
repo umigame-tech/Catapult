@@ -7,14 +7,20 @@ use App\Models\{{ modelName }};
 
 class {{ controllerName }} extends Controller
 {
-    public function index()
+    public function index({{ modelName }} ${{ entity['name'] }})
     {
         return view('{{ entity['name'] }}.index', [
-            '{{ plural }}' => {{ modelName }}::get(),
+            '{{ plural }}' => ${{ entity['name'] }}->get(),
         ]);
     }
 
-    public function show() { }
+    public function show({{ modelName }} ${{ entity['name'] }}, $id)
+    {
+        return view('{{ entity['name'] }}.show', [
+            '{{ entity['name'] }}' => ${{ entity['name'] }}->findOrFail($id),
+        ]);
+    }
+
     public function new() { }
     public function createConfirm() { }
     public function create() { }
