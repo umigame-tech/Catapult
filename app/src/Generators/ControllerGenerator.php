@@ -2,6 +2,8 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Doctrine\Inflector\InflectorFactory;
+
 class ControllerGenerator extends Generator
 {
     const METHOD_GET = 'get';
@@ -31,6 +33,10 @@ class ControllerGenerator extends Generator
     public function generate($entity)
     {
         $controllerName = self::controllerName($entity);
+        $modelName = ModelGenerator::modelName($entity);
+
+        $inflector = InflectorFactory::create()->build();
+        $plural = $inflector->pluralize($entity['name']);
 
         $controller = <<<EOF
 <?php
@@ -38,12 +44,15 @@ class ControllerGenerator extends Generator
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\{$modelName};
 
 class {$controllerName} extends Controller
 {
     public function index()
     {
-        return view('{$entity['name']}.index');
+        return view('{$entity['name']}.index', [
+            '{$plural}' => {$modelName}::get(),
+        ]);
     }
 
     public function show() { }
