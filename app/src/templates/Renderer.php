@@ -28,7 +28,7 @@ class Renderer
         ]);
     }
 
-    public function render($template, $context)
+    public function render($template, $context = [])
     {
         return $this->twig->render($template, $context);
     }

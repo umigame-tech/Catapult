@@ -96,16 +96,10 @@ class Main
         $viewGenerator = new ViewGenerator($this->projectName);
         $routeGenerator = new RouteGenerator($this->projectName);
 
-        $routeGenerator->refreshRoutes();
-
         // 将来的に使うかも
         // chdir($projectPath);
         // exec('composer require laravel/breeze --dev');
         // exec('php artisan breeze:install api --dark --typescript');
-
-        $prefix = $json['sealed_prefix'] ?? "";
-        $indent = empty($prefix) ? 0 : 1;
-        $routeGenerator->sealedRoutesOpen($prefix);
 
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
@@ -114,11 +108,10 @@ class Main
             $seederGenerator->generate($entity);
             $controllerGenerator->generate($entity);
             $viewGenerator->generate($entity);
-            $routeGenerator->generate($entity, $indent);
         }
 
+        $routeGenerator->generate($json);
         $seederGenerator->generateDatabaseSeeder($json['entities']);
-        $routeGenerator->sealedRoutesClose($prefix);
     }
 }
 

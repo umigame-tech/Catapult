@@ -27,8 +27,8 @@ class ControllerGenerator extends Generator
         'edit' => self::METHOD_GET,
         'editConfirm' => self::METHOD_POST,
         'update' => self::METHOD_POST,
-        'deleteConfirm' => self::METHOD_GET,
-        'delete' => self::METHOD_POST, // HTMLフォームからの送信だとDELETEメソッドは使えないので
+        'destroyConfirm' => self::METHOD_GET,
+        'destroy' => self::METHOD_POST, // HTMLフォームからの送信だとDELETEメソッドは使えないので
     ];
 
     public function generate($entity)
