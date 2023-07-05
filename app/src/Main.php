@@ -8,8 +8,10 @@ use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
+use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
 use UmigameTech\Catapult\Generators\SeederGenerator;
+use UmigameTech\Catapult\Generators\TailwindCssSetupGenerator;
 use UmigameTech\Catapult\Generators\ViewGenerator;
 use UmigameTech\Catapult\Traits\ProjectPath;
 
@@ -77,6 +79,12 @@ class Main
 
         $this->setupEnvFile($projectPath);
         $this->setupDatabase($projectPath);
+
+        $tailwind = new TailwindCssSetupGenerator($this->projectName);
+        $tailwind->generate();
+
+        $resources = new ResourcesSetupGenerator($this->projectName);
+        $resources->generate();
 
         $modelGenerator = new ModelGenerator($this->projectName);
         $migrationGenerator = new MigrationGenerator($this->projectName);

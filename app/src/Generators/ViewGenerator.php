@@ -2,6 +2,8 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Doctrine\Inflector\InflectorFactory;
+
 class ViewGenerator extends Generator
 {
 
@@ -27,6 +29,9 @@ class ViewGenerator extends Generator
         $modelName = ModelGenerator::modelName($entity);
         $camelCase = lcfirst($modelName);
 
+        $inflector = InflectorFactory::create()->build();
+        $plural = $inflector->pluralize($entity['name']);
+
         $attributeHeaders = implode(
             "\n" . $this->indents(3),
             array_map(
@@ -44,17 +49,15 @@ class ViewGenerator extends Generator
         );
 
         $view = <<<EOF
-@php
-   use App\Models\\{$modelName};
-@endphp
-<h1>index of {$entity['name']}</h1>
+@extends('layouts.app')
+<h1 class="mb-8">index of {$entity['name']}</h1>
 <ul>
     <li>
         <ul>
             {$attributeHeaders}
         </ul>
     </li>
-@foreach ({$modelName}::get() as \${$camelCase})
+@foreach (\${$plural} as \${$camelCase})
     <li>
         <ul>
             {$attributes}

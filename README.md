@@ -26,8 +26,16 @@ php src/main.php /sample/001.json --skip-installation
 cd /dist/my_great_project
 ```
 
+TailwindCSSのクラスを継続的にビルド
+
 ```sh
-php artisan serve --host 0.0.0.0 --port 8000
+npm run build -- --watch
+```
+
+Laravel の開発サーバーを起動
+
+```sh
+php artisan serve --host 0.0.0.0
 ```
 
 ブラウザで http://localhost:8000/admin/my_great_entity を開く
