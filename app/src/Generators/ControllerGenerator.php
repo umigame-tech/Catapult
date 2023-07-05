@@ -47,36 +47,6 @@ class ControllerGenerator extends Generator
             'entity' => $entity,
         ]);
 
-//         $controller = <<<EOF
-// <?php
-//
-// namespace App\Http\Controllers;
-//
-// use Illuminate\Http\Request;
-// use App\Models\{$modelName};
-//
-// class {$controllerName} extends Controller
-// {
-//     public function index()
-//     {
-//         return view('{$entity['name']}.index', [
-//             '{$plural}' => {$modelName}::get(),
-//         ]);
-//     }
-//
-//     public function show() { }
-//     public function new() { }
-//     public function createConfirm() { }
-//     public function create() { }
-//     public function edit() { }
-//     public function editConfirm() { }
-//     public function update() { }
-//     public function deleteConfirm() { }
-//     public function delete() { }
-// }
-//
-// EOF;
-
         $projectPath = $this->projectPath();
         $controllerPath = "{$projectPath}/app/Http/Controllers/{$controllerName}.php";
         // 既にファイルがある場合は削除してから生成する
