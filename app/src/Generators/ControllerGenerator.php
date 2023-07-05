@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Templates\Renderer;
 
 class ControllerGenerator extends Generator
 {
@@ -26,8 +27,8 @@ class ControllerGenerator extends Generator
         'edit' => self::METHOD_GET,
         'editConfirm' => self::METHOD_POST,
         'update' => self::METHOD_POST,
-        'deleteConfirm' => self::METHOD_GET,
-        'delete' => self::METHOD_POST, // HTMLフォームからの送信だとDELETEメソッドは使えないので
+        'destroyConfirm' => self::METHOD_GET,
+        'destroy' => self::METHOD_POST, // HTMLフォームからの送信だとDELETEメソッドは使えないので
     ];
 
     public function generate($entity)
@@ -38,35 +39,13 @@ class ControllerGenerator extends Generator
         $inflector = InflectorFactory::create()->build();
         $plural = $inflector->pluralize($entity['name']);
 
-        $controller = <<<EOF
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Models\{$modelName};
-
-class {$controllerName} extends Controller
-{
-    public function index()
-    {
-        return view('{$entity['name']}.index', [
-            '{$plural}' => {$modelName}::get(),
+        $renderer = Renderer::getInstance();
+        $controller = $renderer->render('controller.twig', [
+            'controllerName' => $controllerName,
+            'modelName' => $modelName,
+            'plural' => $plural,
+            'entity' => $entity,
         ]);
-    }
-
-    public function show() { }
-    public function new() { }
-    public function createConfirm() { }
-    public function create() { }
-    public function edit() { }
-    public function editConfirm() { }
-    public function update() { }
-    public function deleteConfirm() { }
-    public function delete() { }
-}
-
-EOF;
 
         $projectPath = $this->projectPath();
         $controllerPath = "{$projectPath}/app/Http/Controllers/{$controllerName}.php";

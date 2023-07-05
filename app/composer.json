@@ -13,6 +13,7 @@
         }},
     "require": {
         "doctrine/inflector": "^2.0",
-        "swaggest/json-schema": "^0.12.41"
+        "swaggest/json-schema": "^0.12.41",
+        "twig/twig": "^3.0"
     }
 }

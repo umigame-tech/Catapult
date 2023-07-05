@@ -8,8 +8,8 @@ class ResourcesSetupGenerator extends Generator
     {
         $projectPath = $this->projectPath();
 
-        // src/templates/resources/ 配下のディレクトリをコピーする
-        $resourcesDir = __DIR__ . '/../templates/resources';
+        // src/Templates/resources/ 配下のディレクトリをコピーする
+        $resourcesDir = __DIR__ . '/../Templates/resources';
         $distDir = $projectPath . '/resources';
         $this->copyDir($resourcesDir, $distDir);
     }

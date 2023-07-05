@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+{% for entity in entities %}
+use App\Http\Controllers\{{ entity.controllerName }};
+{% endfor %}
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+{% if prefix is not empty %}
+Route::prefix('{{ prefix }}')->group(function () {
+{% endif %}
+{% for entity in entities %}
+
+{% for action, method in actions %}
+{{ prefix is not empty ? '    ' : '' }}Route::{{ method }}('{{entity.name}}{{ action is same as('index') ? '' : "/#{action}" }}', [{{ entity.controllerName }}::class, '{{ action }}']);
+{% endfor %}
+{% endfor %}
+
+{% if prefix is not empty %}
+});
+{% endif %}

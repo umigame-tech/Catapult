@@ -4,6 +4,7 @@ namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Templates\Renderer;
 
 class MigrationGenerator extends Generator
 {
@@ -29,47 +30,25 @@ class MigrationGenerator extends Generator
     {
         $tableName = $entity['name'];
 
-        $columnList = array_map(
-            fn ($attribute) => "\$table->{$this->attributeTypeMap($attribute['type'])}('{$attribute['name']}');",
+        $columns = array_map(
+            function ($attribute) {
+                return [
+                    'name' => $attribute['name'],
+                    'type' => $this->attributeTypeMap($attribute['type']),
+                ];
+            },
             $entity['attributes']
         );
-        $columns = implode("\n" . $this->indents(3), $columnList);
 
         $inflector = InflectorFactory::create()->build();
         $tableName = $inflector->tableize($tableName);
         $pluralTableName = $inflector->pluralize($tableName);
 
-        $migration = <<<EOF
-<?php
-
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
-
-return new class extends Migration
-{
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
-    {
-        Schema::create('{$pluralTableName}', function (Blueprint \$table) {
-            \$table->id();
-            $columns
-            \$table->timestamps();
-        });
-    }
-
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::dropIfExists('{$tableName}');
-    }
-};
-
-EOF;
+        $renderer = Renderer::getInstance();
+        $migration = $renderer->render('migration.twig', [
+            'pluralTableName' => $pluralTableName,
+            'columns' => $columns,
+        ]);
 
         $projectPath = $this->projectPath();
 
@@ -77,7 +56,7 @@ EOF;
         foreach (glob($projectPath . '/database/migrations/*_create_' . $tableName . '_table.php') as $file) {
             unlink($file);
         }
-        
+
         $migrationPath = "{$projectPath}/database/migrations/"
             . date('Y_m_d_His')
             . "_create_{$tableName}_table.php";

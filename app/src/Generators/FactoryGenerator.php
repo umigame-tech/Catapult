@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Templates\Renderer;
 
 class FactoryGenerator extends Generator
 {
@@ -26,44 +27,29 @@ class FactoryGenerator extends Generator
 
     public function generate($entity)
     {
+        $modelName = ModelGenerator::modelName($entity);
         $factoryName = implode('', array_map(
             fn ($word) => ucfirst($word),
             explode('_', $entity['name'])
         )) . 'Factory';
 
-        $fakerList = array_map(
-            fn ($attribute) => "'{$attribute['name']}' => \$this->faker->{$this->attributeTypeMap($attribute['type'])}()",
+        $fakers = array_map(
+            function ($attribute) {
+                return [
+                    'name' => $attribute['name'],
+                    'type' => $this->attributeTypeMap($attribute['type']),
+                ];
+            },
             $entity['attributes']
         );
 
-        $faker = implode(",\n" . $this->indents(3), $fakerList);
-
-        $factory = <<<EOF
-<?php
-
-namespace Database\Factories;
-
-use Illuminate\Database\Eloquent\Factories\Factory;
-
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\MyGreatEntity>
- */
-class {$factoryName} extends Factory
-{
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
-    public function definition(): array
-    {
-        return [
-            {$faker},
-        ];
-    }
-}
-
-EOF;
+        $renderer = Renderer::getInstance();
+        $factory = $renderer->render('factory.twig', [
+            'modelName' => $modelName,
+            'factoryName' => $factoryName,
+            'fakers' => $fakers,
+            'entity' => $entity,
+        ]);
 
         $projectPath = $this->projectPath();
         $factoryPath = "{$projectPath}" . '/database/factories/' . $factoryName . '.php';
