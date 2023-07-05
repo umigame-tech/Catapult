@@ -5,16 +5,16 @@ namespace UmigameTech\Catapult\Templates;
 use Twig\Loader\FilesystemLoader;
 use Twig\Environment;
 
-class Engine
+class Renderer
 {
-    private static Engine $instance;
+    private static Renderer $instance;
 
     private $twig;
 
     public static function getInstance()
     {
         if (! isset(self::$instance)) {
-            self::$instance = new Engine();
+            self::$instance = new Renderer();
         }
 
         return self::$instance;

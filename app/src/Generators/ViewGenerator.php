@@ -3,7 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
-use UmigameTech\Catapult\Templates\Engine;
+use UmigameTech\Catapult\Templates\Renderer;
 
 class ViewGenerator extends Generator
 {
@@ -32,7 +32,7 @@ class ViewGenerator extends Generator
         $inflector = InflectorFactory::create()->build();
         $plural = $inflector->pluralize($entity['name']);
 
-        $renderer = Engine::getInstance();
+        $renderer = Renderer::getInstance();
         $view = $renderer->render('views/index.blade.php.twig', [
             'entity' => $entity,
             'plural' => $plural,

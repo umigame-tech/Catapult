@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Templates\Renderer;
 
 class ControllerGenerator extends Generator
 {
@@ -38,35 +39,43 @@ class ControllerGenerator extends Generator
         $inflector = InflectorFactory::create()->build();
         $plural = $inflector->pluralize($entity['name']);
 
-        $controller = <<<EOF
-<?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use App\Models\{$modelName};
-
-class {$controllerName} extends Controller
-{
-    public function index()
-    {
-        return view('{$entity['name']}.index', [
-            '{$plural}' => {$modelName}::get(),
+        $renderer = Renderer::getInstance();
+        $controller = $renderer->render('controllers/index.twig', [
+            'controllerName' => $controllerName,
+            'modelName' => $modelName,
+            'plural' => $plural,
+            'entity' => $entity,
         ]);
-    }
 
-    public function show() { }
-    public function new() { }
-    public function createConfirm() { }
-    public function create() { }
-    public function edit() { }
-    public function editConfirm() { }
-    public function update() { }
-    public function deleteConfirm() { }
-    public function delete() { }
-}
-
-EOF;
+//         $controller = <<<EOF
+// <?php
+//
+// namespace App\Http\Controllers;
+//
+// use Illuminate\Http\Request;
+// use App\Models\{$modelName};
+//
+// class {$controllerName} extends Controller
+// {
+//     public function index()
+//     {
+//         return view('{$entity['name']}.index', [
+//             '{$plural}' => {$modelName}::get(),
+//         ]);
+//     }
+//
+//     public function show() { }
+//     public function new() { }
+//     public function createConfirm() { }
+//     public function create() { }
+//     public function edit() { }
+//     public function editConfirm() { }
+//     public function update() { }
+//     public function deleteConfirm() { }
+//     public function delete() { }
+// }
+//
+// EOF;
 
         $projectPath = $this->projectPath();
         $controllerPath = "{$projectPath}/app/Http/Controllers/{$controllerName}.php";
