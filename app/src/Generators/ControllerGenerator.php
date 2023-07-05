@@ -19,16 +19,47 @@ class ControllerGenerator extends Generator
     }
 
     public static $actions = [
-        'index' => self::METHOD_GET,
-        'show' => self::METHOD_GET,
-        'new' => self::METHOD_GET,
-        'createConfirm' => self::METHOD_POST,
-        'create' => self::METHOD_POST,
-        'edit' => self::METHOD_GET,
-        'editConfirm' => self::METHOD_POST,
-        'update' => self::METHOD_POST,
-        'destroyConfirm' => self::METHOD_GET,
-        'destroy' => self::METHOD_POST, // HTMLフォームからの送信だとDELETEメソッドは使えないので
+        'index' => [
+            'method' => self::METHOD_GET,
+            'params' => [],
+        ],
+        'show' => [
+            'method' => self::METHOD_GET,
+            'params' => ['id'],
+        ],
+        'new' => [
+            'method' => self::METHOD_GET,
+            'params' => [],
+        ],
+        'createConfirm' => [
+            'method' => self::METHOD_POST,
+            'params' => [],
+        ],
+        'create' => [
+            'method' => self::METHOD_POST,
+            'params' => [],
+        ],
+        'edit' => [
+            'method' => self::METHOD_GET,
+            'params' => ['id'],
+        ],
+        'editConfirm' => [
+            'method' => self::METHOD_POST,
+            'params' => ['id'],
+        ],
+        'update' => [
+            'method' => self::METHOD_POST,
+            'params' => ['id'],
+        ],
+        'destroyConfirm' => [
+            'method' => self::METHOD_GET,
+            'params' => ['id'],
+        ],
+        'destroy' => [
+            // HTMLフォームからの送信だとDELETEメソッドは使えないので
+            'method' => self::METHOD_POST,
+            'params' => ['id'],
+        ],
     ];
 
     public function generate($entity)
