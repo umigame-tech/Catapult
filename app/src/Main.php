@@ -80,11 +80,13 @@ class Main
         $this->setupEnvFile($projectPath);
         $this->setupDatabase($projectPath);
 
-        $tailwind = new TailwindCssSetupGenerator($this->projectName);
-        $tailwind->generate();
+        if (! $skipInstallation) {
+            $tailwind = new TailwindCssSetupGenerator($this->projectName);
+            $tailwind->generate();
 
-        $resources = new ResourcesSetupGenerator($this->projectName);
-        $resources->generate();
+            $resources = new ResourcesSetupGenerator($this->projectName);
+            $resources->generate();
+        }
 
         $modelGenerator = new ModelGenerator($this->projectName);
         $migrationGenerator = new MigrationGenerator($this->projectName);

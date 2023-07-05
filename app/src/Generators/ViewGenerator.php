@@ -3,15 +3,15 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Templates\Engine;
 
 class ViewGenerator extends Generator
 {
-
     // view CRUD用のBladeテンプレート
     public function generate($entity)
     {
         $this->generateIndexView($entity);
-        
+
         // TODO: index以外のビューテンプレート生成
     }
 
@@ -32,40 +32,12 @@ class ViewGenerator extends Generator
         $inflector = InflectorFactory::create()->build();
         $plural = $inflector->pluralize($entity['name']);
 
-        $attributeHeaders = implode(
-            "\n" . $this->indents(3),
-            array_map(
-                fn ($attribute) => "<li>{$attribute['name']}</li>",
-                $entity['attributes']
-            )
-        );
-
-        $attributes = implode(
-            "\n" . $this->indents(3),
-            array_map(
-                fn ($attribute) => "<li>{{ \${$camelCase}->{$attribute['name']} }}</li>",
-                $entity['attributes']
-            )
-        );
-
-        $view = <<<EOF
-@extends('layouts.app')
-<h1 class="mb-8">index of {$entity['name']}</h1>
-<ul>
-    <li>
-        <ul>
-            {$attributeHeaders}
-        </ul>
-    </li>
-@foreach (\${$plural} as \${$camelCase})
-    <li>
-        <ul>
-            {$attributes}
-        </ul>
-    </li>
-@endforeach
-</ul>
-EOF;
+        $renderer = Engine::getInstance();
+        $view = $renderer->render('views/index.blade.php.twig', [
+            'entity' => $entity,
+            'plural' => $plural,
+            'camelCase' => $camelCase,
+        ]);
 
         file_put_contents($viewPath, $view);
     }
