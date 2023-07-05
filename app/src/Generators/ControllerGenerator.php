@@ -40,7 +40,7 @@ class ControllerGenerator extends Generator
         $plural = $inflector->pluralize($entity['name']);
 
         $renderer = Renderer::getInstance();
-        $controller = $renderer->render('controllers/index.twig', [
+        $controller = $renderer->render('controller.twig', [
             'controllerName' => $controllerName,
             'modelName' => $modelName,
             'plural' => $plural,
