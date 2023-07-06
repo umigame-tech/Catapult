@@ -6,14 +6,17 @@
   <div>
     <label for="{{ attribute['name'] }}">{{ attribute['name'] }}</label>
 {% if attribute.inputType is same as('textarea') %}
-    <textarea name="{{ "#{entity['name']}-#{attribute['name']}" }}" id="{{ "#{entity['name']}-#{attribute['name']}" }}">{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}</textarea>
+    <textarea name="{{ attribute['inputName'] }}" id="{{ attribute['inputName'] }}">{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}</textarea>
 {% else %}
     <input
       type="{{ attribute.inputType }}"
-      name="{{ "#{entity['name']}-#{attribute['name']}" }}"
-      id="{{ "#{entity['name']}-#{attribute['name']}" }}"
-      value="{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}"
+      name="{{ attribute['inputName'] }}"
+      id="{{ attribute['inputName'] }}"
+      value="{{ '{{' }} old('{{ attribute['inputName'] }}') ?? ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}"
     >
+    @foreach ($errors->get('{{ attribute['inputName'] }}') as $error)
+      <div>{{ '{{' }} $error {{ '}}' }}</div>
+    @endforeach
 {% endif %}
   </div>
 {% endfor %}

@@ -66,6 +66,7 @@ class ControllerGenerator extends Generator
     {
         $controllerName = self::controllerName($entity);
         $modelName = ModelGenerator::modelName($entity);
+        $requestName = RequestGenerator::requestName($entity);
 
         $inflector = InflectorFactory::create()->build();
         $plural = $inflector->pluralize($entity['name']);
@@ -74,6 +75,7 @@ class ControllerGenerator extends Generator
         $controller = $renderer->render('controller.twig', [
             'controllerName' => $controllerName,
             'modelName' => $modelName,
+            'requestName' => $requestName,
             'plural' => $plural,
             'entity' => $entity,
         ]);
