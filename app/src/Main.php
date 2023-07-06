@@ -8,6 +8,7 @@ use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
+use UmigameTech\Catapult\Generators\RequestGenerator;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
 use UmigameTech\Catapult\Generators\SeederGenerator;
@@ -95,6 +96,7 @@ class Main
         $controllerGenerator = new ControllerGenerator($json);
         $viewGenerator = new ViewGenerator($json);
         $routeGenerator = new RouteGenerator($json);
+        $requestGenerator = new RequestGenerator($json);
 
         // 将来的に使うかも
         // chdir($projectPath);
@@ -108,6 +110,7 @@ class Main
             $seederGenerator->generate($entity);
             $controllerGenerator->generate($entity);
             $viewGenerator->generate($entity);
+            $requestGenerator->generate($entity);
         }
 
         $routeGenerator->generate($json);

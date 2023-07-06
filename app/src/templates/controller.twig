@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\{{ requestName }};
 use App\Models\{{ modelName }};
 
 class {{ controllerName }} extends Controller
@@ -21,7 +22,7 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function new(Request $request, {{ modelName }} ${{ entity['name'] }})
+    public function new({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }})
     {
         // 戻るボタンで戻ってきた場合にセッションから値を取得する処理
         ${{ entity['name'] }}->fill($request->session()->get('{{ entity['name'] }}.form', []));
@@ -31,11 +32,9 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function createConfirm(Request $request, {{ modelName }} ${{ entity['name'] }})
+    public function createConfirm({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }})
     {
         ${{ entity['name'] }}->fill($request->all());
-
-        // 入力値をセッションに格納する
         $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
 
         return view('{{ entity['name'] }}.createConfirm', [
@@ -43,7 +42,11 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function create() { }
+    public function create()
+    {
+
+    }
+
     public function edit() { }
     public function editConfirm() { }
     public function update() { }

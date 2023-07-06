@@ -12,8 +12,11 @@
       type="{{ attribute.inputType }}"
       name="{{ attribute['inputName'] }}"
       id="{{ attribute['inputName'] }}"
-      value="{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}"
+      value="{{ '{{' }} old('{{ attribute['inputName'] }}') ?? ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}"
     >
+    @foreach ($errors->get('{{ attribute['inputName'] }}') as $error)
+      <div>{{ '{{' }} $error {{ '}}' }}</div>
+    @endforeach
 {% endif %}
   </div>
 {% endfor %}
