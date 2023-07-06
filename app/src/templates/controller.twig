@@ -42,9 +42,13 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function create()
+    public function create(Request $request, {{ modelName }} ${{ entity['name'] }})
     {
+        ${{ entity['name'] }}->fill($request->session()->get('{{ entity['name'] }}.form', []));
+        ${{ entity['name'] }}->save();
+        $request->session()->forget('{{ entity['name'] }}.form');
 
+        return redirect()->route('{{ entity['name'] }}.index');
     }
 
     public function edit() { }

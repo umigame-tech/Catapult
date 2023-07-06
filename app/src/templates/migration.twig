@@ -14,7 +14,11 @@ return new class extends Migration
         Schema::create('{{ pluralTableName }}', function (Blueprint $table) {
             $table->id();
 {% for column in columns %}
+{% if column.type is same as('boolean') %}
+            $table->{{ column.type }}('{{ column.name }}')->default(false);
+{% else %}
             $table->{{ column.type }}('{{ column.name }}');
+{% endif %}
 {% endfor %}
             $table->timestamps();
         });
