@@ -87,6 +87,8 @@ class ViewGenerator extends Generator
         $entity['attributes'] = array_map(
             function ($attribute) {
                 $attribute['inputType'] = $this->attributeTypeMap($attribute['type']);
+                // 今後書き換えやすいように
+                $attribute['inputName'] = $attribute['name'];
                 return $attribute;
             },
             $entity['attributes']
