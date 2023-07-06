@@ -21,7 +21,13 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function new() { }
+    public function new({{ modelName }} ${{ entity['name'] }})
+    {
+        return view('{{ entity['name'] }}.new', [
+            '{{ entity['name'] }}' => ${{ entity['name'] }},
+        ]);
+    }
+
     public function createConfirm() { }
     public function create() { }
     public function edit() { }

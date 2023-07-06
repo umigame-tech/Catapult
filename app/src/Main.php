@@ -88,13 +88,13 @@ class Main
             $resources->generate();
         }
 
-        $modelGenerator = new ModelGenerator($this->projectName);
-        $migrationGenerator = new MigrationGenerator($this->projectName);
-        $factoryGenerator = new FactoryGenerator($this->projectName);
-        $seederGenerator = new SeederGenerator($this->projectName);
-        $controllerGenerator = new ControllerGenerator($this->projectName);
-        $viewGenerator = new ViewGenerator($this->projectName);
-        $routeGenerator = new RouteGenerator($this->projectName);
+        $modelGenerator = new ModelGenerator($json);
+        $migrationGenerator = new MigrationGenerator($json);
+        $factoryGenerator = new FactoryGenerator($json);
+        $seederGenerator = new SeederGenerator($json);
+        $controllerGenerator = new ControllerGenerator($json);
+        $viewGenerator = new ViewGenerator($json);
+        $routeGenerator = new RouteGenerator($json);
 
         // 将来的に使うかも
         // chdir($projectPath);
