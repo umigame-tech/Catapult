@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('content')
 <h1>Create new {{ entity['name'] }}</h1>
 <form method="post" action="{{ baseUri }}/createConfirm">
   {% verbatim %}{{ csrf_field() }}{% endverbatim %}
@@ -25,3 +26,4 @@
     <a href="{{ baseUri }}">Cancel</a>
   </div>
 </form>
+@endsection

@@ -1,7 +1,9 @@
 @extends('layouts.app')
+@section('content')
 <h1>Detail of {{ entity['name'] }} id {{ '{{' }} ${{ entity['name'] }}->id {{ '}}' }}</h1>
 <ul>
 {% for attribute in entity['attributes'] %}
   <li>{{ attribute['name'] }}: {{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}</li>
 {% endfor %}
 </ul>
+@endsection

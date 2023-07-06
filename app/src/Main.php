@@ -82,11 +82,17 @@ class Main
         $this->setupDatabase($projectPath);
 
         if (! $skipInstallation) {
-            $tailwind = new TailwindCssSetupGenerator($this->projectName);
+            $tailwind = new TailwindCssSetupGenerator($json);
             $tailwind->generate();
 
-            $resources = new ResourcesSetupGenerator($this->projectName);
+            $resources = new ResourcesSetupGenerator($json);
             $resources->generate();
+
+            // TODO: クラス化する
+            $current = getcwd();
+            chdir("{$projectPath}/public");
+            exec('wget "https://raw.githubusercontent.com/oxalorg/sakura/master/css/sakura.css"');
+            chdir($current);
         }
 
         $modelGenerator = new ModelGenerator($json);

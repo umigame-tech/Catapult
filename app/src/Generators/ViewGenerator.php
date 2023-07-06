@@ -14,8 +14,8 @@ class ViewGenerator extends Generator
     private function attributeTypeMap(string $type): string
     {
         return match ($type) {
-            AttributeType::String->value => 'string',
-            AttributeType::Username->value => 'string',
+            AttributeType::String->value => 'text',
+            AttributeType::Username->value => 'text',
             AttributeType::Email->value => 'email',
             AttributeType::Tel->value => 'tel',
             AttributeType::Integer->value => 'number',
