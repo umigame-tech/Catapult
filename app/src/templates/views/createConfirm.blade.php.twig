@@ -1,0 +1,11 @@
+@extends('layouts.app')
+<h1>Confirm create new {{ entity['name'] }}</h1>
+{% for attribute in entity['attributes'] %}
+  <p>{{ attribute['name'] }}: {{ '{{' }} ${{ entity['name']}}->{{ attribute['name'] }} {{ '}}' }}</p>
+{% endfor %}
+
+<form method="post" action="{{ baseUri }}/create">
+  {% verbatim %}{{ csrf_field() }}{% endverbatim %}
+  <input type="submit" value="Create">
+  <a href="{{ baseUri }}/new">Cancel</a>
+</form>

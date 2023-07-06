@@ -1,13 +1,19 @@
 @extends('layouts.app')
 <h1>Create new {{ entity['name'] }}</h1>
 <form method="post" action="{{ baseUri }}/createConfirm">
+  {% verbatim %}{{ csrf_field() }}{% endverbatim %}
 {% for attribute in entity['attributes'] %}
   <div>
     <label for="{{ attribute['name'] }}">{{ attribute['name'] }}</label>
 {% if attribute.inputType is same as('textarea') %}
-    <textarea name="{{ "#{entity['name']}-#{attribute['name']}" }}" id="{{ "#{entity['name']}-#{attribute['name']}" }}"></textarea>
+    <textarea name="{{ "#{entity['name']}-#{attribute['name']}" }}" id="{{ "#{entity['name']}-#{attribute['name']}" }}">{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}</textarea>
 {% else %}
-    <input type="{{ attribute.inputType }}" name="{{ "#{entity['name']}-#{attribute['name']}" }}" id="{{ "#{entity['name']}-#{attribute['name']}" }}">
+    <input
+      type="{{ attribute.inputType }}"
+      name="{{ "#{entity['name']}-#{attribute['name']}" }}"
+      id="{{ "#{entity['name']}-#{attribute['name']}" }}"
+      value="{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}"
+    >
 {% endif %}
   </div>
 {% endfor %}

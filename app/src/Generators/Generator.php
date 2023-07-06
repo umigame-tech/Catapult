@@ -25,4 +25,9 @@ abstract class Generator
     {
         return str_repeat(self::INDENT, $level);
     }
+
+    protected function baseUri($entity)
+    {
+        return '/' . (!empty($this->prefix) ? "{$this->prefix}/" : '') . $entity['name'];
+    }
 }
