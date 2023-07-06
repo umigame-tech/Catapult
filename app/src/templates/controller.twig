@@ -21,14 +21,37 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function new({{ modelName }} ${{ entity['name'] }})
+    public function new(Request $request, {{ modelName }} ${{ entity['name'] }})
     {
+        // 戻るボタンで戻ってきた場合にセッションから値を取得する処理
+        ${{ entity['name'] }}->fill($request->session()->get('{{ entity['name'] }}.form', []));
+
         return view('{{ entity['name'] }}.new', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
         ]);
     }
 
-    public function createConfirm() { }
+    public function createConfirm(Request $request, {{ modelName }} ${{ entity['name'] }})
+    {
+        $newKeys = array_map(
+            fn ($key) => str_replace('{{ entity['name'] }}-', '', $key),
+            array_keys($request->toArray())
+        );
+        $data = [];
+        foreach ($newKeys as $key) {
+            $data[$key] = $request->input('{{ entity['name']}}-' . $key);
+        }
+
+        ${{ entity['name'] }}->fill($data);
+
+        // 入力値をセッションに格納する
+        $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
+
+        return view('{{ entity['name'] }}.createConfirm', [
+            '{{ entity['name'] }}' => ${{ entity['name'] }},
+        ]);
+    }
+
     public function create() { }
     public function edit() { }
     public function editConfirm() { }

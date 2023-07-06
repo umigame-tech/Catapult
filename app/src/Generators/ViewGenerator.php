@@ -44,6 +44,7 @@ class ViewGenerator extends Generator
         $this->generateIndexView($entity);
         $this->generateShowView($entity);
         $this->generateNewView($entity);
+        $this->generateCreateConfirmView($entity);
     }
 
     private function generateIndexView($entity)
@@ -80,7 +81,7 @@ class ViewGenerator extends Generator
 
     private function generateNewView($entity)
     {
-        $baseUri = '/' . (!empty($this->prefix) ? "{$this->prefix}/" : '') . $entity['name'];
+        $baseUri = $this->baseUri($entity);
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/new.blade.php';
 
         $entity['attributes'] = array_map(
@@ -93,6 +94,20 @@ class ViewGenerator extends Generator
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/new.blade.php.twig', [
+            'entity' => $entity,
+            'baseUri' => $baseUri,
+        ]);
+
+        file_put_contents($viewPath, $view);
+    }
+
+    private function generateCreateConfirmView($entity)
+    {
+        $baseUri = $this->baseUri($entity);
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/createConfirm.blade.php';
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/createConfirm.blade.php.twig', [
             'entity' => $entity,
             'baseUri' => $baseUri,
         ]);
