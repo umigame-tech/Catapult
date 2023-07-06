@@ -14,8 +14,11 @@ abstract class Generator
 
     protected $projectName = 'project';
 
-    public function __construct($projectName) {
-        $this->projectName = $projectName;
+    protected $prefix = '';
+
+    public function __construct($json) {
+        $this->projectName = $json['project_name'] ?? 'project';
+        $this->prefix = $json['sealed_prefix'] ?? '';
     }
 
     protected function indents(int $level): string

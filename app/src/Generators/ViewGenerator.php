@@ -4,11 +4,31 @@ namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
 use UmigameTech\Catapult\Templates\Renderer;
+use UmigameTech\Catapult\Datatypes\AttributeType;
 
 class ViewGenerator extends Generator
 {
     private $projectPath = '';
     // view CRUD用のBladeテンプレート
+
+    private function attributeTypeMap(string $type): string
+    {
+        return match ($type) {
+            AttributeType::String->value => 'string',
+            AttributeType::Username->value => 'string',
+            AttributeType::Email->value => 'email',
+            AttributeType::Tel->value => 'tel',
+            AttributeType::Integer->value => 'number',
+            AttributeType::Boolean->value => 'checkbox',
+            AttributeType::Date->value => 'date',
+            AttributeType::Datetime->value => 'datetime-local',
+            AttributeType::Time->value => 'time',
+            AttributeType::Decimal->value => 'number',
+            AttributeType::Text->value => 'textarea',
+            default => throw new \Exception('Invalid attribute type'),
+        };
+    }
+
     public function generate($entity)
     {
         $projectPath = $this->projectPath();
@@ -23,6 +43,7 @@ class ViewGenerator extends Generator
 
         $this->generateIndexView($entity);
         $this->generateShowView($entity);
+        $this->generateNewView($entity);
     }
 
     private function generateIndexView($entity)
@@ -52,6 +73,28 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/show.blade.php.twig', [
             'entity' => $entity,
+        ]);
+
+        file_put_contents($viewPath, $view);
+    }
+
+    private function generateNewView($entity)
+    {
+        $baseUri = '/' . (!empty($this->prefix) ? "{$this->prefix}/" : '') . $entity['name'];
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/new.blade.php';
+
+        $entity['attributes'] = array_map(
+            function ($attribute) {
+                $attribute['inputType'] = $this->attributeTypeMap($attribute['type']);
+                return $attribute;
+            },
+            $entity['attributes']
+        );
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/new.blade.php.twig', [
+            'entity' => $entity,
+            'baseUri' => $baseUri,
         ]);
 
         file_put_contents($viewPath, $view);
