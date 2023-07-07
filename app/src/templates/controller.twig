@@ -8,15 +8,17 @@ use App\Models\{{ modelName }};
 
 class {{ controllerName }} extends Controller
 {
-    public function index({{ modelName }} ${{ entity['name'] }})
+    public function index(Request $request, {{ modelName }} ${{ entity['name'] }})
     {
+        $request->session()->forget('{{ entity['name'] }}.form');
         return view('{{ entity['name'] }}.index', [
             '{{ plural }}' => ${{ entity['name'] }}->get(),
         ]);
     }
 
-    public function show({{ modelName }} ${{ entity['name'] }}, $id)
+    public function show(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
+        $request->session()->forget('{{ entity['name'] }}.form');
         return view('{{ entity['name'] }}.show', [
             '{{ entity['name'] }}' => ${{ entity['name'] }}->findOrFail($id),
         ]);
@@ -57,7 +59,7 @@ class {{ controllerName }} extends Controller
 
         // Cancelで戻ってきた場合にセッションから値を取得する処理
         $session = $request->session()->get('{{ entity['name'] }}.form', []);
-        if ($session['id'] === ${{ entity['name'] }}->id) {
+        if (!empty($session) && $session['id'] === ${{ entity['name'] }}->id) {
             ${{ entity['name'] }}->fill($session);
         }
 
@@ -77,7 +79,21 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function update() { }
+    public function update({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
+    {
+        $session = $request->session()->get('{{ entity['name'] }}.form', []);
+        if ($session['id'] != $id) {
+            abort(400, 'セッションのIDとリクエストのIDが一致しません。');
+        }
+
+        ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+        ${{ entity['name'] }}->fill($session);
+        ${{ entity['name'] }}->save();
+        $request->session()->forget('{{ entity['name'] }}.form');
+
+        return redirect()->route('{{ entity['name'] }}.index');
+    }
+
     public function deleteConfirm() { }
     public function delete() { }
 }
