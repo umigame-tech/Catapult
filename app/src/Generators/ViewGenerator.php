@@ -49,6 +49,7 @@ class ViewGenerator extends Generator
         $this->generateShowView($entity);
         $this->generateNewView($entity);
         $this->generateCreateConfirmView($entity);
+        $this->generateEditView($entity);
     }
 
     private function generateIndexView($entity)
@@ -102,6 +103,7 @@ class ViewGenerator extends Generator
         $view = $renderer->render('views/new.blade.php.twig', [
             'entity' => $entity,
             'baseUri' => $baseUri,
+            'backUri' => "{{ route('{$entity['name']}.index') }}",
         ]);
 
         file_put_contents($viewPath, $view);
@@ -116,6 +118,21 @@ class ViewGenerator extends Generator
         $view = $renderer->render('views/createConfirm.blade.php.twig', [
             'entity' => $entity,
             'baseUri' => $baseUri,
+        ]);
+
+        file_put_contents($viewPath, $view);
+    }
+
+    private function generateEditView($entity)
+    {
+        $baseUri = $this->baseUri($entity);
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/edit.blade.php';
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/edit.blade.php.twig', [
+            'entity' => $entity,
+            'baseUri' => $baseUri,
+            'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         file_put_contents($viewPath, $view);
