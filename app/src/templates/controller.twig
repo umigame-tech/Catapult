@@ -51,16 +51,32 @@ class {{ controllerName }} extends Controller
         return redirect()->route('{{ entity['name'] }}.index');
     }
 
-    public function edit({{ modelName }} ${{ entity['name'] }}, $id)
+    public function edit({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+
+        // Cancelで戻ってきた場合にセッションから値を取得する処理
+        $session = $request->session()->get('{{ entity['name'] }}.form', []);
+        if ($session['id'] === ${{ entity['name'] }}->id) {
+            ${{ entity['name'] }}->fill($session);
+        }
 
         return view('{{ entity['name'] }}.edit', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
         ]);
     }
 
-    public function editConfirm() { }
+    public function updateConfirm({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
+    {
+        ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+        ${{ entity['name'] }}->fill($request->all());
+        $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
+
+        return view('{{ entity['name'] }}.updateConfirm', [
+            '{{ entity['name'] }}' => ${{ entity['name'] }},
+        ]);
+    }
+
     public function update() { }
     public function deleteConfirm() { }
     public function delete() { }
