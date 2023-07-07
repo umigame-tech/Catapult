@@ -1,0 +1,9 @@
+{% for attribute in entity['attributes'] %}
+  <p>{{ attribute['name'] }}: {{ '{{' }} ${{ entity['name']}}->{{ attribute['name'] }} {{ '}}' }}</p>
+{% endfor %}
+
+<form method="post" action="{{ submitUri|raw }}">
+  {% verbatim %}{{ csrf_field() }}{% endverbatim %}
+  <input type="submit" value="{{ type|capitalize }}">
+  <a href="{{ backUri|raw }}">Cancel</a>
+</form>

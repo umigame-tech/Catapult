@@ -43,7 +43,7 @@ class ControllerGenerator extends Generator
             'method' => self::METHOD_GET,
             'params' => ['id'],
         ],
-        'editConfirm' => [
+        'updateConfirm' => [
             'method' => self::METHOD_POST,
             'params' => ['id'],
         ],

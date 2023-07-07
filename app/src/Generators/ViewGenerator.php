@@ -50,6 +50,7 @@ class ViewGenerator extends Generator
         $this->generateNewView($entity);
         $this->generateCreateConfirmView($entity);
         $this->generateEditView($entity);
+        $this->generateUpdateConfirmView($entity);
     }
 
     private function generateIndexView($entity)
@@ -102,6 +103,7 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/new.blade.php.twig', [
             'entity' => $entity,
+            'submitUri' => "{{ route('{$entity['name']}.createConfirm') }}",
             'baseUri' => $baseUri,
             'backUri' => "{{ route('{$entity['name']}.index') }}",
         ]);
@@ -117,7 +119,9 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/createConfirm.blade.php.twig', [
             'entity' => $entity,
+            'submitUri' => "{{ route('{$entity['name']}.create') }}",
             'baseUri' => $baseUri,
+            'backUri' => "{{ route('{$entity['name']}.new') }}",
         ]);
 
         file_put_contents($viewPath, $view);
@@ -131,8 +135,25 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/edit.blade.php.twig', [
             'entity' => $entity,
+            'submitUri' => "{{ route('{$entity['name']}.updateConfirm', ['id' => \${$entity['name']}->id]) }}",
             'baseUri' => $baseUri,
             'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
+        ]);
+
+        file_put_contents($viewPath, $view);
+    }
+
+    private function generateUpdateConfirmView($entity)
+    {
+        $baseUri = $this->baseUri($entity);
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/updateConfirm.blade.php';
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/updateConfirm.blade.php.twig', [
+            'entity' => $entity,
+            'submitUri' => "{{ route('{$entity['name']}.update', ['id' => \${$entity['name']}->id]) }}",
+            'baseUri' => $baseUri,
+            'backUri' => "{{ route('{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         file_put_contents($viewPath, $view);

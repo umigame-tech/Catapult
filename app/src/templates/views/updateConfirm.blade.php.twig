@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('content')
+<h1>Confirm update {{ entity['name']}} id {{ '{{' }} ${{ entity['name']}}->id {{ '}}' }}</h1>
+{% set vars = {'type' : 'update'} %}
+{% include 'views/confirm.twig' with vars %}
+@endsection
