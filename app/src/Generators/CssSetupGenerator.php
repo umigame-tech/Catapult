@@ -7,7 +7,7 @@ class CssSetupGenerator extends Generator
     public function generate()
     {
         $current = getcwd();
-        chdir("{$this->projectPath()}/public");
+        chdir("{$this->projectPath()}/resources/css");
 
         if (!file_exists('sakura.css')) {
             $sakura = file_get_contents("https://raw.githubusercontent.com/oxalorg/sakura/master/css/sakura.css");

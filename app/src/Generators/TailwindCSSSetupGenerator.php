@@ -36,6 +36,19 @@ EOT;
             file_put_contents($appCssPath, $tailwindCssSetup . "\n" . $appCss);
         }
 
+        $viteConfig = file_get_contents("{$projectPath}/vite.config.js");
+        $newConfig = preg_replace('/\ +input: \[.*/', <<<'EOT'
+            input: [
+                './resources/js/app.js',
+                './resources/css/app.css',
+                './resources/css/sakura.css',
+                './resources/css/style.css',
+            ],
+EOT
+        , $viteConfig);
+
+        file_put_contents("{$projectPath}/vite.config.js", $newConfig);
+
         chdir($currentPath);
     }
 }
