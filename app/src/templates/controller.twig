@@ -104,5 +104,17 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function destroy() { }
+    public function destroy(Request $request, {{ modelName }} ${{ entity['name']}}, $id)
+    {
+        $session = $request->session()->get('{{ entity['name'] }}.destroy_id', null);
+        if ($session != $id) {
+            abort(400, 'セッションのIDとリクエストのIDが一致しません。');
+        }
+        $request->session()->forget('{{ entity['name'] }}.destroy_id');
+
+        ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+        ${{ entity['name'] }}->delete();
+
+        return redirect()->route('{{ entity['name'] }}.index');
+    }
 }
