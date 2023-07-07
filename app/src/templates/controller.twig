@@ -97,7 +97,7 @@ class {{ controllerName }} extends Controller
     public function destroyConfirm(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
-        $request->session()->put('{{ entity['name'] }}.delete_id', $id);
+        $request->session()->put('{{ entity['name'] }}.destroy_id', $id);
 
         return view('{{ entity['name'] }}.destroyConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
