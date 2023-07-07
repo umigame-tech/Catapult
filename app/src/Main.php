@@ -8,6 +8,7 @@ use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
+use UmigameTech\Catapult\Generators\CssSetupGenerator;
 use UmigameTech\Catapult\Generators\RequestGenerator;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
@@ -88,11 +89,8 @@ class Main
             $resources = new ResourcesSetupGenerator($json);
             $resources->generate();
 
-            // TODO: クラス化する
-            $current = getcwd();
-            chdir("{$projectPath}/public");
-            exec('wget "https://raw.githubusercontent.com/oxalorg/sakura/master/css/sakura.css"');
-            chdir($current);
+            $css = new CssSetupGenerator($json);
+            $css->generate();
         }
 
         $modelGenerator = new ModelGenerator($json);
