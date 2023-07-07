@@ -51,6 +51,7 @@ class ViewGenerator extends Generator
         $this->generateCreateConfirmView($entity);
         $this->generateEditView($entity);
         $this->generateUpdateConfirmView($entity);
+        $this->generateDestroyConfirmView($entity);
     }
 
     private function generateIndexView($entity)
@@ -154,6 +155,22 @@ class ViewGenerator extends Generator
             'submitUri' => "{{ route('{$entity['name']}.update', ['id' => \${$entity['name']}->id]) }}",
             'baseUri' => $baseUri,
             'backUri' => "{{ route('{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
+        ]);
+
+        file_put_contents($viewPath, $view);
+    }
+
+    private function generateDestroyConfirmView($entity)
+    {
+        $baseUri = $this->baseUri($entity);
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/destroyConfirm.blade.php';
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/destroyConfirm.blade.php.twig', [
+            'entity' => $entity,
+            'submitUri' => "{{ route('{$entity['name']}.destroy', ['id' => \${$entity['name']}->id]) }}",
+            'baseUri' => $baseUri,
+            'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         file_put_contents($viewPath, $view);
