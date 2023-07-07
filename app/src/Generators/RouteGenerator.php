@@ -20,10 +20,10 @@ class RouteGenerator extends Generator
         foreach ($actions as $actionName => $action) {
             $spaces = $prefix ? '    ' : '';
 
-            $entityName = $entity['name'];
+            $entityPath = $entity['name'];
             $actionPath = '/' . $actionName;
             if ($actionName === 'index') {
-                $entityName = $inflector->pluralize($entity['name']);
+                $entityPath = $inflector->pluralize($entity['name']);
                 $actionPath = '';
             }
 
@@ -33,8 +33,8 @@ class RouteGenerator extends Generator
             );
             $params = $params ? '/' . $params : '';
 
-            $converted[$actionName] = "{$spaces}Route::{$action['method']}('{$entityName}{$actionPath}{$params}', "
-                . "[{$entity['controllerName']}::class, '{$actionName}'])->name('{$entityName}.{$actionName}');";
+            $converted[$actionName] = "{$spaces}Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
+                . "[{$entity['controllerName']}::class, '{$actionName}'])->name('{$entity['name']}.{$actionName}');";
         }
 
         return $converted;

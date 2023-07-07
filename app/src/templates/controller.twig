@@ -24,7 +24,7 @@ class {{ controllerName }} extends Controller
 
     public function new({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }})
     {
-        // 戻るボタンで戻ってきた場合にセッションから値を取得する処理
+        // Cancelで戻ってきた場合にセッションから値を取得する処理
         ${{ entity['name'] }}->fill($request->session()->get('{{ entity['name'] }}.form', []));
 
         return view('{{ entity['name'] }}.new', [
@@ -51,7 +51,15 @@ class {{ controllerName }} extends Controller
         return redirect()->route('{{ entity['name'] }}.index');
     }
 
-    public function edit() { }
+    public function edit({{ modelName }} ${{ entity['name'] }}, $id)
+    {
+        ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+
+        return view('{{ entity['name'] }}.edit', [
+            '{{ entity['name'] }}' => ${{ entity['name'] }},
+        ]);
+    }
+
     public function editConfirm() { }
     public function update() { }
     public function deleteConfirm() { }
