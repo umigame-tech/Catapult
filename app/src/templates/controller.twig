@@ -10,7 +10,7 @@ class {{ controllerName }} extends Controller
 {
     public function index(Request $request, {{ modelName }} ${{ entity['name'] }})
     {
-        $request->session()->forget('{{ entity['name'] }}.form');
+        $request->session()->forget('{{ entity['name'] }}');
         return view('{{ entity['name'] }}.index', [
             '{{ plural }}' => ${{ entity['name'] }}->get(),
         ]);
@@ -18,7 +18,7 @@ class {{ controllerName }} extends Controller
 
     public function show(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
-        $request->session()->forget('{{ entity['name'] }}.form');
+        $request->session()->forget('{{ entity['name'] }}');
         return view('{{ entity['name'] }}.show', [
             '{{ entity['name'] }}' => ${{ entity['name'] }}->findOrFail($id),
         ]);
@@ -94,6 +94,15 @@ class {{ controllerName }} extends Controller
         return redirect()->route('{{ entity['name'] }}.index');
     }
 
-    public function deleteConfirm() { }
-    public function delete() { }
+    public function destroyConfirm(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
+    {
+        ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+        $request->session()->put('{{ entity['name'] }}.delete_id', $id);
+
+        return view('{{ entity['name'] }}.destroyConfirm', [
+            '{{ entity['name'] }}' => ${{ entity['name'] }},
+        ]);
+    }
+
+    public function destroy() { }
 }
