@@ -57,6 +57,9 @@ class RequestGenerator extends Generator
             unlink($requestPath);
         }
 
+        if (!file_exists(dirname($requestPath))) {
+            mkdir(dirname($requestPath), 0755, true);
+        }
         file_put_contents($requestPath, $request);
     }
 }

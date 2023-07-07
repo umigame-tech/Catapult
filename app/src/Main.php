@@ -8,6 +8,7 @@ use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
+use UmigameTech\Catapult\Generators\CssSetupGenerator;
 use UmigameTech\Catapult\Generators\RequestGenerator;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
@@ -82,11 +83,14 @@ class Main
         $this->setupDatabase($projectPath);
 
         if (! $skipInstallation) {
-            $tailwind = new TailwindCssSetupGenerator($this->projectName);
+            $tailwind = new TailwindCssSetupGenerator($json);
             $tailwind->generate();
 
-            $resources = new ResourcesSetupGenerator($this->projectName);
+            $resources = new ResourcesSetupGenerator($json);
             $resources->generate();
+
+            $css = new CssSetupGenerator($json);
+            $css->generate();
         }
 
         $modelGenerator = new ModelGenerator($json);
