@@ -5,6 +5,7 @@ namespace UmigameTech\Catapult\Generators;
 use Doctrine\Inflector\InflectorFactory;
 use UmigameTech\Catapult\Templates\Renderer;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\FileSystem\RemoveDirectory;
 
 class ViewGenerator extends Generator
 {
@@ -34,12 +35,15 @@ class ViewGenerator extends Generator
         $projectPath = $this->projectPath();
         $this->projectPath = $projectPath;
 
+        $dirPath = $this->projectPath . '/resources/views/' . $entity['name'];
+
         // 前回のディレクトリが残っている場合は削除する
-        if (file_exists($this->projectPath . '/resources/views/' . $entity['name'])) {
-            exec("rm -rf {$this->projectPath}/resources/views/{$entity['name']}");
+        if (file_exists($dirPath)) {
+            $remover = new RemoveDirectory();
+            $remover->remove($dirPath);
         }
 
-        mkdir($this->projectPath . '/resources/views/' . $entity['name'], 0755, true);
+        mkdir($dirPath, 0755, true);
 
         $this->generateIndexView($entity);
         $this->generateShowView($entity);
