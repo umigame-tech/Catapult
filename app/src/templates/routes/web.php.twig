@@ -22,8 +22,8 @@ Route::prefix('{{ prefix }}')->group(function () {
 {% endif %}
 {% for entity in entities %}
 
-{% for actionName, action in actions %}
-{{ prefix is not empty ? '    ' : '' }}Route::{{ action.method }}('{{entity.name}}{{ actionName is same as('index') ? '' : "/#{actionName}" }}{% for param in action.params %}/{{ "{#{param}}" }}{% endfor %}', [{{ entity.controllerName }}::class, '{{ actionName }}'])->name('{{ entity.name }}.{{ actionName }}');
+{% for route in entity.routes %}
+{{ route|raw }}
 {% endfor %}
 {% endfor %}
 
