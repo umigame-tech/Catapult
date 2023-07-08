@@ -14,7 +14,8 @@
     "require": {
         "doctrine/inflector": "^2.0",
         "swaggest/json-schema": "^0.12.41",
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "composer/composer": "^2.5"
     },
     "require-dev": {
         "pestphp/pest": "^2.8"
