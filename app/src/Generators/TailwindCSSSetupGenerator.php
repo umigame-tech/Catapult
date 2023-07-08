@@ -12,12 +12,18 @@ class TailwindCssSetupGenerator extends Generator
 
         chdir($projectPath);
         exec('npm install -D tailwindcss postcss autoprefixer');
+
+        if (file_exists("{$projectPath}/tailwind.config.js")) {
+            unlink("{$projectPath}/tailwind.config.js");
+        }
+
         exec('npx tailwindcss init -p');
         $content = file_get_contents("{$projectPath}/tailwind.config.js");
         $newContent = preg_replace('/  content: \[\],/', <<<'EOT'
   content: [
     "./resources/**/*.blade.php",
     "./resources/**/*.js",
+    "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
   ],
 EOT,
             $content
@@ -36,7 +42,13 @@ EOT;
             file_put_contents($appCssPath, $tailwindCssSetup . "\n" . $appCss);
         }
 
+        if (file_exists("{$projectPath}/vite.config.js")) {
+            unlink("{$projectPath}/vite.config.js");
+        }
+        copy(__DIR__ . '/../Templates/vite.config.js', "{$projectPath}/vite.config.js");
+
         $viteConfig = file_get_contents("{$projectPath}/vite.config.js");
+
         $newConfig = preg_replace('/\ +input: \[.*/', <<<'EOT'
             input: [
                 './resources/js/app.js',

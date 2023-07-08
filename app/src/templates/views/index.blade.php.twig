@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <h1 class="mb-8">index of {{ entity['name'] }}</h1>
+{{ '{{' }} ${{ plural }}->links() {{ '}}' }}
 <table>
   <thead>
     <tr>
@@ -9,14 +10,16 @@
 {% endfor %}
     </tr>
   </thead>
-@foreach (${{ plural }} as ${{ camelCase }})
   <tbody>
+@foreach (${{ plural }} as ${{ camelCase }})
     <tr>
 {% for attribute in entity['attributes'] %}
       <td>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
 {% endfor %}
     </tr>
-  </tbody>
 @endforeach
+  </tbody>
 </table>
+
+{{ '{{' }} ${{ plural }}->links() {{ '}}' }}
 @endsection
