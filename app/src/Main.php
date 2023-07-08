@@ -4,6 +4,8 @@ namespace UmigameTech\Catapult;
 
 use SplFileObject;
 use Swaggest\JsonSchema\Schema;
+use Symfony\Component\Console\Input\StringInput;
+use Symfony\Component\Console\Output\ConsoleOutput;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
@@ -72,10 +74,12 @@ class Main
 
         $skipInstallation = !empty($argv[2]) && $argv[2] === '--skip-installation';
         if (! $skipInstallation) {
+            $composer = new \Composer\Console\Application();
+            $composer->setAutoExit(false);
             if (file_exists($projectPath . '/composer.json')) {
-                exec("composer install --working-dir={$projectPath}");
+                $composer->run(new StringInput("install --working-dir={$projectPath}"), new ConsoleOutput());
             } else {
-                exec("composer create-project --prefer-dist laravel/laravel {$projectPath}");
+                $composer->run(new StringInput("create-project --prefer-dist laravel/laravel {$projectPath}"), new ConsoleOutput());
             }
         }
 
