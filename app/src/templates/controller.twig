@@ -12,7 +12,7 @@ class {{ controllerName }} extends Controller
     {
         $request->session()->forget('{{ entity['name'] }}');
         return view('{{ entity['name'] }}.index', [
-            '{{ plural }}' => ${{ entity['name'] }}->get(),
+            '{{ plural }}' => ${{ entity['name'] }}->paginate(10),
         ]);
     }
 

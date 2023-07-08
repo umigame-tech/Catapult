@@ -1,22 +1,25 @@
 @extends('layouts.app')
 @section('content')
 <h1 class="mb-8">index of {{ entity['name'] }}</h1>
-<ul>
-  <li>
-    <ul>
+{{ '{{' }} ${{ plural }}->links() {{ '}}' }}
+<table>
+  <thead>
+    <tr>
 {% for attribute in entity['attributes'] %}
-      <li>{{ attribute['name'] }}</li>
+      <th>{{ attribute['name'] }}</th>
 {% endfor %}
-    </ul>
-  </li>
+    </tr>
+  </thead>
+  <tbody>
 @foreach (${{ plural }} as ${{ camelCase }})
-  <li>
-    <ul>
+    <tr>
 {% for attribute in entity['attributes'] %}
-      <li>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</li>
+      <td>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
 {% endfor %}
-    </ul>
-  </li>
+    </tr>
 @endforeach
-</ul>
+  </tbody>
+</table>
+
+{{ '{{' }} ${{ plural }}->links() {{ '}}' }}
 @endsection

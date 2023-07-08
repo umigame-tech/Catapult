@@ -102,11 +102,6 @@ class Main
         $routeGenerator = new RouteGenerator($json);
         $requestGenerator = new RequestGenerator($json);
 
-        // 将来的に使うかも
-        // chdir($projectPath);
-        // exec('composer require laravel/breeze --dev');
-        // exec('php artisan breeze:install api --dark --typescript');
-
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
