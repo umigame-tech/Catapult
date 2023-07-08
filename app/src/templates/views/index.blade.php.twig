@@ -2,7 +2,7 @@
 @section('content')
 <h1 class="mb-8">index of {{ entity['name'] }}</h1>
 {{ '{{' }} ${{ plural }}->links() {{ '}}' }}
-<table>
+<table class="overflow-x-scroll max-w-screen block whitespace-nowrap" style="max-height: calc(100vh - 200px)">
   <thead>
     <tr>
 {% for attribute in entity['attributes'] %}
@@ -14,7 +14,11 @@
 @foreach (${{ plural }} as ${{ camelCase }})
     <tr>
 {% for attribute in entity['attributes'] %}
+{% if attribute.type is same as('text') %}
+      <td class="whitespace-normal min-w-[400px]">{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
+{% else %}
       <td>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
+{% endif %}
 {% endfor %}
     </tr>
 @endforeach
