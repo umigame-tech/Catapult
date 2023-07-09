@@ -24,7 +24,7 @@ class {{ requestName }} extends FormRequest
         return [
 {% for attribute in attributes %}
             '{{ attribute.name }}' => [
-                '{{ attribute.rule }}',
+                {{ attribute.rules|raw }},
             ],
 {% endfor %}
         ];

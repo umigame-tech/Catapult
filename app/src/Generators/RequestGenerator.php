@@ -31,14 +31,39 @@ class RequestGenerator extends Generator
         };
     }
 
+    private function buildValidationRules(string $type, $attribute)
+    {
+        $rules = $attribute['rules'] ?? [];
+        $validationRules = [];
+        foreach ($rules as $name => $value) {
+            $validationRules[] = match ($name) {
+                'min' => "min:{$value}",
+                'max' => "max:{$value}",
+                'required' => 'required',
+                'unique' => "unique:{$attribute['name']}",
+                default => null,
+            };
+        }
+
+        return array_values(
+            array_filter(
+                $validationRules,
+                fn ($rule) => $rule !== null
+            )
+        );
+    }
+
     public function generate($entity)
     {
         $requestName = self::requestName($entity);
         $attributes = array_map(
             function ($attribute) {
+                $rules = [$this->attributeTypeMap($attribute['type'])];
+                $rules = array_merge($rules, $this->buildValidationRules($attribute['type'], $attribute));
+                $rules= implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [
                     'name' => $attribute['name'],
-                    'rule' => $this->attributeTypeMap($attribute['type']),
+                    'rules' => $rules,
                 ];
             },
             $entity['attributes']
