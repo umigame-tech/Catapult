@@ -1,9 +1,7 @@
-{% for attribute in entity['attributes'] %}
-  <p>{{ attribute['name'] }}: {{ '{{' }} ${{ entity['name']}}->{{ attribute['name'] }} {{ '}}' }}</p>
-{% endfor %}
+{% include 'views/detail.twig' %}
 
-<form method="post" action="{{ submitUri|raw }}">
-  {% verbatim %}{{ csrf_field() }}{% endverbatim %}
-  <input type="submit" value="{{ type|capitalize }}">
-  <a href="{{ backUri|raw }}">Cancel</a>
-</form>
+  <form method="post" action="{{ submitUri|raw }}">
+    {% verbatim %}{{ csrf_field() }}{% endverbatim %}
+    <input type="submit" value="{{ type|capitalize }}">
+    <a href="{{ backUri|raw }}">Cancel</a>
+  </form>

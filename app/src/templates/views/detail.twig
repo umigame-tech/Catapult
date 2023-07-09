@@ -1,0 +1,8 @@
+  <ul>
+{% for attribute in entity['attributes'] %}
+    <li>
+      <h4>{{ attribute['name'] }}</h4>
+      <p>{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}</p>
+    </li>
+{% endfor %}
+  </ul>
