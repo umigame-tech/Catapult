@@ -49,11 +49,31 @@
                     "time",
                     "text"
                   ]
+                },
+                "rules": {
+                  "description": "List of rules",
+                  "type": "object",
+                  "properties": {
+                    "required": {
+                      "description": "Is the attribute required?",
+                      "type": "boolean"
+                    },
+                    "min": {
+                      "description": "Minimum value or length of the attribute",
+                      "type": "integer"
+                    },
+                    "max": {
+                      "description": "Maximum value or length of the attribute",
+                      "type": "integer"
+                    }
+                  }
                 }
-              }
+              },
+              "required": ["name", "type"]
             }
           }
-        }
+        },
+        "required": ["name", "attributes"]
       }
     }
   },
