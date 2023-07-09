@@ -17,6 +17,7 @@ use UmigameTech\Catapult\Generators\RouteGenerator;
 use UmigameTech\Catapult\Generators\SeederGenerator;
 use UmigameTech\Catapult\Generators\TailwindCssSetupGenerator;
 use UmigameTech\Catapult\Generators\ViewGenerator;
+use UmigameTech\Catapult\ProjectSettings;
 use UmigameTech\Catapult\Traits\ProjectPath;
 
 require_once(__DIR__ . '/../vendor/autoload.php');
@@ -46,7 +47,10 @@ class Main
             }
         }
 
+        $settings = ProjectSettings::getInstance();
         if ($isSqlite) {
+            $settings->set('db_engine', 'sqlite');
+
             $sqlitePath = "{$projectPath}/database/database.sqlite";
             touch($sqlitePath);
             $file->fwrite("DB_DATABASE={$sqlitePath}\n");
