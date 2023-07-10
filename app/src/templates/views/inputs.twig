@@ -1,8 +1,11 @@
   <form method="post" action="{{ submitUri|raw }}">
   {% verbatim %}{{ csrf_field() }}{% endverbatim %}
 {% for attribute in entity['attributes'] %}
-    <div>
+    <div class="mt-8">
       <label for="{{ attribute['name'] }}">{{ attribute['name'] }}</label>
+      @foreach ($errors->get('{{ attribute['inputName'] }}') as $error)
+      <div class="text-red-500">{{ '{{' }} $error {{ '}}' }}</div>
+      @endforeach
 {% if attribute.inputType is same as('textarea') %}
       <textarea name="{{ attribute['inputName'] }}" id="{{ attribute['inputName'] }}">{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}</textarea>
 {% else %}
@@ -12,13 +15,10 @@
         id="{{ attribute['inputName'] }}"
         value="{{ '{{' }} old('{{ attribute['inputName'] }}') ?? ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}"
       >
-    @foreach ($errors->get('{{ attribute['inputName'] }}') as $error)
-        <div>{{ '{{' }} $error {{ '}}' }}</div>
-    @endforeach
 {% endif %}
     </div>
 {% endfor %}
-    <div>
+    <div class="mt-8">
       <input type="submit" value="Confirm {{ type|capitalize }}">
       <a href="{{ backUri|raw }}">Cancel</a>
     </div>
