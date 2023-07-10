@@ -14,7 +14,7 @@ class FactoryGenerator extends Generator
             AttributeType::Username->value => 'userName',
             AttributeType::Email->value => 'email',
             AttributeType::Tel->value => 'phoneNumber',
-            AttributeType::Integer->value => 'randomNumber',
+            AttributeType::Integer->value => 'numberBetween',
             AttributeType::Boolean->value => 'boolean',
             AttributeType::Date->value => 'date',
             AttributeType::Datetime->value => 'dateTime',
@@ -23,6 +23,56 @@ class FactoryGenerator extends Generator
             AttributeType::Text->value => 'realText',
             default => throw new \Exception('Invalid attribute type'),
         };
+    }
+
+    private function buildSize($type, $attribute)
+    {
+        if (!in_array($type, ['realText', 'randomFloat', 'numberBetween'])) {
+            return '';
+        }
+
+        $size = [];
+        foreach ($attribute['rules'] ?? [] as $name => $value) {
+            if ($name === 'min') {
+                $size['min'] = $value;
+            }
+            if ($name === 'max') {
+                $size['max'] = $value;
+            }
+        }
+        if ($size === []) {
+            return '';
+        }
+
+        if ($type === 'randomFloat') {
+            $sizeArgs = array_map(
+                fn ($key) => match ($key) {
+                    'min' => "min: {$size['min']}",
+                    'max' => "max: {$size['max']}",
+                    default => '',
+                },
+                array_keys($size)
+            );
+            return implode(', ', $sizeArgs);
+        }
+
+        if ($type === 'numberBetween') {
+            $sizeArgs = array_map(
+                fn ($key) => match ($key) {
+                    'min' => "int1: {$size['min']}",
+                    'max' => "int2: {$size['max']}",
+                    default => '',
+                },
+                array_keys($size)
+            );
+            return implode(', ', $sizeArgs);
+        }
+
+        if ($type === 'realText' && isset($size['max'])) {
+            return "maxNbChars: {$size['max']}";
+        }
+
+        return '';
     }
 
     public function generate($entity)
@@ -35,9 +85,11 @@ class FactoryGenerator extends Generator
 
         $fakers = array_map(
             function ($attribute) {
+                $type = $this->attributeTypeMap($attribute['type']);
                 return [
                     'name' => $attribute['name'],
-                    'type' => $this->attributeTypeMap($attribute['type']),
+                    'type' => $type,
+                    'size' => $this->buildSize($type, $attribute),
                 ];
             },
             $entity['attributes']

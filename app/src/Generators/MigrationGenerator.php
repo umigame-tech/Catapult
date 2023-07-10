@@ -4,6 +4,7 @@ namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\ProjectSettings;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class MigrationGenerator extends Generator
@@ -26,15 +27,47 @@ class MigrationGenerator extends Generator
         };
     }
 
+    private function buildCheckConstraint(string $sqlDataType, $attribute)
+    {
+        $settings = ProjectSettings::getInstance();
+        if ($settings->get('db_engine') === 'sqlite') {
+            // SQLite の場合は ALTER TABLE 構文で CHECK 成約を追加できない
+            return [];
+        }
+
+        if ($sqlDataType === 'integer') {
+            $rules = $attribute['rules'] ?? [];
+            $constraints = [];
+            foreach ($rules as $name => $value) {
+                $constraints[] = match ($name) {
+                    'min' => "{$attribute['name']}_min CHECK ({$sqlDataType} >= {$value})",
+                    'max' => "{$attribute['name']}_max CHECK ({$sqlDataType} <= {$value})",
+                    default => null,
+                };
+            }
+
+            return array_values(
+                array_filter(
+                    $constraints,
+                    fn ($constraint) => $constraint !== null
+                )
+            );
+        }
+
+        return [];
+    }
+
     public function generate($entity)
     {
         $tableName = $entity['name'];
 
         $columns = array_map(
             function ($attribute) {
+                $type = $this->attributeTypeMap($attribute['type']);
                 return [
                     'name' => $attribute['name'],
-                    'type' => $this->attributeTypeMap($attribute['type']),
+                    'type' => $type,
+                    'constraints' => $this->buildCheckConstraint($type, $attribute),
                 ];
             },
             $entity['attributes']
@@ -52,14 +85,14 @@ class MigrationGenerator extends Generator
 
         $projectPath = $this->projectPath();
 
-        // /_create_{$tableName}_table/ というパターンに一致するファイル名で既にファイルがある場合は削除してから生成する
-        foreach (glob($projectPath . '/database/migrations/*_create_' . $tableName . '_table.php') as $file) {
+        // /_create_{$pluralTableName}_table/ というパターンに一致するファイル名で既にファイルがある場合は削除してから生成する
+        foreach (glob($projectPath . '/database/migrations/*_create_' . $pluralTableName . '_table.php') as $file) {
             unlink($file);
         }
 
         $migrationPath = "{$projectPath}/database/migrations/"
             . date('Y_m_d_His')
-            . "_create_{$tableName}_table.php";
+            . "_create_{$pluralTableName}_table.php";
 
         file_put_contents($migrationPath, $migration);
     }

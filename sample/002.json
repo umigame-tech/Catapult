@@ -19,7 +19,11 @@
         },
         {
           "name": "age",
-          "type": "integer"
+          "type": "integer",
+          "rules": {
+            "min": 10,
+            "max": 80
+          }
         },
         {
           "name": "is_admin",

@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('content')
-<h1>Confirm delete {{ entity['name'] }} id {{ '{{' }} ${{ entity['name'] }}->id {{ '}}' }}</h1>
+<div class="w-4/5 lg:w-2/5 mx-auto">
+  <h1>Confirm delete {{ entity['name'] }} id {{ '{{' }} ${{ entity['name'] }}->id {{ '}}' }}</h1>
 {% set vars = {'type': 'destroy'} %}
 {% include 'views/confirm.twig' with vars %}
+</div>
 @endsection
