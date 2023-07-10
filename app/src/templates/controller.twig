@@ -50,7 +50,9 @@ class {{ controllerName }} extends Controller
         ${{ entity['name'] }}->save();
         $request->session()->forget('{{ entity['name'] }}.form');
 
-        return redirect()->route('{{ entity['name'] }}.index');
+        return redirect()
+            ->route('{{ entity['name'] }}.index')
+            ->with('message', "Succeeded to create the {{ entity['name'] }}");
     }
 
     public function edit({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
@@ -91,7 +93,9 @@ class {{ controllerName }} extends Controller
         ${{ entity['name'] }}->save();
         $request->session()->forget('{{ entity['name'] }}.form');
 
-        return redirect()->route('{{ entity['name'] }}.index');
+        return redirect()
+            ->route('{{ entity['name'] }}.index')
+            ->with('message', "Succeeded to update the {{ entity['name'] }}");
     }
 
     public function destroyConfirm(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
@@ -115,6 +119,8 @@ class {{ controllerName }} extends Controller
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
         ${{ entity['name'] }}->delete();
 
-        return redirect()->route('{{ entity['name'] }}.index');
+        return redirect()
+            ->route('{{ entity['name'] }}.index')
+            ->with('message', "Succeeded to delete the {{ entity['name'] }}");
     }
 }

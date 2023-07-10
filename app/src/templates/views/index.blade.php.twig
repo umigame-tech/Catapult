@@ -1,6 +1,12 @@
 @extends('layouts.app')
 @section('content')
 <h1 class="mb-8">index of {{ entity['name'] }}</h1>
+@if (session('message'))
+<div class="bg-green-500 text-white p-4 mb-4 flex items-center">
+  <span>{{ "{{ session('message') }}" }}</span>
+  <button class="ml-auto" onclick="this.parentElement.remove()">x</button>
+</div>
+@endif
 {{ '{{' }} ${{ plural }}->links() {{ '}}' }}
 <table class="overflow-x-scroll max-w-screen block whitespace-nowrap" style="max-height: calc(100vh - 200px)">
   <thead>
@@ -16,6 +22,10 @@
 {% for attribute in entity['attributes'] %}
 {% if attribute.type is same as('text') %}
       <td class="whitespace-normal min-w-[400px]">{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
+{% elseif attribute.type is same as('boolean') %}
+      <td>
+        {{ '{{' }} !empty(${{ camelCase }}->{{ attribute['name'] }}) ? 'Yes' : 'No' {{ '}}' }}
+      </td>
 {% else %}
       <td>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
 {% endif %}
