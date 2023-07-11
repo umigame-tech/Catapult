@@ -4,16 +4,15 @@ namespace UmigameTech\Catapult\Generators;
 
 class CssSetupGenerator extends Generator
 {
-    public function generate()
+    public function generateContent()
     {
-        $current = getcwd();
-        chdir("{$this->projectPath()}/resources/css");
-
+        $cssPath = "{$this->projectPath()}/resources/css/sakura.css";
         if (!file_exists('sakura.css')) {
             $sakura = file_get_contents("https://raw.githubusercontent.com/oxalorg/sakura/master/css/sakura.css");
-            file_put_contents('sakura.css', $sakura);
-            chdir($current);
-            return;
+            return [
+                'path' => $cssPath,
+                'content' => $sakura,
+            ];
         }
 
         // 1週間以上経過していたら更新する
@@ -21,9 +20,23 @@ class CssSetupGenerator extends Generator
         if (filemtime('sakura.css') < time() - $oneWeek) {
             unlink('sakura.css');
             $sakura = file_get_contents("https://raw.githubusercontent.com/oxalorg/sakura/master/css/sakura.css");
-            file_put_contents('sakura.css', $sakura);
+            return [
+                'path' => $cssPath,
+                'content' => $sakura,
+            ];
         }
 
-        chdir($current);
+        // それ以外は何もしない
+        return [];
+    }
+
+    public function generate()
+    {
+        $result = $this->generateContent();
+        if (empty($result)) {
+            return;
+        }
+
+        $this->writer->write(...$result);
     }
 }

@@ -24,9 +24,12 @@ abstract class Generator
 
     protected FileWriterInterface $writer;
 
+    protected array $entities = [];
+
     public function __construct($json, FileReaderInterface $reader = new FileReader(), FileWriterInterface $writer = new FileWriter()) {
         $this->projectName = $json['project_name'] ?? 'project';
         $this->prefix = $json['sealed_prefix'] ?? '';
+        $this->entities = $json['entities'] ?? [];
 
         $this->reader = $reader;
         $this->writer = $writer;
@@ -40,10 +43,5 @@ abstract class Generator
     protected function baseUri($entity)
     {
         return '/' . (!empty($this->prefix) ? "{$this->prefix}/" : '') . $entity['name'];
-    }
-
-    public function writeToFile($path, $content)
-    {
-        $this->writer->write($path, $content);
     }
 }

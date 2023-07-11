@@ -11,12 +11,58 @@ beforeEach(function () {
         }
     };
 
-    $this->writer = new class implements FileWriterInterface {
+    $this->contents = [];
+
+    $outer = $this;
+    $this->writer = new class($outer) implements FileWriterInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
         public function write($path, $content): bool|int
         {
+            $this->outer->contents[] = $content;
             return mb_strlen($content, '8bit');
         }
     };
+});
+
+test('generateContent', function () {
+    $entity = [
+        'name' => 'user',
+        'fields' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'string',
+            ],
+        ],
+    ];
+    $generator = new ControllerGenerator(
+        [
+            'project_name' => 'test',
+            'sealed_prefix' => 'admin',
+            'entities' => [
+                $entity,
+            ],
+        ],
+        $this->reader,
+        $this->writer
+    );
+
+    $controller = $generator->generateContent($entity);
+    $path = $controller['path'];
+    $content = $controller['content'];
+    expect($path)->toBeString();
+    expect($content)->toBeString();
+    expect($content)->toContain('class UserController');
 });
 
 test('generate', function () {
@@ -48,11 +94,8 @@ test('generate', function () {
         $this->reader,
         $this->writer
     );
+    $generator->generate();
 
-    $controller = $generator->generate($entity);
-    $path = $controller['path'];
-    $content = $controller['content'];
-    expect($path)->toBeString();
-    expect($content)->toBeString();
-    expect($content)->toContain('class UserController');
+    expect($this->contents)->toBeArray();
+    expect($this->contents)->toHaveLength(1);
 });

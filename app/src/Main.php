@@ -98,27 +98,26 @@ class Main
             $resources->generate();
 
             $css = new CssSetupGenerator($json);
-            $css->generate();
+            $cssGenerated = $css->generate();
         }
+
+        $controllerGenerator = new ControllerGenerator($json);
+        $controllerGenerator->generate();
 
         $modelGenerator = new ModelGenerator($json);
         $migrationGenerator = new MigrationGenerator($json);
         $factoryGenerator = new FactoryGenerator($json);
         $seederGenerator = new SeederGenerator($json);
-        $controllerGenerator = new ControllerGenerator($json);
         $viewGenerator = new ViewGenerator($json);
         $routeGenerator = new RouteGenerator($json);
         $requestGenerator = new RequestGenerator($json);
 
+        // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
             $factoryGenerator->generate($entity);
             $seederGenerator->generate($entity);
-
-            $generatedController = $controllerGenerator->generate($entity);
-            $controllerGenerator->writeToFile(...$generatedController);
-
             $viewGenerator->generate($entity);
             $requestGenerator->generate($entity);
         }

@@ -62,7 +62,7 @@ class ControllerGenerator extends Generator
         ],
     ];
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $controllerName = self::controllerName($entity);
         $modelName = ModelGenerator::modelName($entity);
@@ -91,5 +91,17 @@ class ControllerGenerator extends Generator
             'path' => $controllerPath,
             'content' => $controller,
         ];
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $result = $this->generateContent($entity);
+            if (empty($result)) {
+                continue;
+            }
+
+            $this->writer->write(...$result);
+        }
     }
 }
