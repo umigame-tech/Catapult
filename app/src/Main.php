@@ -111,6 +111,8 @@ class Main
         $migrationGenerator->generate();
 
         $modelGenerator = new ModelGenerator($json);
+        $modelGenerator->generate();
+
         $seederGenerator = new SeederGenerator($json);
         $viewGenerator = new ViewGenerator($json);
         $routeGenerator = new RouteGenerator($json);
@@ -118,7 +120,6 @@ class Main
 
         // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
-            $modelGenerator->generate($entity);
             $seederGenerator->generate($entity);
             $viewGenerator->generate($entity);
             $requestGenerator->generate($entity);

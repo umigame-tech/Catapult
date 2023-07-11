@@ -11,6 +11,10 @@ docker compose exec php bash
 ```
 
 ```sh
+composer install
+```
+
+```sh
 php src/main.php /sample/001.json
 ```
 
