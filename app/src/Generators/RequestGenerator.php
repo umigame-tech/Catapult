@@ -53,7 +53,7 @@ class RequestGenerator extends Generator
         );
     }
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $requestName = self::requestName($entity);
         $attributes = array_map(
@@ -85,6 +85,22 @@ class RequestGenerator extends Generator
         if (!file_exists(dirname($requestPath))) {
             mkdir(dirname($requestPath), 0755, true);
         }
-        file_put_contents($requestPath, $request);
+
+        return [
+            'path' => $requestPath,
+            'content' => $request,
+        ];
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $content = $this->generateContent($entity);
+            if (empty($content)) {
+                continue;
+            }
+
+            $this->writer->write(...$content);
+        }
     }
 }

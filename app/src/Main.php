@@ -113,16 +113,17 @@ class Main
         $modelGenerator = new ModelGenerator($json);
         $modelGenerator->generate();
 
+        $requestGenerator = new RequestGenerator($json);
+        $requestGenerator->generate();
+
         $seederGenerator = new SeederGenerator($json);
         $viewGenerator = new ViewGenerator($json);
         $routeGenerator = new RouteGenerator($json);
-        $requestGenerator = new RequestGenerator($json);
 
         // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
             $seederGenerator->generate($entity);
             $viewGenerator->generate($entity);
-            $requestGenerator->generate($entity);
         }
 
         $routeGenerator->generate($json);
