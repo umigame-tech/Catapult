@@ -57,7 +57,7 @@ class MigrationGenerator extends Generator
         return [];
     }
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $tableName = $entity['name'];
 
@@ -94,6 +94,21 @@ class MigrationGenerator extends Generator
             . date('Y_m_d_His')
             . "_create_{$pluralTableName}_table.php";
 
-        file_put_contents($migrationPath, $migration);
+        return [
+            'path' => $migrationPath,
+            'content' => $migration,
+        ];
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            if (empty($entity)) {
+                continue;
+            }
+
+            $result = $this->generateContent($entity);
+            $this->writer->write(...$result);
+        }
     }
 }
