@@ -2,6 +2,10 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\FileSystem\FileReader;
+use UmigameTech\Catapult\FileSystem\FileReaderInterface;
+use UmigameTech\Catapult\FileSystem\FileWriter;
+use UmigameTech\Catapult\FileSystem\FileWriterInterface;
 use UmigameTech\Catapult\Traits\ProjectPath;
 
 abstract class Generator
@@ -16,9 +20,16 @@ abstract class Generator
 
     protected $prefix = '';
 
-    public function __construct($json) {
+    protected FileReaderInterface $reader;
+
+    protected FileWriterInterface $writer;
+
+    public function __construct($json, FileReaderInterface $reader = new FileReader(), FileWriterInterface $writer = new FileWriter()) {
         $this->projectName = $json['project_name'] ?? 'project';
         $this->prefix = $json['sealed_prefix'] ?? '';
+
+        $this->reader = $reader;
+        $this->writer = $writer;
     }
 
     protected function indents(int $level): string
@@ -29,5 +40,10 @@ abstract class Generator
     protected function baseUri($entity)
     {
         return '/' . (!empty($this->prefix) ? "{$this->prefix}/" : '') . $entity['name'];
+    }
+
+    public function writeToFile($path, $content)
+    {
+        $this->writer->write($path, $content);
     }
 }

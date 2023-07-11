@@ -115,7 +115,10 @@ class Main
             $migrationGenerator->generate($entity);
             $factoryGenerator->generate($entity);
             $seederGenerator->generate($entity);
-            $controllerGenerator->generate($entity);
+
+            $generatedController = $controllerGenerator->generate($entity);
+            $controllerGenerator->writeToFile(...$generatedController);
+
             $viewGenerator->generate($entity);
             $requestGenerator->generate($entity);
         }

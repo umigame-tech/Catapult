@@ -87,6 +87,9 @@ class ControllerGenerator extends Generator
             unlink($controllerPath);
         }
 
-        file_put_contents($controllerPath, $controller);
+        return [
+            'path' => $controllerPath,
+            'content' => $controller,
+        ];
     }
 }
