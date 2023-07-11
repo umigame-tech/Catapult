@@ -104,9 +104,11 @@ class Main
         $controllerGenerator = new ControllerGenerator($json);
         $controllerGenerator->generate();
 
+        $factoryGenerator = new FactoryGenerator($json);
+        $factoryGenerator->generate();
+
         $modelGenerator = new ModelGenerator($json);
         $migrationGenerator = new MigrationGenerator($json);
-        $factoryGenerator = new FactoryGenerator($json);
         $seederGenerator = new SeederGenerator($json);
         $viewGenerator = new ViewGenerator($json);
         $routeGenerator = new RouteGenerator($json);
@@ -116,7 +118,6 @@ class Main
         foreach ($json['entities'] as $entity) {
             $modelGenerator->generate($entity);
             $migrationGenerator->generate($entity);
-            $factoryGenerator->generate($entity);
             $seederGenerator->generate($entity);
             $viewGenerator->generate($entity);
             $requestGenerator->generate($entity);
