@@ -6,6 +6,9 @@ use SplFileObject;
 use Swaggest\JsonSchema\Schema;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use UmigameTech\Catapult\FileSystem\FileReader;
+use UmigameTech\Catapult\FileSystem\FileRemover;
+use UmigameTech\Catapult\FileSystem\FileWriter;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
@@ -90,46 +93,48 @@ class Main
         $this->setupEnvFile($projectPath);
         $this->setupDatabase($projectPath);
 
+        $reader = new FileReader;
+        $writer = new FileWriter;
+        $remover = new FileRemover;
+
         if (! $skipInstallation) {
-            $tailwind = new TailwindCssSetupGenerator($json);
+            $tailwind = new TailwindCssSetupGenerator($json, $reader, $writer, $remover);
             $tailwind->generate();
 
-            $resources = new ResourcesSetupGenerator($json);
+            $resources = new ResourcesSetupGenerator($json, $reader, $writer, $remover);
             $resources->generate();
 
-            $css = new CssSetupGenerator($json);
-            $cssGenerated = $css->generate();
+            $css = new CssSetupGenerator($json, $reader, $writer, $remover);
+            $css->generate();
         }
 
-        $controllerGenerator = new ControllerGenerator($json);
+        $controllerGenerator = new ControllerGenerator($json, $reader, $writer, $remover);
         $controllerGenerator->generate();
 
-        $factoryGenerator = new FactoryGenerator($json);
+        $factoryGenerator = new FactoryGenerator($json, $reader, $writer, $remover);
         $factoryGenerator->generate();
 
-        $migrationGenerator = new MigrationGenerator($json);
+        $migrationGenerator = new MigrationGenerator($json, $reader, $writer, $remover);
         $migrationGenerator->generate();
 
-        $modelGenerator = new ModelGenerator($json);
+        $modelGenerator = new ModelGenerator($json, $reader, $writer, $remover);
         $modelGenerator->generate();
 
-        $requestGenerator = new RequestGenerator($json);
+        $requestGenerator = new RequestGenerator($json, $reader, $writer, $remover);
         $requestGenerator->generate();
 
-        $routeGenerator = new RouteGenerator($json);
+        $routeGenerator = new RouteGenerator($json, $reader, $writer, $remover);
         $routeGenerator->generate();
 
-        $seederGenerator = new SeederGenerator($json);
+        $seederGenerator = new SeederGenerator($json, $reader, $writer, $remover);
         $seederGenerator->generate();
 
-        $viewGenerator = new ViewGenerator($json);
+        $viewGenerator = new ViewGenerator($json, $reader, $writer, $remover);
 
         // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
             $viewGenerator->generate($entity);
         }
-
-        $seederGenerator->generateDatabaseSeeder($json['entities']);
     }
 }
 

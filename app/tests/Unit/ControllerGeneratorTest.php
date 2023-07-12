@@ -25,6 +25,18 @@ beforeEach(function () {
             return mb_strlen($content, '8bit');
         }
     };
+
+    $this->remover = new class($outer) implements FileRemoverInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
+        public function remove($path): bool
+        {
+            $this->outer->removed[] = $path;
+            return true;
+        }
+    };
 });
 
 test('generateContent', function () {
@@ -54,7 +66,8 @@ test('generateContent', function () {
             ],
         ],
         $this->reader,
-        $this->writer
+        $this->writer,
+        $this->remover
     );
 
     $controller = $generator->generateContent($entity);
@@ -92,7 +105,8 @@ test('generate', function () {
             ],
         ],
         $this->reader,
-        $this->writer
+        $this->writer,
+        $this->remover
     );
     $generator->generate();
 

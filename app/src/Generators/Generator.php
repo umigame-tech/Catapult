@@ -32,12 +32,8 @@ abstract class Generator
 
     protected array $entities = [];
 
-    public function __construct(
-        $json,
-        FileReaderInterface $reader = new FileReader(),
-        FileWriterInterface $writer = new FileWriter(),
-        FileRemoverInterface $remover = new FileRemover()
-    ) {
+    public function __construct($json, FileReaderInterface $reader, FileWriterInterface $writer, FileRemoverInterface $remover)
+    {
         $this->json = $json;
         $this->projectName = $json['project_name'] ?? 'project';
         $this->prefix = $json['sealed_prefix'] ?? '';

@@ -1,6 +1,7 @@
 <?php
 
 use UmigameTech\Catapult\FileSystem\FileReaderInterface;
+use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
 use UmigameTech\Catapult\Generators\CssSetupGenerator;
 
@@ -18,6 +19,20 @@ beforeEach(function () {
             return mb_strlen($content, '8bit');
         }
     };
+
+    $this->removed = [];
+    $outer = $this;
+    $this->remover = new class($outer) implements FileRemoverInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
+        public function remove($path): bool
+        {
+            $this->outer->removed[] = $path;
+            return true;
+        }
+    };
 });
 
 test('generate', function () {
@@ -29,7 +44,8 @@ test('generate', function () {
             'entities' => [],
         ],
         $this->reader,
-        $this->writer
+        $this->writer,
+        $this->remover
     );
 
     $result = $generator->generateContent();
