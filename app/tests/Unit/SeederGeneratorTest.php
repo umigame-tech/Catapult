@@ -1,8 +1,9 @@
 <?php
 
 use UmigameTech\Catapult\FileSystem\FileReaderInterface;
+use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
-use UmigameTech\Catapult\Generators\RouteGenerator;
+use UmigameTech\Catapult\Generators\SeederGenerator;
 
 beforeEach(function () {
     $this->reader = new class implements FileReaderInterface {
@@ -13,6 +14,7 @@ beforeEach(function () {
     };
 
     $this->contents = [];
+    $this->removed = [];
 
     $outer = $this;
     $this->writer = new class($outer) implements FileWriterInterface {
@@ -24,6 +26,18 @@ beforeEach(function () {
         {
             $this->outer->contents[] = $content;
             return mb_strlen($content, '8bit');
+        }
+    };
+
+    $this->remover = new class($outer) implements FileRemoverInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
+        public function remove($path): bool
+        {
+            $this->outer->removed[] = $path;
+            return true;
         }
     };
 });
@@ -46,7 +60,7 @@ test('generateContent', function () {
             ],
         ],
     ];
-    $generator = new RouteGenerator(
+    $generator = new SeederGenerator(
         [
             'project_name' => 'test',
             'sealed_prefix' => 'admin',
@@ -58,10 +72,10 @@ test('generateContent', function () {
         $this->writer
     );
 
-    list('content' => $content) = $generator->generateContent();
+    list('content' => $content) = $generator->generateContent($entity);
     expect($content)
         ->toBeString()
-        ->toContain("Route::get('users', [UserController::class, 'index'])->name('user.index');");
+        ->toContain('class UserSeeder extends Seeder');
 });
 
 test('generate', function () {
@@ -82,7 +96,7 @@ test('generate', function () {
             ],
         ],
     ];
-    $generator = new RouteGenerator(
+    $generator = new SeederGenerator(
         [
             'project_name' => 'test',
             'sealed_prefix' => 'admin',
@@ -98,4 +112,11 @@ test('generate', function () {
     expect($this->contents)
         ->toBeArray()
         ->toHaveLength(1);
+
+    expect($this->removed)
+        ->toBeArray()
+        ->toHaveLength(2)
+        ->toMatchArray([
+            'database/seeders/DatabaseSeeder.php',
+        ]);
 });
