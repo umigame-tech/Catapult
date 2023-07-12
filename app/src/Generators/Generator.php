@@ -14,6 +14,8 @@ abstract class Generator
 
     const INDENT = '    ';
 
+    protected $json = [];
+
     protected $targetDir = '/dist';
 
     protected $projectName = 'project';
@@ -27,6 +29,7 @@ abstract class Generator
     protected array $entities = [];
 
     public function __construct($json, FileReaderInterface $reader = new FileReader(), FileWriterInterface $writer = new FileWriter()) {
+        $this->json = $json;
         $this->projectName = $json['project_name'] ?? 'project';
         $this->prefix = $json['sealed_prefix'] ?? '';
         $this->entities = $json['entities'] ?? [];

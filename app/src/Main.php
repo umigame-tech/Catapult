@@ -116,9 +116,11 @@ class Main
         $requestGenerator = new RequestGenerator($json);
         $requestGenerator->generate();
 
+        $routeGenerator = new RouteGenerator($json);
+        $routeGenerator->generate();
+
         $seederGenerator = new SeederGenerator($json);
         $viewGenerator = new ViewGenerator($json);
-        $routeGenerator = new RouteGenerator($json);
 
         // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
@@ -126,7 +128,6 @@ class Main
             $viewGenerator->generate($entity);
         }
 
-        $routeGenerator->generate($json);
         $seederGenerator->generateDatabaseSeeder($json['entities']);
     }
 }
