@@ -69,7 +69,8 @@ test('generateContent', function () {
             ],
         ],
         $this->reader,
-        $this->writer
+        $this->writer,
+        $this->remover
     );
 
     list('content' => $content) = $generator->generateContent($entity);
@@ -105,7 +106,8 @@ test('generate', function () {
             ],
         ],
         $this->reader,
-        $this->writer
+        $this->writer,
+        $this->remover
     );
 
     $generator->generate();
