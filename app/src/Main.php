@@ -120,11 +120,12 @@ class Main
         $routeGenerator->generate();
 
         $seederGenerator = new SeederGenerator($json);
+        $seederGenerator->generate();
+
         $viewGenerator = new ViewGenerator($json);
 
         // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
-            $seederGenerator->generate($entity);
             $viewGenerator->generate($entity);
         }
 
