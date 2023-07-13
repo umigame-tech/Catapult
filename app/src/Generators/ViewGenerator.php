@@ -30,7 +30,7 @@ class ViewGenerator extends Generator
         };
     }
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $projectPath = $this->projectPath();
         $this->projectPath = $projectPath;
@@ -52,6 +52,13 @@ class ViewGenerator extends Generator
         $this->generateEditView($entity);
         $this->generateUpdateConfirmView($entity);
         $this->generateDestroyConfirmView($entity);
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $this->generateContent($entity);
+        }
     }
 
     private function generateIndexView($entity)
