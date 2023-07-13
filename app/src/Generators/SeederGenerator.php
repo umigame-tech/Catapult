@@ -6,8 +6,9 @@ use UmigameTech\Catapult\Templates\Renderer;
 class SeederGenerator extends Generator
 {
 
-    public function generateDatabaseSeeder($entities)
+    public function generateDatabaseSeeder()
     {
+        $entities = $this->entities;
         $seeders = array_map(
             function ($entity) {
                 return ModelGenerator::modelName($entity) . 'Seeder';
@@ -22,11 +23,17 @@ class SeederGenerator extends Generator
 
         $projectPath = $this->projectPath();
         $seederPath = "{$projectPath}" . '/database/seeders/DatabaseSeeder.php';
-        unlink($seederPath);
-        file_put_contents($seederPath, $seeder);
+        if ($this->checker->exists($seederPath)) {
+            $this->remover->remove($seederPath);
+        }
+
+        return [
+            'path' => $seederPath,
+            'content' => $seeder,
+        ];
     }
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $modelName = ModelGenerator::modelName($entity);
         $seederName = $modelName . 'Seeder';
@@ -41,10 +48,28 @@ class SeederGenerator extends Generator
         $projectPath = $this->projectPath();
         $seederPath = "{$projectPath}" . '/database/seeders/' . $seederName . '.php';
         // 既にファイルがある場合は削除してから生成する
-        if (file_exists($seederPath)) {
-            unlink($seederPath);
+        if ($this->checker->exists($seederPath)) {
+            $this->remover->remove($seederPath);
         }
 
-        file_put_contents($seederPath, $seeder);
+        return [
+            'path' => $seederPath,
+            'content' => $seeder,
+        ];
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $generated = $this->generateContent($entity);
+            if (empty($generated)) {
+                continue;
+            }
+
+            $this->writer->write(...$generated);
+        }
+
+        $generated = $this->generateDatabaseSeeder();
+        $this->writer->write(...$generated);
     }
 }

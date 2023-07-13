@@ -40,26 +40,35 @@ class RouteGenerator extends Generator
         return $converted;
     }
 
-    public function generate($json)
+    public function generateContent()
     {
         $renderer = Renderer::getInstance();
         $webRoutePath = $this->projectPath() . '/routes/web.php';
 
-        $prefix = $json['sealed_prefix'] ?? '';
+        $prefix = $this->prefix;
         $entities = array_map(
             function ($entity) use ($prefix) {
                 $entity['controllerName'] = ControllerGenerator::controllerName($entity);
                 $entity['routes'] = $this->convertActionName($entity, $prefix);
                 return $entity;
             },
-            $json['entities']
+            $this->entities
         );
 
         $routes = $renderer->render('routes/web.php.twig', [
-            'prefix' => $json['sealed_prefix'] ?? '',
+            'prefix' => $prefix,
             'entities' => $entities,
         ]);
 
-        file_put_contents($webRoutePath, $routes);
+        return [
+            'path' => $webRoutePath,
+            'content' => $routes,
+        ];
+    }
+
+    public function generate()
+    {
+        $content = $this->generateContent();
+        $this->writer->write(...$content);
     }
 }

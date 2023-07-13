@@ -30,7 +30,7 @@ class ViewGenerator extends Generator
         };
     }
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $projectPath = $this->projectPath();
         $this->projectPath = $projectPath;
@@ -38,7 +38,7 @@ class ViewGenerator extends Generator
         $dirPath = $this->projectPath . '/resources/views/' . $entity['name'];
 
         // 前回のディレクトリが残っている場合は削除する
-        if (file_exists($dirPath)) {
+        if ($this->checker->exists($dirPath)) {
             $remover = new RemoveDirectory();
             $remover->remove($dirPath);
         }
@@ -52,6 +52,13 @@ class ViewGenerator extends Generator
         $this->generateEditView($entity);
         $this->generateUpdateConfirmView($entity);
         $this->generateDestroyConfirmView($entity);
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $this->generateContent($entity);
+        }
     }
 
     private function generateIndexView($entity)
@@ -71,7 +78,7 @@ class ViewGenerator extends Generator
             'camelCase' => $camelCase,
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 
     private function generateShowView($entity)
@@ -83,7 +90,7 @@ class ViewGenerator extends Generator
             'entity' => $entity,
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 
     private function generateNewView($entity)
@@ -109,7 +116,7 @@ class ViewGenerator extends Generator
             'backUri' => "{{ route('{$entity['name']}.index') }}",
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 
     private function generateCreateConfirmView($entity)
@@ -125,7 +132,7 @@ class ViewGenerator extends Generator
             'backUri' => "{{ route('{$entity['name']}.new') }}",
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 
     private function generateEditView($entity)
@@ -141,7 +148,7 @@ class ViewGenerator extends Generator
             'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 
     private function generateUpdateConfirmView($entity)
@@ -157,7 +164,7 @@ class ViewGenerator extends Generator
             'backUri' => "{{ route('{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 
     private function generateDestroyConfirmView($entity)
@@ -173,6 +180,6 @@ class ViewGenerator extends Generator
             'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
-        file_put_contents($viewPath, $view);
+        $this->writer->write(path: $viewPath, content: $view);
     }
 }

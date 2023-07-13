@@ -18,7 +18,7 @@
         "composer/composer": "^2.5"
     },
     "require-dev": {
-        "pestphp/pest": "^2.8"
+        "pestphp/pest": "^2.8.2"
     },
     "config": {
         "allow-plugins": {

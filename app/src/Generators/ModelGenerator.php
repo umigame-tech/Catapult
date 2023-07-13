@@ -13,7 +13,7 @@ class ModelGenerator extends Generator
         ));
     }
 
-    public function generate($entity) {
+    public function generateContent($entity) {
         $modelName = self::modelName($entity);
 
         $fillableList = array_map(
@@ -34,7 +34,21 @@ class ModelGenerator extends Generator
             unlink($modelPath);
         }
 
-        file_put_contents($modelPath, $model);
+        return [
+            'path' => $modelPath,
+            'content' => $model,
+        ];
     }
 
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $content = $this->generateContent($entity);
+            if (empty($content)) {
+                continue;
+            }
+
+            $this->writer->write(...$content);
+        }
+    }
 }

@@ -2,36 +2,19 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\FileSystem\CopyDirectory;
+use UmigameTech\Catapult\FileSystem\CopyDirectoryInterface;
+
 class ResourcesSetupGenerator extends Generator
 {
-    public function generate()
+    public function generate(CopyDirectoryInterface $copyDirectory = new CopyDirectory)
     {
         $projectPath = $this->projectPath();
 
         // src/Templates/resources/ 配下のディレクトリをコピーする
         $resourcesDir = __DIR__ . '/../Templates/resources';
         $distDir = $projectPath . '/resources';
-        $this->copyDir($resourcesDir, $distDir);
-    }
 
-    private function copyDir($source, $dest)
-    {
-        if (!file_exists($dest)) {
-            mkdir($dest);
-        }
-
-        foreach (scandir($source) as $file) {
-            if ($file === '.' || $file === '..') {
-                continue;
-            }
-
-            $sourcePath = "{$source}/{$file}";
-            $destPath = "{$dest}/{$file}";
-            if (is_dir($sourcePath)) {
-                $this->copyDir($sourcePath, $destPath);
-            } else {
-                copy($sourcePath, $destPath);
-            }
-        }
+        $copyDirectory->copyDir($resourcesDir, $distDir);
     }
 }

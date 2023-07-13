@@ -75,7 +75,7 @@ class FactoryGenerator extends Generator
         return '';
     }
 
-    public function generate($entity)
+    public function generateContent($entity)
     {
         $modelName = ModelGenerator::modelName($entity);
         $factoryName = implode('', array_map(
@@ -110,6 +110,20 @@ class FactoryGenerator extends Generator
             unlink($factoryPath);
         }
 
-        file_put_contents($factoryPath, $factory);
+        return [
+            'path' => $factoryPath,
+            'content' => $factory,
+        ];
+    }
+
+    public function generate()
+    {
+        foreach ($this->entities as $entity) {
+            $content = $this->generateContent($entity);
+            if (empty($content)) {
+                continue;
+            }
+            $this->writer->write(...$content);
+        }
     }
 }

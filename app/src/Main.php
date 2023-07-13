@@ -6,6 +6,12 @@ use SplFileObject;
 use Swaggest\JsonSchema\Schema;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use UmigameTech\Catapult\FileSystem\CopyFileInterface;
+use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
+use UmigameTech\Catapult\FileSystem\FileReaderInterface;
+use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
+use UmigameTech\Catapult\FileSystem\FileSystemContainer;
+use UmigameTech\Catapult\FileSystem\FileWriterInterface;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
@@ -30,11 +36,31 @@ class Main
 
     private $targetDir = '/dist';
 
+    private FileReaderInterface $reader;
+    private FileWriterInterface $writer;
+    private FileRemoverInterface $remover;
+    private FileCheckerInterface $checker;
+    private CopyFileInterface $copier;
+
+
+    public function __construct(FileSystemContainer $container = null)
+    {
+        if (empty($container)) {
+            $container = new FileSystemContainer;
+        }
+
+        $this->reader = $container->reader;
+        $this->writer = $container->writer;
+        $this->remover = $container->remover;
+        $this->checker = $container->checker;
+        $this->copier = $container->copier;
+    }
+
     private function setupEnvFile($projectPath)
     {
         $fileDir = __DIR__ . '/../../app';
         $envFile = preg_replace('/\/$/', '', $fileDir) . '/default.env';
-        copy($envFile, $projectPath . '/.env');
+        $this->copier->copyFile(source: $envFile, dest: $projectPath . '/.env');
     }
 
     private function setupDatabase($projectPath)
@@ -64,12 +90,12 @@ class Main
             exit(1);
         }
 
-        if (! $inputFile = file_get_contents($argv[1])) {
+        if (! $inputFile = $this->reader->read($argv[1])) {
             echo "File not found: {$argv[1]}\n";
             exit(1);
         }
 
-        $schema = Schema::import(json_decode(file_get_contents(__DIR__ . '/JsonSchemas/schema.json')));
+        $schema = Schema::import(json_decode($this->reader->read(__DIR__ . '/JsonSchemas/schema.json')));
         $json = $schema->in(json_decode($inputFile));
         if (!empty($json['project_name'])) {
             $this->projectName = $json['project_name'];
@@ -80,7 +106,7 @@ class Main
         if (! $skipInstallation) {
             $composer = new \Composer\Console\Application();
             $composer->setAutoExit(false);
-            if (file_exists($projectPath . '/composer.json')) {
+            if ($this->checker->exists($projectPath . '/composer.json')) {
                 $composer->run(new StringInput("install --working-dir={$projectPath}"), new ConsoleOutput());
             } else {
                 $composer->run(new StringInput("create-project --prefer-dist laravel/laravel {$projectPath}"), new ConsoleOutput());
@@ -101,27 +127,29 @@ class Main
             $css->generate();
         }
 
-        $modelGenerator = new ModelGenerator($json);
-        $migrationGenerator = new MigrationGenerator($json);
-        $factoryGenerator = new FactoryGenerator($json);
-        $seederGenerator = new SeederGenerator($json);
         $controllerGenerator = new ControllerGenerator($json);
-        $viewGenerator = new ViewGenerator($json);
-        $routeGenerator = new RouteGenerator($json);
+        $controllerGenerator->generate();
+
+        $factoryGenerator = new FactoryGenerator($json);
+        $factoryGenerator->generate();
+
+        $migrationGenerator = new MigrationGenerator($json);
+        $migrationGenerator->generate();
+
+        $modelGenerator = new ModelGenerator($json);
+        $modelGenerator->generate();
+
         $requestGenerator = new RequestGenerator($json);
+        $requestGenerator->generate();
 
-        foreach ($json['entities'] as $entity) {
-            $modelGenerator->generate($entity);
-            $migrationGenerator->generate($entity);
-            $factoryGenerator->generate($entity);
-            $seederGenerator->generate($entity);
-            $controllerGenerator->generate($entity);
-            $viewGenerator->generate($entity);
-            $requestGenerator->generate($entity);
-        }
+        $routeGenerator = new RouteGenerator($json);
+        $routeGenerator->generate();
 
-        $routeGenerator->generate($json);
-        $seederGenerator->generateDatabaseSeeder($json['entities']);
+        $seederGenerator = new SeederGenerator($json);
+        $seederGenerator->generate();
+
+        $viewGenerator = new ViewGenerator($json);
+        $viewGenerator->generate();
     }
 }
 

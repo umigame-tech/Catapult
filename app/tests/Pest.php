@@ -24,6 +24,13 @@
 |
 */
 
+use UmigameTech\Catapult\FileSystem\CopyFileInterface;
+use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
+use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
+use UmigameTech\Catapult\FileSystem\FileReaderInterface;
+use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\FileSystem\FileSystemContainer;
+
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
@@ -42,4 +49,70 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+class MockedFileSystem extends FileSystemContainer
+{
+    public array $contents = [];
+    public array $removed = [];
+    public array $copied = [];
+}
+
+function mockFileSystems()
+{
+    $mocked = new MockedFileSystem;
+    $mocked->reader = new class implements FileReaderInterface {
+        public function read($path)
+        {
+            return "";
+        }
+    };
+
+    $outer = $mocked;
+    $mocked->writer = new class($outer) implements FileWriterInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
+        public function write($path, $content): bool|int
+        {
+            $this->outer->contents[] = $content;
+            return mb_strlen($content, '8bit');
+        }
+    };
+
+    $outer = $mocked;
+    $mocked->remover = new class($outer) implements FileRemoverInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
+        public function remove($path): bool
+        {
+            $this->outer->removed[] = $path;
+            return true;
+        }
+    };
+
+    $mocked->checker = new class implements FileCheckerInterface {
+        public function exists($path): bool
+        {
+            return false;
+        }
+    };
+
+
+    $mocked->copier = new class($outer) implements CopyFileInterface {
+        public $outer;
+        public function __construct($outer) {
+            $this->outer = $outer;
+        }
+
+        public function copyFile($source, $dest)
+        {
+            $this->outer->copied[] = compact('source', 'dest');
+        }
+    };
+
+    return $mocked;
 }
