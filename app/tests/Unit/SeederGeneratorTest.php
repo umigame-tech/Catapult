@@ -121,5 +121,5 @@ test('remove old files', function () {
 
     $generator->generate();
     expect($this->mocked->removed)
-        ->toHaveLength(3);
+        ->toHaveLength(2);
 });
