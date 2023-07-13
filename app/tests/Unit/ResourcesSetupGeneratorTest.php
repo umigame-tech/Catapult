@@ -1,32 +1,21 @@
 <?php
 
 use UmigameTech\Catapult\FileSystem\CopyDirectoryInterface;
-use UmigameTech\Catapult\FileSystem\FileReaderInterface;
-use UmigameTech\Catapult\FileSystem\FileWriterInterface;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 
 beforeEach(function () {
-    $this->reader = new class implements FileReaderInterface {
-        public function read($path)
-        {
-            return "";
-        }
-    };
-
-    $this->writer = new class implements FileWriterInterface {
-        public function write($path, $content): bool|int
-        {
-            return mb_strlen($content, '8bit');
-        }
-    };
+    $this->mocked = mockFileSystems();
 });
 
 test('generate', function () {
-    $generator = new ResourcesSetupGenerator([
-        'project_name' => 'test',
-        'sealed_prefix' => 'admin',
-        'entities' => [],
-    ], $this->reader, $this->writer);
+    $generator = new ResourcesSetupGenerator(
+        [
+            'project_name' => 'test',
+            'sealed_prefix' => 'admin',
+            'entities' => [],
+        ],
+        $this->mocked
+    );
 
     $this->result = [];
     $outer = $this;

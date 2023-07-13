@@ -1,45 +1,10 @@
 <?php
 
-use UmigameTech\Catapult\FileSystem\FileReaderInterface;
-use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
-use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
 use UmigameTech\Catapult\Generators\SeederGenerator;
 
 beforeEach(function () {
-    $this->reader = new class implements FileReaderInterface {
-        public function read($path)
-        {
-            return "";
-        }
-    };
-
-    $this->contents = [];
-    $this->removed = [];
-
-    $outer = $this;
-    $this->writer = new class($outer) implements FileWriterInterface {
-        public $outer;
-        public function __construct($outer) {
-            $this->outer = $outer;
-        }
-        public function write($path, $content): bool|int
-        {
-            $this->outer->contents[] = $content;
-            return mb_strlen($content, '8bit');
-        }
-    };
-
-    $this->remover = new class($outer) implements FileRemoverInterface {
-        public $outer;
-        public function __construct($outer) {
-            $this->outer = $outer;
-        }
-        public function remove($path): bool
-        {
-            $this->outer->removed[] = $path;
-            return true;
-        }
-    };
+    $this->mocked = mockFileSystems();
 });
 
 test('generateContent', function () {
@@ -68,9 +33,7 @@ test('generateContent', function () {
                 $entity,
             ],
         ],
-        $this->reader,
-        $this->writer,
-        $this->remover
+        $this->mocked
     );
 
     list('content' => $content) = $generator->generateContent($entity);
@@ -105,20 +68,58 @@ test('generate', function () {
                 $entity,
             ],
         ],
-        $this->reader,
-        $this->writer,
-        $this->remover
+        $this->mocked
     );
 
     $generator->generate();
-    expect($this->contents)
+    expect($this->mocked->contents)
         ->toBeArray()
-        ->toHaveLength(1);
+        ->toHaveLength(2);
 
-    expect($this->removed)
+    $generator->generate();
+    expect($this->mocked->removed)
         ->toBeArray()
-        ->toHaveLength(2)
-        ->toMatchArray([
-            'database/seeders/DatabaseSeeder.php',
-        ]);
+        ->toHaveLength(0);
+});
+
+test('remove old files', function () {
+    $this->mocked->checker = new class implements FileCheckerInterface {
+        public function exists($path): bool
+        {
+            return true;
+        }
+    };
+
+    $entity = [
+        'name' => 'user',
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'string',
+            ],
+        ],
+    ];
+
+    $generator = new SeederGenerator(
+        [
+            'project_name' => 'test',
+            'sealed_prefix' => 'admin',
+            'entities' => [
+                $entity,
+            ],
+        ],
+        $this->mocked
+    );
+
+    $generator->generate();
+    expect($this->mocked->removed)
+        ->toHaveLength(3);
 });

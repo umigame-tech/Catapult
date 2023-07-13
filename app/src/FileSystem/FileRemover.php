@@ -6,7 +6,7 @@ namespace UmigameTech\Catapult\FileSystem;
  * ファイル削除を分離することで
  * ロジックとファイルシステムの依存を切り離す
  */
-class FileRemover extends FileRemoverInterface
+class FileRemover implements FileRemoverInterface
 {
     public function remove($path): bool
     {

@@ -13,12 +13,13 @@ class TailwindCssSetupGenerator extends Generator
         chdir($projectPath);
         exec('npm install -D tailwindcss postcss autoprefixer');
 
-        if (file_exists("{$projectPath}/tailwind.config.js")) {
-            unlink("{$projectPath}/tailwind.config.js");
+        $twPath = "{$projectPath}/tailwind.config.js";
+        if ($this->checker->exists($twPath)) {
+            $this->remover->remove($twPath);
         }
 
         exec('npx tailwindcss init -p');
-        $content = file_get_contents("{$projectPath}/tailwind.config.js");
+        $content = $this->reader->read($twPath);
         $newContent = preg_replace('/  content: \[\],/', <<<'EOT'
   content: [
     "./resources/**/*.blade.php",
@@ -29,7 +30,10 @@ EOT,
             $content
         );
 
-        file_put_contents("{$projectPath}/tailwind.config.js", $newContent);
+        $this->writer->write(
+            path: "{$projectPath}/tailwind.config.js",
+            content: $newContent
+        );
 
         $appCssPath = "{$projectPath}/resources/css/app.css";
         $tailwindCssSetup = <<<'EOT'
@@ -37,17 +41,25 @@ EOT,
 @tailwind components;
 @tailwind utilities;
 EOT;
-        $appCss = file_get_contents($appCssPath);
+        $appCss = $this->reader->read($appCssPath);
         if (! str_contains($appCss, $tailwindCssSetup)) {
-            file_put_contents($appCssPath, $tailwindCssSetup . "\n" . $appCss);
+            $this->writer->write(
+                path: $appCssPath,
+                content: $tailwindCssSetup . "\n" . $appCss
+            );
         }
 
-        if (file_exists("{$projectPath}/vite.config.js")) {
-            unlink("{$projectPath}/vite.config.js");
+        $vitePath = "{$projectPath}/vite.config.js";
+        if ($this->checker->exists($vitePath)) {
+            $this->remover->remove($vitePath);
         }
-        copy(__DIR__ . '/../Templates/vite.config.js', "{$projectPath}/vite.config.js");
 
-        $viteConfig = file_get_contents("{$projectPath}/vite.config.js");
+        $this->copier->copyFile(
+            source: __DIR__ . '/../Templates/vite.config.js',
+            dest: $vitePath
+        );
+
+        $viteConfig = $this->reader->read($vitePath);
 
         $newConfig = preg_replace('/\ +input: \[.*/', <<<'EOT'
             input: [
@@ -59,7 +71,10 @@ EOT;
 EOT
         , $viteConfig);
 
-        file_put_contents("{$projectPath}/vite.config.js", $newConfig);
+        $this->writer->write(
+            path: $vitePath,
+            content: $newConfig
+        );
 
         chdir($currentPath);
     }

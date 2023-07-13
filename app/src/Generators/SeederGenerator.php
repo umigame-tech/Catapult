@@ -23,7 +23,9 @@ class SeederGenerator extends Generator
 
         $projectPath = $this->projectPath();
         $seederPath = "{$projectPath}" . '/database/seeders/DatabaseSeeder.php';
-        $this->remover->remove($seederPath);
+        if ($this->checker->exists($seederPath)) {
+            $this->remover->remove($seederPath);
+        }
 
         return [
             'path' => $seederPath,
@@ -46,7 +48,7 @@ class SeederGenerator extends Generator
         $projectPath = $this->projectPath();
         $seederPath = "{$projectPath}" . '/database/seeders/' . $seederName . '.php';
         // 既にファイルがある場合は削除してから生成する
-        if (file_exists($seederPath)) {
+        if ($this->checker->exists($seederPath)) {
             $this->remover->remove($seederPath);
         }
 
@@ -68,5 +70,6 @@ class SeederGenerator extends Generator
         }
 
         $generated = $this->generateDatabaseSeeder();
+        $this->writer->write(...$generated);
     }
 }

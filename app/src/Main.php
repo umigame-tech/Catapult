@@ -93,43 +93,39 @@ class Main
         $this->setupEnvFile($projectPath);
         $this->setupDatabase($projectPath);
 
-        $reader = new FileReader;
-        $writer = new FileWriter;
-        $remover = new FileRemover;
-
         if (! $skipInstallation) {
-            $tailwind = new TailwindCssSetupGenerator($json, $reader, $writer, $remover);
+            $tailwind = new TailwindCssSetupGenerator($json);
             $tailwind->generate();
 
-            $resources = new ResourcesSetupGenerator($json, $reader, $writer, $remover);
+            $resources = new ResourcesSetupGenerator($json);
             $resources->generate();
 
-            $css = new CssSetupGenerator($json, $reader, $writer, $remover);
+            $css = new CssSetupGenerator($json);
             $css->generate();
         }
 
-        $controllerGenerator = new ControllerGenerator($json, $reader, $writer, $remover);
+        $controllerGenerator = new ControllerGenerator($json);
         $controllerGenerator->generate();
 
-        $factoryGenerator = new FactoryGenerator($json, $reader, $writer, $remover);
+        $factoryGenerator = new FactoryGenerator($json);
         $factoryGenerator->generate();
 
-        $migrationGenerator = new MigrationGenerator($json, $reader, $writer, $remover);
+        $migrationGenerator = new MigrationGenerator($json);
         $migrationGenerator->generate();
 
-        $modelGenerator = new ModelGenerator($json, $reader, $writer, $remover);
+        $modelGenerator = new ModelGenerator($json);
         $modelGenerator->generate();
 
-        $requestGenerator = new RequestGenerator($json, $reader, $writer, $remover);
+        $requestGenerator = new RequestGenerator($json);
         $requestGenerator->generate();
 
-        $routeGenerator = new RouteGenerator($json, $reader, $writer, $remover);
+        $routeGenerator = new RouteGenerator($json);
         $routeGenerator->generate();
 
-        $seederGenerator = new SeederGenerator($json, $reader, $writer, $remover);
+        $seederGenerator = new SeederGenerator($json);
         $seederGenerator->generate();
 
-        $viewGenerator = new ViewGenerator($json, $reader, $writer, $remover);
+        $viewGenerator = new ViewGenerator($json);
 
         // TODO: ここのforeachループなくす
         foreach ($json['entities'] as $entity) {
