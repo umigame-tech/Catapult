@@ -3,5 +3,5 @@
   <form method="post" action="{{ submitUri|raw }}">
     {% verbatim %}{{ csrf_field() }}{% endverbatim %}
     <input type="submit" value="{{ type|capitalize }}">
-    <a href="{{ backUri|raw }}">Cancel</a>
+    <a href="{{ '{{' }} $backUrl {{ '}}' }}">Cancel</a>
   </form>

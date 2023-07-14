@@ -42,6 +42,16 @@ class Main
     private FileCheckerInterface $checker;
     private CopyFileInterface $copier;
 
+    private $generators = [
+        ControllerGenerator::class,
+        FactoryGenerator::class,
+        MigrationGenerator::class,
+        ModelGenerator::class,
+        RequestGenerator::class,
+        RouteGenerator::class,
+        SeederGenerator::class,
+        ViewGenerator::class,
+    ];
 
     public function __construct(FileSystemContainer $container = null)
     {
@@ -117,39 +127,15 @@ class Main
         $this->setupDatabase($projectPath);
 
         if (! $skipInstallation) {
-            $tailwind = new TailwindCssSetupGenerator($json);
-            $tailwind->generate();
-
-            $resources = new ResourcesSetupGenerator($json);
-            $resources->generate();
-
-            $css = new CssSetupGenerator($json);
-            $css->generate();
+            array_unshift($this->generators, TailwindCssSetupGenerator::class);
+            array_unshift($this->generators, ResourcesSetupGenerator::class);
+            array_unshift($this->generators, CssSetupGenerator::class);
         }
 
-        $controllerGenerator = new ControllerGenerator($json);
-        $controllerGenerator->generate();
-
-        $factoryGenerator = new FactoryGenerator($json);
-        $factoryGenerator->generate();
-
-        $migrationGenerator = new MigrationGenerator($json);
-        $migrationGenerator->generate();
-
-        $modelGenerator = new ModelGenerator($json);
-        $modelGenerator->generate();
-
-        $requestGenerator = new RequestGenerator($json);
-        $requestGenerator->generate();
-
-        $routeGenerator = new RouteGenerator($json);
-        $routeGenerator->generate();
-
-        $seederGenerator = new SeederGenerator($json);
-        $seederGenerator->generate();
-
-        $viewGenerator = new ViewGenerator($json);
-        $viewGenerator->generate();
+        foreach ($this->generators as $generator) {
+            $generator = new $generator($json);
+            $generator->generate();
+        }
     }
 }
 

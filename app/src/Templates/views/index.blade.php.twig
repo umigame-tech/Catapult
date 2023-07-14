@@ -14,6 +14,7 @@
 {% for attribute in entity['attributes'] %}
       <th>{{ attribute['name'] }}</th>
 {% endfor %}
+      <th>Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -30,6 +31,26 @@
       <td>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
 {% endif %}
 {% endfor %}
+      <td>
+        <a href="{{ '{{' }}
+          route('{{ entity.name }}.show', [
+            'id' => ${{ camelCase }}->id,
+            'fromUrl' => $fromUrl,
+          ])
+        {{ '}}' }}">詳細</a>
+        <a href="{{ '{{' }}
+          route('{{ entity.name }}.edit', [
+            'id' => ${{ camelCase }}->id,
+            'fromUrl' => $fromUrl,
+          ])
+        {{ '}}' }}">編集</a>
+        <a href="{{ '{{' }}
+          route('{{ entity.name }}.destroyConfirm', [
+            'id' => ${{ camelCase }}->id,
+            'fromUrl' => $fromUrl,
+          ])
+        {{ '}}' }}">削除</a>
+      </td>
     </tr>
 @endforeach
   </tbody>

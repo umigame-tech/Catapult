@@ -111,9 +111,7 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/new.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route('{$entity['name']}.createConfirm') }}",
             'baseUri' => $baseUri,
-            'backUri' => "{{ route('{$entity['name']}.index') }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
@@ -143,9 +141,7 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/edit.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route('{$entity['name']}.updateConfirm', ['id' => \${$entity['name']}->id]) }}",
             'baseUri' => $baseUri,
-            'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
