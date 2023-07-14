@@ -1,4 +1,4 @@
-  <form method="post" action="{{ submitUri|raw }}">
+  <form method="post" action="{{ '{{' }} $submitUrl {{ '}}' }}">
   {% verbatim %}{{ csrf_field() }}{% endverbatim %}
 {% for attribute in entity['attributes'] %}
     <div class="mt-8">

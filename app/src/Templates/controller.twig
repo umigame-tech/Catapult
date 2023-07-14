@@ -45,8 +45,16 @@ class {{ controllerName }} extends Controller
         // Cancelで戻ってきた場合にセッションから値を取得する処理
         ${{ entity['name'] }}->fill($request->session()->get('{{ entity['name'] }}.form', []));
 
+        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $fromUrl = $this->buildFromUrl($request);
+        $submitUrl = route('{{ entity['name'] }}.createConfirm', [
+            'fromUrl' => $fromUrl,
+        ]);
+
         return view('{{ entity['name'] }}.new', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
+            'backUrl' => $backUrl,
+            'submitUrl' => $submitUrl,
         ]);
     }
 
@@ -75,6 +83,11 @@ class {{ controllerName }} extends Controller
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
         $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $fromUrl = $this->buildFromUrl($request);
+        $submitUrl = route('{{ entity['name'] }}.updateConfirm', [
+            'id' => $id,
+            'fromUrl' => $fromUrl,
+        ]);
 
         // Cancelで戻ってきた場合にセッションから値を取得する処理
         $session = $request->session()->get('{{ entity['name'] }}.form', []);
@@ -85,17 +98,20 @@ class {{ controllerName }} extends Controller
         return view('{{ entity['name'] }}.edit', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
             'backUrl' => $backUrl,
+            'submitUrl' => $submitUrl,
         ]);
     }
 
     public function updateConfirm({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
+        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
         ${{ entity['name'] }}->fill($request->all());
         $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
 
         return view('{{ entity['name'] }}.updateConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
+            'backUrl' => $backUrl,
         ]);
     }
 
@@ -119,10 +135,12 @@ class {{ controllerName }} extends Controller
     public function destroyConfirm(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
         $request->session()->put('{{ entity['name'] }}.destroy_id', $id);
 
         return view('{{ entity['name'] }}.destroyConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
+            'backUrl' => $backUrl,
         ]);
     }
 
