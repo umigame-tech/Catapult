@@ -145,7 +145,6 @@ class ViewGenerator extends Generator
             'entity' => $entity,
             'submitUri' => "{{ route('{$entity['name']}.updateConfirm', ['id' => \${$entity['name']}->id]) }}",
             'baseUri' => $baseUri,
-            'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);

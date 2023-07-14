@@ -15,7 +15,7 @@ class {{ controllerName }} extends Controller
         if (!empty($currentGetParams)) {
             $currentUrl[] = $currentGetParams;
         }
-        return implode('?', $currentUrl);
+        return '/' . implode('?', $currentUrl);
     }
 
     public function index(Request $request, {{ modelName }} ${{ entity['name'] }})
@@ -24,7 +24,7 @@ class {{ controllerName }} extends Controller
         $fromUrl = $this->buildFromUrl($request);
         return view('{{ entity['name'] }}.index', [
             '{{ plural }}' => ${{ entity['name'] }}->paginate(10),
-            'fromUrl' => "/{$fromUrl}",
+            'fromUrl' => $fromUrl,
         ]);
     }
 
@@ -74,6 +74,7 @@ class {{ controllerName }} extends Controller
     public function edit({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
 
         // Cancelで戻ってきた場合にセッションから値を取得する処理
         $session = $request->session()->get('{{ entity['name'] }}.form', []);
@@ -83,6 +84,7 @@ class {{ controllerName }} extends Controller
 
         return view('{{ entity['name'] }}.edit', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
+            'backUrl' => $backUrl,
         ]);
     }
 

@@ -20,6 +20,6 @@
 {% endfor %}
     <div class="mt-8">
       <input type="submit" value="Confirm {{ type|capitalize }}">
-      <a href="{{ backUri|raw }}">Cancel</a>
+      <a href="{{ '{{' }} $backUrl {{ '}}' }}">Cancel</a>
     </div>
   </form>
