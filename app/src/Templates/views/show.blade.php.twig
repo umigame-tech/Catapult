@@ -3,5 +3,20 @@
 <div class="w-4/5 lg:w-2/5 mx-auto">
   <h1>Detail of {{ entity['name'] }} id {{ '{{' }} ${{ entity['name'] }}->id {{ '}}' }}</h1>
 {% include 'views/detail.twig' %}
+  <div class="mt-8">
+    <a href="{{ '{{' }} $backUrl {{ '}}' }}">Back</a>
+    <a href="{{ '{{' }}
+      route('{{ entity.name }}.edit', [
+        'id' => ${{ entity.name }}->id,
+        'fromUrl' => $fromUrl,
+      ])
+    {{ '}}' }}">Edit</a>
+    <a href="{{ '{{' }}
+      route('{{ entity.name }}.destroyConfirm', [
+        'id' => ${{ entity.name }}->id,
+        'fromUrl' => $fromUrl,
+      ])
+    {{ '}}' }}">Delete</a>
+  </div>
 </div>
 @endsection

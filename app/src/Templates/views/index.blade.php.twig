@@ -32,9 +32,9 @@
 {% endif %}
 {% endfor %}
       <td>
-        <a href="{{ '{{' }} route('{{ entity.name }}.show', ['id' => ${{ camelCase }}->id ]) {{ '}}' }}">詳細</a>
-        <a href="{{ '{{' }} route('{{ entity.name }}.edit', ['id' => ${{ camelCase }}->id ]) {{ '}}' }}">編集</a>
-        <a href="{{ '{{' }} route('{{ entity.name }}.destroyConfirm', ['id' => ${{ camelCase }}->id ]) {{ '}}' }}">削除</a>
+        <a href="{{ '{{' }} route('{{ entity.name }}.show', ['id' => ${{ camelCase }}->id, 'fromUrl' => $fromUrl]) {{ '}}' }}">詳細</a>
+        <a href="{{ '{{' }} route('{{ entity.name }}.edit', ['id' => ${{ camelCase }}->id]) {{ '}}' }}">編集</a>
+        <a href="{{ '{{' }} route('{{ entity.name }}.destroyConfirm', ['id' => ${{ camelCase }}->id]) {{ '}}' }}">削除</a>
       </td>
     </tr>
 @endforeach

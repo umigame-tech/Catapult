@@ -8,19 +8,35 @@ use App\Models\{{ modelName }};
 
 class {{ controllerName }} extends Controller
 {
+    private function buildFromUrl(Request $request)
+    {
+        $currentUrl = [$request->path()];
+        $currentGetParams = $request->server('QUERY_STRING');
+        if (!empty($currentGetParams)) {
+            $currentUrl[] = $currentGetParams;
+        }
+        return implode('?', $currentUrl);
+    }
+
     public function index(Request $request, {{ modelName }} ${{ entity['name'] }})
     {
         $request->session()->forget('{{ entity['name'] }}');
+        $fromUrl = $this->buildFromUrl($request);
         return view('{{ entity['name'] }}.index', [
             '{{ plural }}' => ${{ entity['name'] }}->paginate(10),
+            'fromUrl' => "/{$fromUrl}",
         ]);
     }
 
     public function show(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         $request->session()->forget('{{ entity['name'] }}');
+        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $fromUrl = $this->buildFromUrl($request);
         return view('{{ entity['name'] }}.show', [
             '{{ entity['name'] }}' => ${{ entity['name'] }}->findOrFail($id),
+            'backUrl' => $backUrl,
+            'fromUrl' => $fromUrl,
         ]);
     }
 
