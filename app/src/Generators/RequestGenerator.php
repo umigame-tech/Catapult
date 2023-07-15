@@ -20,6 +20,7 @@ class RequestGenerator extends Generator
             AttributeType::Username->value => 'string',
             AttributeType::Email->value => 'email',
             AttributeType::Tel->value => 'string',
+            AttributeType::Password->value => 'string',
             AttributeType::Integer->value => 'integer',
             AttributeType::Boolean->value => 'boolean',
             AttributeType::Date->value => 'date',

@@ -4,6 +4,7 @@
   "entities": [
     {
       "name": "person",
+      "authenticatable": true,
       "attributes": [
         {
           "name": "name",
@@ -12,6 +13,10 @@
         {
           "name": "email",
           "type": "email"
+        },
+        {
+          "name": "password",
+          "type": "password"
         },
         {
           "name": "tel",

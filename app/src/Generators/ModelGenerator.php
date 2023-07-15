@@ -1,6 +1,8 @@
 <?php
 
 namespace UmigameTech\Catapult\Generators;
+
+use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class ModelGenerator extends Generator
@@ -15,16 +17,29 @@ class ModelGenerator extends Generator
 
     public function generateContent($entity) {
         $modelName = self::modelName($entity);
+        $authenticatable = $entity['authenticatable'] ?? false;
+        $parentClass = $authenticatable ? 'Authenticatable' : 'Model';
+        $parentClassImport = $authenticatable
+            ? 'use Illuminate\Foundation\Auth\User as Authenticatable;'
+            : 'use Illuminate\Database\Eloquent\Model;';
 
         $fillableList = array_map(
             fn ($attribute) => $attribute['name'],
             $entity['attributes']
         );
 
+        $hiddenList = array_filter(
+            $entity['attributes'],
+            fn ($attribute) => $attribute['type'] === AttributeType::Password->value
+        );
+
         $renderer = Renderer::getInstance();
         $model = $renderer->render('model.twig', [
             'modelName' => $modelName,
             'fillableList' => $fillableList,
+            'hiddenList' => $hiddenList,
+            'parentClass' => $parentClass,
+            'parentClassImport' => $parentClassImport,
         ]);
 
         $projectPath = $this->projectPath();
