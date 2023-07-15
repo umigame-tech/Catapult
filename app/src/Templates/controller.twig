@@ -159,4 +159,27 @@ class {{ controllerName }} extends Controller
             ->route('{{ entity['name'] }}.index')
             ->with('message', "Succeeded to delete the {{ entity['name'] }}");
     }
+{% if authenticatable %}
+    public function login(Request $request)
+    {
+        $submitUrl = route('{{ entity['name'] }}.loginSubmit');
+
+        return view('{{ entity['name'] }}.login', [
+            'submitUrl' => $submitUrl,
+        ]);
+    }
+
+    // TODO: ログイン用のRequestクラスの自動生成
+    public function loginSubmit(Request $request)
+    {
+        // TODO: ログイン処理の実装
+        return [];
+    }
+
+    public function logout(Request $request)
+    {
+        // TODO: ログアウト処理
+        return [];
+    }
+{% endif %}
 }

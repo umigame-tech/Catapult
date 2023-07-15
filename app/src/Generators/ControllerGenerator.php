@@ -71,6 +71,8 @@ class ControllerGenerator extends Generator
         $inflector = InflectorFactory::create()->build();
         $plural = $inflector->pluralize($entity['name']);
 
+        $authenticatable = $entity['authenticatable'] ?? false;
+
         $renderer = Renderer::getInstance();
         $controller = $renderer->render('controller.twig', [
             'controllerName' => $controllerName,
@@ -78,6 +80,7 @@ class ControllerGenerator extends Generator
             'requestName' => $requestName,
             'plural' => $plural,
             'entity' => $entity,
+            'authenticatable' => $authenticatable,
         ]);
 
         $projectPath = $this->projectPath();

@@ -49,7 +49,15 @@ class RouteGenerator extends Generator
         $entities = array_map(
             function ($entity) use ($prefix) {
                 $entity['controllerName'] = ControllerGenerator::controllerName($entity);
-                $entity['routes'] = $this->convertActionName($entity, $prefix);
+                $routes = $this->convertActionName($entity, $prefix);
+                if ($entity['authenticatable'] ?? false) {
+                    $controllerName = $entity['controllerName'];
+                    $routes['login'] = "    Route::get('{$entity['name']}/login', [{$controllerName}::class, 'login'])->name('{$entity['name']}.login');";
+                    $routes['loginSubmit'] = "    Route::post('{$entity['name']}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$entity['name']}.loginSubmit');";
+                    $routes['logout'] = "    Route::post('{$entity['name']}/logout', [{$controllerName}::class, 'logout'])->name('{$entity['name']}.logout');";
+                }
+
+                $entity['routes'] = $routes;
                 return $entity;
             },
             $this->entities
