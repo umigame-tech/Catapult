@@ -13,6 +13,7 @@ class FactoryGenerator extends Generator
             AttributeType::String->value => 'realText',
             AttributeType::Username->value => 'userName',
             AttributeType::Email->value => 'email',
+            AttributeType::Password->value => 'password',
             AttributeType::Tel->value => 'phoneNumber',
             AttributeType::Integer->value => 'numberBetween',
             AttributeType::Boolean->value => 'boolean',

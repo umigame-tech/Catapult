@@ -42,6 +42,43 @@ test('generateContent', function () {
         ->toContain('class User extends Model');
 });
 
+test('authenticatable', function () {
+    $entity = [
+        'name' => 'user',
+        'authenticatable' => true,
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'password',
+            ],
+        ],
+    ];
+    $generator = new ModelGenerator(
+        [
+            'project_name' => 'test',
+            'sealed_prefix' => 'admin',
+            'entities' => [
+                $entity,
+            ],
+        ],
+        $this->mocked
+    );
+
+    list('content' => $content) = $generator->generateContent($entity);
+
+    expect($content)
+        ->toBeString()
+        ->toContain('class User extends Authenticatable');
+});
+
 test('generate', function () {
     $entity = [
         'name' => 'user',

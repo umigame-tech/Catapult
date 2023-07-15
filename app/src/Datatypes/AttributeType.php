@@ -7,6 +7,7 @@ enum AttributeType: string
     case String = 'string';
     case Username = 'username';
     case Email = 'email';
+    case Password = 'password';
     case Tel = 'tel';
     case Integer = 'integer';
     case Boolean = 'boolean';

@@ -18,6 +18,7 @@ class ViewGenerator extends Generator
             AttributeType::String->value => 'text',
             AttributeType::Username->value => 'text',
             AttributeType::Email->value => 'email',
+            AttributeType::Password->value => 'password',
             AttributeType::Tel->value => 'tel',
             AttributeType::Integer->value => 'number',
             AttributeType::Boolean->value => 'checkbox',

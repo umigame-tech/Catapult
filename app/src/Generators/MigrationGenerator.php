@@ -15,6 +15,7 @@ class MigrationGenerator extends Generator
             AttributeType::String->value => 'string',
             AttributeType::Username->value => 'string',
             AttributeType::Email->value => 'string',
+            AttributeType::Password->value => 'string',
             AttributeType::Tel->value => 'string',
             AttributeType::Integer->value => 'integer',
             AttributeType::Boolean->value => 'boolean',

@@ -40,6 +40,7 @@
                     "string",
                     "username",
                     "email",
+                    "password",
                     "tel",
                     "integer",
                     "decimal",
@@ -71,6 +72,10 @@
               },
               "required": ["name", "type"]
             }
+          },
+          "authenticatable": {
+            "description": "Is the entity authenticatable?",
+            "type": "boolean"
           }
         },
         "required": ["name", "attributes"]
