@@ -12,7 +12,8 @@
         },
         {
           "name": "email",
-          "type": "email"
+          "type": "email",
+          "loginKey": true
         },
         {
           "name": "password",

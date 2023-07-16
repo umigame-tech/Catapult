@@ -35,6 +35,7 @@ class ViewGenerator extends Generator
     {
         $projectPath = $this->projectPath();
         $this->projectPath = $projectPath;
+        $authenticatable = $entity['authenticatable'] ?? false;
 
         $dirPath = $this->projectPath . '/resources/views/' . $entity['name'];
 
@@ -53,6 +54,10 @@ class ViewGenerator extends Generator
         $this->generateEditView($entity);
         $this->generateUpdateConfirmView($entity);
         $this->generateDestroyConfirmView($entity);
+
+        if ($authenticatable) {
+            $this->generateLoginView($entity);
+        }
     }
 
     public function generate()
@@ -96,7 +101,6 @@ class ViewGenerator extends Generator
 
     private function generateNewView($entity)
     {
-        $baseUri = $this->baseUri($entity);
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/new.blade.php';
 
         $entity['attributes'] = array_map(
@@ -112,7 +116,6 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/new.blade.php.twig', [
             'entity' => $entity,
-            'baseUri' => $baseUri,
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
@@ -120,14 +123,12 @@ class ViewGenerator extends Generator
 
     private function generateCreateConfirmView($entity)
     {
-        $baseUri = $this->baseUri($entity);
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/createConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/createConfirm.blade.php.twig', [
             'entity' => $entity,
             'submitUri' => "{{ route('{$entity['name']}.create') }}",
-            'baseUri' => $baseUri,
             'backUri' => "{{ route('{$entity['name']}.new') }}",
         ]);
 
@@ -136,13 +137,11 @@ class ViewGenerator extends Generator
 
     private function generateEditView($entity)
     {
-        $baseUri = $this->baseUri($entity);
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/edit.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/edit.blade.php.twig', [
             'entity' => $entity,
-            'baseUri' => $baseUri,
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
@@ -150,14 +149,12 @@ class ViewGenerator extends Generator
 
     private function generateUpdateConfirmView($entity)
     {
-        $baseUri = $this->baseUri($entity);
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/updateConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/updateConfirm.blade.php.twig', [
             'entity' => $entity,
             'submitUri' => "{{ route('{$entity['name']}.update', ['id' => \${$entity['name']}->id]) }}",
-            'baseUri' => $baseUri,
             'backUri' => "{{ route('{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
@@ -166,15 +163,52 @@ class ViewGenerator extends Generator
 
     private function generateDestroyConfirmView($entity)
     {
-        $baseUri = $this->baseUri($entity);
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/destroyConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/destroyConfirm.blade.php.twig', [
             'entity' => $entity,
             'submitUri' => "{{ route('{$entity['name']}.destroy', ['id' => \${$entity['name']}->id]) }}",
-            'baseUri' => $baseUri,
             'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
+        ]);
+
+        $this->writer->write(path: $viewPath, content: $view);
+    }
+
+    private function generateLoginView($entity)
+    {
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/login.blade.php';
+
+        $entity['attributes'] = array_map(
+            function ($attribute) {
+                $attribute['inputType'] = $this->attributeTypeMap($attribute['type']);
+                // 今後書き換えやすいように
+                $attribute['inputName'] = $attribute['name'];
+                return $attribute;
+            },
+            $entity['attributes']
+        );
+
+        $loginKeys = array_values(array_filter(
+            $entity['attributes'],
+            fn ($attribute) => $attribute['loginKey'] ?? false
+        ));
+
+        $password = array_values(array_filter(
+            $entity['attributes'],
+            fn ($attribute) => $attribute['type'] === 'password'
+        ));
+        if (empty($password)) {
+            throw new \Exception('password is not found');
+        }
+
+        $password = $password[0];
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/login.blade.php.twig', [
+            'entity' => $entity,
+            'loginKeys' => $loginKeys,
+            'password' => $password,
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
