@@ -51,6 +51,10 @@
                     "text"
                   ]
                 },
+                "loginKey": {
+                  "description": "Is the attribute a login",
+                  "type": "boolean"
+                },
                 "rules": {
                   "description": "List of rules",
                   "type": "object",

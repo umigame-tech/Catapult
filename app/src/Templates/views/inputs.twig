@@ -7,7 +7,7 @@
       <div class="text-red-500">{{ '{{' }} $error {{ '}}' }}</div>
       @endforeach
 {% if attribute.inputType is same as('textarea') %}
-      <textarea name="{{ attribute['inputName'] }}" id="{{ attribute['inputName'] }}">{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} ?? '' {{ '}}' }}</textarea>
+      <textarea name="{{ attribute['inputName'] }}" id="{{ attribute['inputName'] }}">{{ '{{' }} old('{{ attribute['inputName'] }}') ?? ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}</textarea>
 {% else %}
       <input
         type="{{ attribute.inputType }}"

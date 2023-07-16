@@ -38,8 +38,50 @@ test('generateContent', function () {
     $path = $controller['path'];
     $content = $controller['content'];
     expect($path)->toBeString();
-    expect($content)->toBeString();
-    expect($content)->toContain('class UserController');
+    expect($content)
+        ->toBeString()
+        ->toContain('class UserController')
+        ->not->toContain('public function login');
+});
+
+test('authenticatable', function () {
+    $entity = [
+        'name' => 'user',
+        'authenticatable' => true,
+        'fields' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'password',
+            ],
+        ],
+    ];
+    $generator = new ControllerGenerator(
+        [
+            'project_name' => 'test',
+            'sealed_prefix' => 'admin',
+            'entities' => [
+                $entity,
+            ],
+        ],
+        $this->mocked,
+    );
+
+    list('content' => $content) = $generator->generateContent($entity);
+
+    expect($content)
+        ->toBeString()
+        ->toContain('class UserController')
+        ->toContain('public function login(')
+        ->toContain('public function loginSubmit(')
+        ->toContain('public function logout(');
 });
 
 test('generate', function () {
