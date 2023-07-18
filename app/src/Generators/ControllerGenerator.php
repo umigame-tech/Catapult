@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class ControllerGenerator extends Generator
@@ -85,8 +86,27 @@ class ControllerGenerator extends Generator
 
         if ($authenticatable) {
             $loginRequestName = RequestGenerator::loginRequestName($entity);
+            $loginKeys = array_values(array_filter(
+                $entity['attributes'],
+                fn ($attribute) => $attribute['loginKey'] ?? false
+            ));
+            $loginKeys = array_map(
+                fn ($key) => $key['name'],
+                $loginKeys
+            );
+
+            $password = array_values(array_filter(
+                $entity['attributes'],
+                fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
+            ));
+            if (empty($password)) {
+                throw new \Exception('Password attribute is not found');
+            }
             $data = array_merge($data, [
                 'loginRequestName' => $loginRequestName,
+                'authName' => AuthGenerator::authName($entity),
+                'loginKeys' => $loginKeys,
+                'password' => $password[0]['name'],
             ]);
         }
 

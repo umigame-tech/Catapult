@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\{{ requestName }};
+{% if loginRequestName is not empty %}
+use App\Http\Requests\{{ loginRequestName }};
+{% endif %}
 use App\Models\{{ modelName }};
 
 class {{ controllerName }} extends Controller
@@ -173,9 +176,18 @@ class {{ controllerName }} extends Controller
     public function loginSubmit({{ loginRequestName }} $request)
     {
         // TODO: ログイン処理の実装
-        $credentials = $request->only('email', 'password');
+        $credentials = $request->only('{{ loginKeys|join("', '") }}', '{{ password }}');
 
-        return [];
+        if (auth('{{ authName }}')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/');
+        }
+
+        return back()->withErrors([
+{% for key in loginKeys %}
+            '{{ key }}' => 'The provided credentials do not match our records.',
+{% endfor %}
+        ])->onlyInput('{{ loginKeys|join("', '") }}');
     }
 
     public function logout(Request $request)

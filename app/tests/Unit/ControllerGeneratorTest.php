@@ -48,7 +48,7 @@ test('authenticatable', function () {
     $entity = [
         'name' => 'user',
         'authenticatable' => true,
-        'fields' => [
+        'attributes' => [
             [
                 'name' => 'name',
                 'type' => 'string',
@@ -56,6 +56,7 @@ test('authenticatable', function () {
             [
                 'name' => 'email',
                 'type' => 'string',
+                'loginKey' => true,
             ],
             [
                 'name' => 'password',
@@ -81,7 +82,8 @@ test('authenticatable', function () {
         ->toContain('class UserController')
         ->toContain('public function login(')
         ->toContain('public function loginSubmit(')
-        ->toContain('public function logout(');
+        ->toContain('public function logout(')
+        ->toContain('$credentials = $request->only(\'email\', \'password\');');
 });
 
 test('generate', function () {

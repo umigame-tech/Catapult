@@ -22,7 +22,7 @@ class {{ factoryName }} extends Factory
         return [
 {% for faker in fakers %}
 {% if faker.type is same as('password') %}
-            '{{ faker.name }}' => Hash::make($this->faker->{{ faker.type }}({{ faker.size }})),
+            '{{ faker.name }}' => Hash::make('password'),
 {% else %}
             '{{ faker.name }}' => $this->faker->{{ faker.type }}({{ faker.size }}),
 {% endif %}

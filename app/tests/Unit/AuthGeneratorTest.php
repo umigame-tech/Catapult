@@ -6,6 +6,29 @@ beforeEach(function () {
     $this->mocked = mockFileSystems();
 });
 
+test('authName', function () {
+    $entity = [
+        'name' => 'person',
+        'authenticatable' => true,
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'password',
+            ],
+        ],
+    ];
+    $name = AuthGenerator::authName($entity);
+    expect($name)->toBe('people');
+});
+
 test('generateContent', function () {
     $entity = [
         'name' => 'person',
