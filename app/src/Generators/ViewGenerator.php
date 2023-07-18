@@ -47,13 +47,21 @@ class ViewGenerator extends Generator
 
         mkdir($dirPath, 0755, true);
 
-        $this->generateIndexView($entity);
-        $this->generateShowView($entity);
+        $visible = clone $entity;
+        $visible['attributes'] = array_values(array_filter(
+            $visible['attributes'],
+            fn ($attribute) => $attribute['type'] !== AttributeType::Password->value
+        ));
+
+        $this->generateIndexView($visible);
+        $this->generateShowView($visible);
+
         $this->generateNewView($entity);
         $this->generateCreateConfirmView($entity);
         $this->generateEditView($entity);
         $this->generateUpdateConfirmView($entity);
-        $this->generateDestroyConfirmView($entity);
+
+        $this->generateDestroyConfirmView($visible);
 
         if ($authenticatable) {
             $this->generateLoginView($entity);
@@ -196,10 +204,10 @@ class ViewGenerator extends Generator
 
         $password = array_values(array_filter(
             $entity['attributes'],
-            fn ($attribute) => $attribute['type'] === 'password'
+            fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
         ));
         if (empty($password)) {
-            throw new \Exception('password is not found');
+            throw new \Exception('Password attribute is not found');
         }
 
         $password = $password[0];

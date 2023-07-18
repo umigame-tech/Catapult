@@ -12,6 +12,7 @@ use UmigameTech\Catapult\FileSystem\FileReaderInterface;
 use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\Generators\AuthGenerator;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
@@ -130,6 +131,11 @@ class Main
             array_unshift($this->generators, TailwindCssSetupGenerator::class);
             array_unshift($this->generators, ResourcesSetupGenerator::class);
             array_unshift($this->generators, CssSetupGenerator::class);
+        }
+
+        $authenticatableCount = count(array_filter($json['entities'] ?? [], fn($e) => $e['authenticatable'] ?? false));
+        if ($authenticatableCount > 0) {
+            array_unshift($this->generators, AuthGenerator::class);
         }
 
         foreach ($this->generators as $generator) {

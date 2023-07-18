@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class ControllerGenerator extends Generator
@@ -74,14 +75,42 @@ class ControllerGenerator extends Generator
         $authenticatable = $entity['authenticatable'] ?? false;
 
         $renderer = Renderer::getInstance();
-        $controller = $renderer->render('controller.twig', [
+        $data = [
             'controllerName' => $controllerName,
             'modelName' => $modelName,
             'requestName' => $requestName,
             'plural' => $plural,
             'entity' => $entity,
             'authenticatable' => $authenticatable,
-        ]);
+        ];
+
+        if ($authenticatable) {
+            $loginRequestName = RequestGenerator::loginRequestName($entity);
+            $loginKeys = array_values(array_filter(
+                $entity['attributes'],
+                fn ($attribute) => $attribute['loginKey'] ?? false
+            ));
+            $loginKeys = array_map(
+                fn ($key) => $key['name'],
+                $loginKeys
+            );
+
+            $password = array_values(array_filter(
+                $entity['attributes'],
+                fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
+            ));
+            if (empty($password)) {
+                throw new \Exception('Password attribute is not found');
+            }
+            $data = array_merge($data, [
+                'loginRequestName' => $loginRequestName,
+                'authName' => AuthGenerator::authName($entity),
+                'loginKeys' => $loginKeys,
+                'password' => $password[0]['name'],
+            ]);
+        }
+
+        $controller = $renderer->render('controller.twig', $data);
 
         $projectPath = $this->projectPath();
         $controllerPath = "{$projectPath}/app/Http/Controllers/{$controllerName}.php";
