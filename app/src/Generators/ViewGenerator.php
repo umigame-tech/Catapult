@@ -47,8 +47,15 @@ class ViewGenerator extends Generator
 
         mkdir($dirPath, 0755, true);
 
-        $this->generateIndexView($entity);
-        $this->generateShowView($entity);
+        $visible = clone $entity;
+        $visible['attributes'] = array_values(array_filter(
+            $visible['attributes'],
+            fn ($attribute) => $attribute['type'] !== AttributeType::Password->value
+        ));
+
+        $this->generateIndexView($visible);
+        $this->generateShowView($visible);
+
         $this->generateNewView($entity);
         $this->generateCreateConfirmView($entity);
         $this->generateEditView($entity);
