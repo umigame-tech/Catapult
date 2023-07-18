@@ -4,6 +4,8 @@
       <h4>{{ attribute['name'] }}</h4>
 {% if attribute['type'] is same as('boolean') %}
       <p>{{ '{{' }} !empty(${{ entity['name'] }}->{{ attribute['name'] }}) ? 'Yes' : 'No' {{ '}}' }}</p>
+{% elseif attribute['type'] is same as('password') %}
+      <p>{{ '{{' }} str_repeat('*', strlen( ${{ entity['name'] }}->{{ attribute['name'] }} )) {{ '}}' }}</p>
 {% else %}
       <p>{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}</p>
 {% endif %}

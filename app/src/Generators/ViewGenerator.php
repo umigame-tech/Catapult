@@ -60,7 +60,8 @@ class ViewGenerator extends Generator
         $this->generateCreateConfirmView($entity);
         $this->generateEditView($entity);
         $this->generateUpdateConfirmView($entity);
-        $this->generateDestroyConfirmView($entity);
+
+        $this->generateDestroyConfirmView($visible);
 
         if ($authenticatable) {
             $this->generateLoginView($entity);

@@ -66,8 +66,10 @@ class {{ controllerName }} extends Controller
         ${{ entity['name'] }}->fill($request->all());
         $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
 
+        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
         return view('{{ entity['name'] }}.createConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
+            'backUrl' => $backUrl,
         ]);
     }
 
@@ -85,6 +87,9 @@ class {{ controllerName }} extends Controller
     public function edit({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
+{% if authenticatable %}
+        unset(${{ entity['name'] }}->{{ password }});
+{% endif %}
         $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
         $fromUrl = $this->buildFromUrl($request);
         $submitUrl = route('{{ entity['name'] }}.updateConfirm', [
