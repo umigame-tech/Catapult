@@ -12,6 +12,11 @@ class RequestGenerator extends Generator
         return ModelGenerator::modelName($entity) . 'Request';
     }
 
+    public static function loginRequestName($entity)
+    {
+        return ModelGenerator::modelName($entity) . 'LoginRequest';
+    }
+
     // attributeのtypeをLaravelのvalidation ruleに変換する
     private function attributeTypeMap(string $type): string
     {
@@ -32,6 +37,7 @@ class RequestGenerator extends Generator
         };
     }
 
+    // $type は今は使わないが、型によってルールを加える可能性がある（emailやtelなど）
     private function buildValidationRules(string $type, $attribute)
     {
         $rules = $attribute['rules'] ?? [];
@@ -93,6 +99,59 @@ class RequestGenerator extends Generator
         ];
     }
 
+    public function generateLoginContent($entity)
+    {
+        $requestName = self::loginRequestName($entity);
+
+        $loginKeys = array_values(array_filter(
+            $entity['attributes'],
+            fn ($attribute) => $attribute['loginKey'] ?? false
+        ));
+
+        $password = array_values(array_filter(
+            $entity['attributes'],
+            fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
+        ));
+        if (empty($password)) {
+            throw new \Exception('Password attribute is not found');
+        }
+
+        $attributes = array_map(
+            function ($attribute) {
+                $rules = [$this->attributeTypeMap($attribute['type'])];
+                $rules = array_merge($rules, $this->buildValidationRules($attribute['type'], $attribute));
+                $rules= implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
+                return [
+                    'name' => $attribute['name'],
+                    'rules' => $rules,
+                ];
+            },
+            array_merge($loginKeys, $password)
+        );
+
+        $renderer = Renderer::getInstance();
+        $request = $renderer->render('request.twig', [
+            'requestName' => $requestName,
+            'entity' => $entity,
+            'attributes' => $attributes,
+        ]);
+
+        $projectPath = $this->projectPath();
+        $requestPath = "{$projectPath}/app/Http/Requests/{$requestName}.php";
+        if (file_exists($requestPath)) {
+            unlink($requestPath);
+        }
+
+        if (!file_exists(dirname($requestPath))) {
+            mkdir(dirname($requestPath), 0755, true);
+        }
+
+        return [
+            'path' => $requestPath,
+            'content' => $request,
+        ];
+    }
+
     public function generate()
     {
         foreach ($this->entities as $entity) {
@@ -102,6 +161,18 @@ class RequestGenerator extends Generator
             }
 
             $this->writer->write(...$content);
+
+            // ログイン可能なエンティティの場合はログイン用のリクエストも生成する
+            if (!($entity['authenticatable'] ?? false)) {
+                continue;
+            }
+
+            $loginContent = $this->generateLoginContent($entity);
+            if (empty($loginContent)) {
+                continue;
+            }
+
+            $this->writer->write(...$loginContent);
         }
     }
 }

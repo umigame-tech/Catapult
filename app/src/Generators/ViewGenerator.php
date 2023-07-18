@@ -196,10 +196,10 @@ class ViewGenerator extends Generator
 
         $password = array_values(array_filter(
             $entity['attributes'],
-            fn ($attribute) => $attribute['type'] === 'password'
+            fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
         ));
         if (empty($password)) {
-            throw new \Exception('password is not found');
+            throw new \Exception('Password attribute is not found');
         }
 
         $password = $password[0];
