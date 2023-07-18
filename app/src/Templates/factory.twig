@@ -3,6 +3,9 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
+{% if authenticatable %}
+use Illuminate\Support\Facades\Hash;
+{% endif %}
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\{{ modelName }}>
@@ -18,7 +21,11 @@ class {{ factoryName }} extends Factory
     {
         return [
 {% for faker in fakers %}
+{% if faker.type is same as('password') %}
+            '{{ faker.name }}' => Hash::make($this->faker->{{ faker.type }}({{ faker.size }})),
+{% else %}
             '{{ faker.name }}' => $this->faker->{{ faker.type }}({{ faker.size }}),
+{% endif %}
 {% endfor %}
         ];
     }

@@ -159,7 +159,7 @@ class {{ controllerName }} extends Controller
             ->route('{{ entity['name'] }}.index')
             ->with('message', "Succeeded to delete the {{ entity['name'] }}");
     }
-{% if authenticatable %}
+{% if authenticatable and loginRequestName is not empty %}
     public function login(Request $request)
     {
         $submitUrl = route('{{ entity['name'] }}.loginSubmit');
@@ -170,9 +170,11 @@ class {{ controllerName }} extends Controller
     }
 
     // TODO: ログイン用のRequestクラスの自動生成
-    public function loginSubmit(Request $request)
+    public function loginSubmit({{ loginRequestName }} $request)
     {
         // TODO: ログイン処理の実装
+        $credentials = $request->only('email', 'password');
+
         return [];
     }
 

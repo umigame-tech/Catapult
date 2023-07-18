@@ -102,6 +102,7 @@ class FactoryGenerator extends Generator
             'factoryName' => $factoryName,
             'fakers' => $fakers,
             'entity' => $entity,
+            'authenticatable' => $entity['authenticatable'] ?? false,
         ]);
 
         $projectPath = $this->projectPath();

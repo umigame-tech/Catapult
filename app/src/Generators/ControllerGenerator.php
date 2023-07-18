@@ -74,14 +74,23 @@ class ControllerGenerator extends Generator
         $authenticatable = $entity['authenticatable'] ?? false;
 
         $renderer = Renderer::getInstance();
-        $controller = $renderer->render('controller.twig', [
+        $data = [
             'controllerName' => $controllerName,
             'modelName' => $modelName,
             'requestName' => $requestName,
             'plural' => $plural,
             'entity' => $entity,
             'authenticatable' => $authenticatable,
-        ]);
+        ];
+
+        if ($authenticatable) {
+            $loginRequestName = RequestGenerator::loginRequestName($entity);
+            $data = array_merge($data, [
+                'loginRequestName' => $loginRequestName,
+            ]);
+        }
+
+        $controller = $renderer->render('controller.twig', $data);
 
         $projectPath = $this->projectPath();
         $controllerPath = "{$projectPath}/app/Http/Controllers/{$controllerName}.php";
