@@ -66,6 +66,9 @@ class RequestGenerator extends Generator
         $attributes = array_map(
             function ($attribute) {
                 $rules = [$this->attributeTypeMap($attribute['type'])];
+                if ($attribute['type'] === AttributeType::Password->value) {
+                    $rules[] = 'nullable';
+                }
                 $rules = array_merge($rules, $this->buildValidationRules($attribute['type'], $attribute));
                 $rules= implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [
