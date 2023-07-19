@@ -9,6 +9,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' =>['everyone'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -45,6 +46,9 @@ test('authenticatable', function () {
     $entity = [
         'name' => 'user',
         'authenticatable' => true,
+        'allowedFor' => [
+            'user',
+        ],
         'attributes' => [
             [
                 'name' => 'name',
@@ -73,6 +77,7 @@ test('authenticatable', function () {
     list('content' => $content) = $generator->generateContent();
     expect($content)
         ->toBeString()
+        ->toContain("Route::prefix('users')->group(function () {")
         ->toContain("Route::get('user/login', [UserController::class, 'login'])->name('user.login');")
         ->toContain("Route::post('user/login', [UserController::class, 'loginSubmit'])->name('user.loginSubmit');")
         ->toContain("Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');");

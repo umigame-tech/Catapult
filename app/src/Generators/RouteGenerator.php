@@ -7,18 +7,20 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class RouteGenerator extends Generator
 {
+    const FOR_EVERYONE = ['all', 'everyone', 'any', '*'];
+
     public function __construct(...$args)
     {
         parent::__construct(...$args);
     }
 
-    private function convertActionName($entity, $prefix)
+    private function convertActionName($entity, $indentLevel)
     {
         $inflector = InflectorFactory::create()->build();
         $converted = [];
         $actions = ControllerGenerator::$actions;
         foreach ($actions as $actionName => $action) {
-            $spaces = $prefix ? '    ' : '';
+            $spaces = $this->indents($indentLevel);
 
             $entityPath = $entity['name'];
             $actionPath = '/' . $actionName;
@@ -45,17 +47,71 @@ class RouteGenerator extends Generator
         $renderer = Renderer::getInstance();
         $webRoutePath = $this->projectPath() . '/routes/web.php';
 
-        $authGenerator = (new AuthGenerator($this->json));
+        $authList = $this->makeAuthList();
+
+        $forEveryone = $this->makeForEveryone();
+
+        $routes = $renderer->render('routes/web.php.twig', [
+            'authList' => $authList,
+            'forEveryone' => $forEveryone,
+            'entities' => $this->entities,
+        ]);
+
+        return [
+            'path' => $webRoutePath,
+            'content' => $routes,
+        ];
+    }
+
+    private function makeAuthList()
+    {
+        $authNames = array_values(array_map(
+            fn ($entity) => $this->inflector->pluralize($entity['name']),
+            array_filter(
+                $this->entities,
+                fn ($entity) => $entity['authenticatable'] ?? false
+            )
+        ));
+        $authList = [];
+        foreach ($authNames as $authName) {
+            $filtered = array_filter(
+                $this->entities,
+                function ($entity) use ($authName) {
+                    $allowedFor = array_map(
+                        fn ($allowed) => $this->inflector->pluralize($allowed),
+                        $entity['allowedFor'] ?? []
+                    );
+                    return in_array($authName, $allowedFor);
+                }
+            );
+
+            $authList[$authName] = $this->convertEntitiesForRoute($filtered, 1);
+        }
+
+        return $authList;
+    }
+
+    private function makeForEveryone()
+    {
+        $filtered = array_filter(
+            $this->entities,
+            fn ($entity) => in_array($entity['allowedFor'] ?? [], self::FOR_EVERYONE)
+        );
+
+        return $this->convertEntitiesForRoute($filtered);
+    }
+
+    private function convertEntitiesForRoute($entities, $indentLevel = 0)
+    {
         $entities = array_map(
-            function ($entity) use ($authGenerator) {
-                $prefix = $authGenerator->authName($entity);
+            function ($entity) use ($indentLevel) {
                 $entity['controllerName'] = ControllerGenerator::controllerName($entity);
-                $routes = $this->convertActionName($entity, $prefix);
+                $routes = $this->convertActionName($entity, $indentLevel);
                 if ($entity['authenticatable'] ?? false) {
                     $controllerName = $entity['controllerName'];
-                    $routes['login'] = "    Route::get('{$entity['name']}/login', [{$controllerName}::class, 'login'])->name('{$entity['name']}.login');";
-                    $routes['loginSubmit'] = "    Route::post('{$entity['name']}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$entity['name']}.loginSubmit');";
-                    $routes['logout'] = "    Route::post('{$entity['name']}/logout', [{$controllerName}::class, 'logout'])->name('{$entity['name']}.logout');";
+                    $routes['login'] = $this->indents($indentLevel) . "Route::get('{$entity['name']}/login', [{$controllerName}::class, 'login'])->name('{$entity['name']}.login');";
+                    $routes['loginSubmit'] = $this->indents($indentLevel) . "Route::post('{$entity['name']}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$entity['name']}.loginSubmit');";
+                    $routes['logout'] = $this->indents($indentLevel) . "Route::post('{$entity['name']}/logout', [{$controllerName}::class, 'logout'])->name('{$entity['name']}.logout');";
                 }
 
                 $entity['routes'] = $routes;
@@ -64,15 +120,7 @@ class RouteGenerator extends Generator
             $this->entities
         );
 
-        $routes = $renderer->render('routes/web.php.twig', [
-            'prefix' => $prefix ?? '', // TODO: authごとにprefixを設定できるような作りにする
-            'entities' => $entities,
-        ]);
-
-        return [
-            'path' => $webRoutePath,
-            'content' => $routes,
-        ];
+        return $entities;
     }
 
     public function generate()

@@ -19,6 +19,14 @@
             "description": "Name of the entity",
             "type": "string"
           },
+          "allowedFor": {
+            "description": "List of roles that can access the entity",
+            "type": "array",
+            "items": {
+              "description": "Role that can access the entity",
+              "type": "string"
+            }
+          },
           "attributes": {
             "description": "List of attributes",
             "type": "array",
@@ -78,7 +86,7 @@
             "type": "boolean"
           }
         },
-        "required": ["name", "attributes"]
+        "required": ["name", "attributes", "allowedFor"]
       }
     }
   },
