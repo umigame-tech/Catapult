@@ -28,7 +28,6 @@ test('generateContent', function () {
     $generator = new SeederGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -63,7 +62,6 @@ test('generate', function () {
     $generator = new SeederGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -111,7 +109,6 @@ test('remove old files', function () {
     $generator = new SeederGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],

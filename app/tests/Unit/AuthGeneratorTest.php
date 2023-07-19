@@ -24,8 +24,8 @@ test('authName', function () {
                 'type' => 'password',
             ],
         ],
-    ];
-    $name = AuthGenerator::authName($entity);
+        ];
+    $name = (new AuthGenerator([]))->authName($entity);
     expect($name)->toBe('people');
 });
 
@@ -51,7 +51,6 @@ test('generateContent', function () {
     $generator = new AuthGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],

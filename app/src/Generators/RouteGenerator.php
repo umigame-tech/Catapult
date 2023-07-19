@@ -45,9 +45,10 @@ class RouteGenerator extends Generator
         $renderer = Renderer::getInstance();
         $webRoutePath = $this->projectPath() . '/routes/web.php';
 
-        $prefix = $this->prefix;
+        $authGenerator = (new AuthGenerator($this->json));
         $entities = array_map(
-            function ($entity) use ($prefix) {
+            function ($entity) use ($authGenerator) {
+                $prefix = $authGenerator->authName($entity);
                 $entity['controllerName'] = ControllerGenerator::controllerName($entity);
                 $routes = $this->convertActionName($entity, $prefix);
                 if ($entity['authenticatable'] ?? false) {
@@ -64,7 +65,7 @@ class RouteGenerator extends Generator
         );
 
         $routes = $renderer->render('routes/web.php.twig', [
-            'prefix' => $prefix,
+            'prefix' => $prefix ?? '', // TODO: authごとにprefixを設定できるような作りにする
             'entities' => $entities,
         ]);
 

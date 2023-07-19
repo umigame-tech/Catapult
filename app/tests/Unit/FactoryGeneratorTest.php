@@ -27,7 +27,6 @@ test('generateContent', function () {
     $generator = new FactoryGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -62,7 +61,6 @@ test('password', function () {
     $generator = new FactoryGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],

@@ -9,10 +9,6 @@
       "description": "Name of the project",
       "type": "string"
     },
-    "sealed_prefix": {
-      "description": "Prefix of path of login needed pages",
-      "type": "string"
-    },
     "entities": {
       "description": "List of entities",
       "type": "array",

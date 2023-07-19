@@ -13,7 +13,6 @@ test('generate', function () {
     // $generator = new TailwindCssSetupGenerator(
     //     [
     //         'project_name' => 'test',
-    //         'sealed_prefix' => 'admin',
     //     ],
     //     $this->mocked
     // );

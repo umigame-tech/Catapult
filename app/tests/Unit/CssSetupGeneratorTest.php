@@ -11,7 +11,6 @@ test('generate', function () {
     $generator = new CssSetupGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [],
         ],
         $this->mocked

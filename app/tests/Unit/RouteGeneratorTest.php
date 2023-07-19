@@ -27,7 +27,6 @@ test('generateContent', function () {
     $generator = new RouteGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -64,7 +63,6 @@ test('authenticatable', function () {
     $generator = new RouteGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -101,7 +99,6 @@ test('generate', function () {
     $generator = new RouteGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
