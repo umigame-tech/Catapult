@@ -5,14 +5,14 @@
 {% include 'views/detail.twig' %}
   <div class="mt-8">
     <a href="{{ '{{' }}
-      route('{{ entity.name }}.edit', [
+      route($routePrefix . '{{ entity.name }}.edit', [
         'id' => ${{ entity.name }}->id,
         'fromUrl' => $fromUrl,
       ])
     {{ '}}' }}">Edit</a>
     <a href="{{ '{{' }} $backUrl {{ '}}' }}">Back</a>
     <a href="{{ '{{' }}
-      route('{{ entity.name }}.destroyConfirm', [
+      route($routePrefix . '{{ entity.name }}.destroyConfirm', [
         'id' => ${{ entity.name }}->id,
         'fromUrl' => $fromUrl,
       ])

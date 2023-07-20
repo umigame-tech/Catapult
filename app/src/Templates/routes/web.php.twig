@@ -20,7 +20,7 @@ use App\Http\Controllers\{{ entity.controllerName }};
 {# for authenticated users #}
 {# TODO: routeのnameにもプレフィックスを付けるようにする。各画面でroute関数を使っている箇所でも対応が必要。 #}
 {% for authName, entities in authList %}
-Route::prefix('{{ authName }}')->group(function () {
+Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ authName }}')->group(function () {
 {% for entity in entities %}
 
 {% for route in entity.routes %}
@@ -29,6 +29,12 @@ Route::prefix('{{ authName }}')->group(function () {
 
 {% endfor %}
 });
+
+{% for entity in entities %}
+{% for loginRoute in entity.loginRoutes %}
+{{ loginRoute|raw }}
+{% endfor %}
+{% endfor %}
 {% endfor %}
 {# for everyone #}
 {% for entity in forEveryone %}

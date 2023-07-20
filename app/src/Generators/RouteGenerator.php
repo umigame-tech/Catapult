@@ -47,7 +47,7 @@ class RouteGenerator extends Generator
 
         $authList = $this->makeAuthList();
 
-        $forEveryone = $this->makeForEveryone();
+        $forEveryone = $this->routesForEveryone();
 
         $routes = $renderer->render('routes/web.php.twig', [
             'authList' => $authList,
@@ -89,11 +89,19 @@ class RouteGenerator extends Generator
         return $authList;
     }
 
-    private function makeForEveryone()
+    private function routesForEveryone()
     {
         $filtered = array_filter(
             $this->entities,
-            fn ($entity) => in_array($entity['allowedFor'] ?? [], self::FOR_EVERYONE)
+            function ($entity) {
+                foreach ($entity['allowedFor'] ?? [] as $allowed) {
+                    if (in_array($allowed, self::FOR_EVERYONE)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
         );
 
         return $this->convertEntitiesForRoute($filtered);
@@ -105,17 +113,20 @@ class RouteGenerator extends Generator
             function ($entity) {
                 $entity['controllerName'] = ControllerGenerator::controllerName($entity);
                 $routes = $this->convertActionName($entity);
+                $authName = $this->inflector->pluralize($entity['name']);
+                $loginRoutes = [];
                 if ($entity['authenticatable'] ?? false) {
                     $controllerName = $entity['controllerName'];
-                    $routes['login'] = "Route::get('{$entity['name']}/login', [{$controllerName}::class, 'login'])->name('{$entity['name']}.login');";
-                    $routes['loginSubmit'] = "Route::post('{$entity['name']}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$entity['name']}.loginSubmit');";
-                    $routes['logout'] = "Route::post('{$entity['name']}/logout', [{$controllerName}::class, 'logout'])->name('{$entity['name']}.logout');";
+                    $loginRoutes['login'] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
+                    $loginRoutes['loginSubmit'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
+                    $loginRoutes['logout'] = "Route::post('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
                 }
 
                 $entity['routes'] = $routes;
+                $entity['loginRoutes'] = $loginRoutes;
                 return $entity;
             },
-            $this->entities
+            $entities
         );
 
         return $entities;
