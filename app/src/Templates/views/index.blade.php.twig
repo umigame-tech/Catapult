@@ -33,19 +33,19 @@
 {% endfor %}
       <td>
         <a href="{{ '{{' }}
-          route('{{ entity.name }}.show', [
+          route($routePrefix . '{{ entity.name }}.show', [
             'id' => ${{ camelCase }}->id,
             'fromUrl' => $fromUrl,
           ])
         {{ '}}' }}">詳細</a>
         <a href="{{ '{{' }}
-          route('{{ entity.name }}.edit', [
+          route($routePrefix . '{{ entity.name }}.edit', [
             'id' => ${{ camelCase }}->id,
             'fromUrl' => $fromUrl,
           ])
         {{ '}}' }}">編集</a>
         <a href="{{ '{{' }}
-          route('{{ entity.name }}.destroyConfirm', [
+          route($routePrefix . '{{ entity.name }}.destroyConfirm', [
             'id' => ${{ camelCase }}->id,
             'fromUrl' => $fromUrl,
           ])

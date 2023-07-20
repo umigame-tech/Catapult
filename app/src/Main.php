@@ -12,6 +12,7 @@ use UmigameTech\Catapult\FileSystem\FileReaderInterface;
 use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\Generators\AuthenticateSetupGenerator;
 use UmigameTech\Catapult\Generators\AuthGenerator;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
@@ -52,6 +53,7 @@ class Main
         RouteGenerator::class,
         SeederGenerator::class,
         ViewGenerator::class,
+        AuthenticateSetupGenerator::class,
     ];
 
     public function __construct(FileSystemContainer $container = null)

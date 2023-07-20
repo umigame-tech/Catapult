@@ -2,6 +2,7 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Doctrine\Inflector\InflectorFactory;
 use UmigameTech\Catapult\FileSystem\CopyFileInterface;
 use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
 use UmigameTech\Catapult\FileSystem\FileReaderInterface;
@@ -22,8 +23,6 @@ abstract class Generator
 
     protected $projectName = 'project';
 
-    protected $prefix = '';
-
     protected FileReaderInterface $reader;
 
     protected FileWriterInterface $writer;
@@ -36,11 +35,12 @@ abstract class Generator
 
     protected array $entities = [];
 
+    protected $inflector;
+
     public function __construct($json, $container = null)
     {
         $this->json = $json;
         $this->projectName = $json['project_name'] ?? 'project';
-        $this->prefix = $json['sealed_prefix'] ?? '';
         $this->entities = $json['entities'] ?? [];
 
         if (empty($container)) {
@@ -52,6 +52,8 @@ abstract class Generator
         $this->remover = $container->remover;
         $this->checker = $container->checker;
         $this->copier = $container->copier;
+
+        $this->inflector = InflectorFactory::create()->build();
     }
 
     protected function indents(int $level): string
@@ -61,6 +63,11 @@ abstract class Generator
 
     protected function baseUri($entity)
     {
-        return '/' . (!empty($this->prefix) ? "{$this->prefix}/" : '') . $entity['name'];
+        if (! ($entity['authenticatable'] ?? false)) {
+            return '/' . $entity['name'];
+        }
+
+        $prefix = $this->inflector->pluralize($entity['name']);
+        return '/' . (!empty($prefix) ? "{$prefix}/" : '') . $entity['name'];
     }
 }

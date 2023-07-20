@@ -27,7 +27,6 @@ test('generateContent', function () {
     $generator = new RequestGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -62,7 +61,6 @@ test('generate', function () {
     $generator = new RequestGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],

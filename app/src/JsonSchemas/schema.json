@@ -9,10 +9,6 @@
       "description": "Name of the project",
       "type": "string"
     },
-    "sealed_prefix": {
-      "description": "Prefix of path of login needed pages",
-      "type": "string"
-    },
     "entities": {
       "description": "List of entities",
       "type": "array",
@@ -22,6 +18,14 @@
           "name": {
             "description": "Name of the entity",
             "type": "string"
+          },
+          "allowedFor": {
+            "description": "List of roles that can access the entity",
+            "type": "array",
+            "items": {
+              "description": "Role that can access the entity",
+              "type": "string"
+            }
           },
           "attributes": {
             "description": "List of attributes",
@@ -82,7 +86,7 @@
             "type": "boolean"
           }
         },
-        "required": ["name", "attributes"]
+        "required": ["name", "attributes", "allowedFor"]
       }
     }
   },

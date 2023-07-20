@@ -5,6 +5,9 @@
     {
       "name": "person",
       "authenticatable": true,
+      "allowedFor": [
+        "person"
+      ],
       "attributes": [
         {
           "name": "name",

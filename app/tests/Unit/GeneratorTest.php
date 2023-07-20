@@ -27,13 +27,17 @@ test('indents', function () {
 });
 
 test('baseUri with prefix', function () {
+    $this->entity = [
+        'name' => 'person',
+        'authenticatable' => true,
+    ];
     $outer = $this;
     $generator = new class($outer) extends Generator {
         public function __construct($outer)
         {
             return parent::__construct(
                 [
-                    'sealed_prefix' => 'admin',
+                    'entities' => [ $outer->entity ],
                 ],
                 $outer->mocked
             );
@@ -44,7 +48,7 @@ test('baseUri with prefix', function () {
         }
     };
 
-    expect($generator->getBaseUri(['name' => 'user']))->toBe('/admin/user');
+    expect($generator->getBaseUri($this->entity))->toBe('/people/person');
 });
 
 test('baseUri without prefix', function () {

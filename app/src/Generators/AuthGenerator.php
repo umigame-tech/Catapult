@@ -7,21 +7,9 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class AuthGenerator extends Generator
 {
-    private static $authName;
-    private static $inflector;
-
-    public static function authName($entity)
+    public function authName($entity)
     {
-        if (!empty(self::$authName)) {
-            return self::$authName;
-        }
-
-        if (empty(self::$inflector)) {
-            self::$inflector = InflectorFactory::create()->build();
-        }
-
-        self::$authName = self::$inflector->pluralize($entity['name']);
-        return self::$authName;
+        return $this->inflector->pluralize($entity['name']);
     }
 
     public function generateContent()

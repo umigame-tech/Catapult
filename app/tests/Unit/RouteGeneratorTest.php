@@ -9,6 +9,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' =>['everyone'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -27,7 +28,6 @@ test('generateContent', function () {
     $generator = new RouteGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -46,6 +46,9 @@ test('authenticatable', function () {
     $entity = [
         'name' => 'user',
         'authenticatable' => true,
+        'allowedFor' => [
+            'user',
+        ],
         'attributes' => [
             [
                 'name' => 'name',
@@ -64,7 +67,6 @@ test('authenticatable', function () {
     $generator = new RouteGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],
@@ -75,9 +77,11 @@ test('authenticatable', function () {
     list('content' => $content) = $generator->generateContent();
     expect($content)
         ->toBeString()
-        ->toContain("Route::get('user/login', [UserController::class, 'login'])->name('user.login');")
-        ->toContain("Route::post('user/login', [UserController::class, 'loginSubmit'])->name('user.loginSubmit');")
-        ->toContain("Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');");
+        ->toContain("Route::prefix('users')->name('users.')->middleware('auth:users')->group(function () {")
+        ->toContain("   Route::get('users', [UserController::class, 'index'])->name('user.index');")
+        ->toContain("Route::get('users/login', [UserController::class, 'login'])->name('users.login');")
+        ->toContain("Route::post('users/login', [UserController::class, 'loginSubmit'])->name('users.loginSubmit');")
+        ->toContain("Route::post('users/logout', [UserController::class, 'logout'])->name('users.logout');");
 });
 
 test('generate', function () {
@@ -101,7 +105,6 @@ test('generate', function () {
     $generator = new RouteGenerator(
         [
             'project_name' => 'test',
-            'sealed_prefix' => 'admin',
             'entities' => [
                 $entity,
             ],

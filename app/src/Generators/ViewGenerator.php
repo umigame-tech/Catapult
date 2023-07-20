@@ -136,8 +136,8 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/createConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route('{$entity['name']}.create') }}",
-            'backUri' => "{{ route('{$entity['name']}.new') }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity['name']}.create') }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity['name']}.new') }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
@@ -162,8 +162,8 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/updateConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route('{$entity['name']}.update', ['id' => \${$entity['name']}->id]) }}",
-            'backUri' => "{{ route('{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity['name']}.update', ['id' => \${$entity['name']}->id]) }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
@@ -176,8 +176,8 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/destroyConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route('{$entity['name']}.destroy', ['id' => \${$entity['name']}->id]) }}",
-            'backUri' => "{{ route('{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity['name']}.destroy', ['id' => \${$entity['name']}->id]) }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
@@ -215,6 +215,7 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/login.blade.php.twig', [
             'entity' => $entity,
+            'plural' => $this->inflector->pluralize($entity['name']),
             'loginKeys' => $loginKeys,
             'password' => $password,
         ]);

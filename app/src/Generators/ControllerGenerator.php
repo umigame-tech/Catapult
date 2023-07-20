@@ -104,7 +104,7 @@ class ControllerGenerator extends Generator
             }
             $data = array_merge($data, [
                 'loginRequestName' => $loginRequestName,
-                'authName' => AuthGenerator::authName($entity),
+                'authName' => (new AuthGenerator($this->json))->authName($entity),
                 'loginKeys' => $loginKeys,
                 'password' => $password[0]['name'],
             ]);

@@ -11,6 +11,24 @@ use App\Models\{{ modelName }};
 
 class {{ controllerName }} extends Controller
 {
+    private $routePrefix = '';
+
+    public function __construct()
+    {
+        $this->middleware(function (Request $request, \Closure $next) {
+            $authList = array_keys(config('auth.guards'));
+            foreach ($authList as $authName) {
+                if (auth()->guard($authName)->check()) {
+                    $this->routePrefix = $authName . '.';
+                    break;
+                }
+            }
+
+            return $next($request);
+        });
+
+    }
+
     private function buildFromUrl(Request $request)
     {
         $currentUrl = [$request->path()];
@@ -28,18 +46,20 @@ class {{ controllerName }} extends Controller
         return view('{{ entity['name'] }}.index', [
             '{{ plural }}' => ${{ entity['name'] }}->paginate(10),
             'fromUrl' => $fromUrl,
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
     public function show(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         $request->session()->forget('{{ entity['name'] }}');
-        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity['name'] }}.index'));
         $fromUrl = $this->buildFromUrl($request);
         return view('{{ entity['name'] }}.show', [
             '{{ entity['name'] }}' => ${{ entity['name'] }}->findOrFail($id),
             'backUrl' => $backUrl,
             'fromUrl' => $fromUrl,
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
@@ -48,9 +68,9 @@ class {{ controllerName }} extends Controller
         // Cancelで戻ってきた場合にセッションから値を取得する処理
         ${{ entity['name'] }}->fill($request->session()->get('{{ entity['name'] }}.form', []));
 
-        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity['name'] }}.index'));
         $fromUrl = $this->buildFromUrl($request);
-        $submitUrl = route('{{ entity['name'] }}.createConfirm', [
+        $submitUrl = route($this->routePrefix . '{{ entity['name'] }}.createConfirm', [
             'fromUrl' => $fromUrl,
         ]);
 
@@ -66,10 +86,11 @@ class {{ controllerName }} extends Controller
         ${{ entity['name'] }}->fill($request->all());
         $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
 
-        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity['name'] }}.index'));
         return view('{{ entity['name'] }}.createConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
             'backUrl' => $backUrl,
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
@@ -80,7 +101,7 @@ class {{ controllerName }} extends Controller
         $request->session()->forget('{{ entity['name'] }}.form');
 
         return redirect()
-            ->route('{{ entity['name'] }}.index')
+            ->route($this->routePrefix . '{{ entity['name'] }}.index')
             ->with('message', "Succeeded to create the {{ entity['name'] }}");
     }
 
@@ -90,9 +111,9 @@ class {{ controllerName }} extends Controller
 {% if authenticatable %}
         unset(${{ entity['name'] }}->{{ password }});
 {% endif %}
-        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity['name'] }}.index'));
         $fromUrl = $this->buildFromUrl($request);
-        $submitUrl = route('{{ entity['name'] }}.updateConfirm', [
+        $submitUrl = route($this->routePrefix . '{{ entity['name'] }}.updateConfirm', [
             'id' => $id,
             'fromUrl' => $fromUrl,
         ]);
@@ -112,7 +133,7 @@ class {{ controllerName }} extends Controller
 
     public function updateConfirm({{ requestName }} $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
-        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity['name'] }}.index'));
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
         ${{ entity['name'] }}->fill($request->all());
         $request->session()->put('{{ entity['name'] }}.form', ${{ entity['name'] }}->toArray());
@@ -120,6 +141,7 @@ class {{ controllerName }} extends Controller
         return view('{{ entity['name'] }}.updateConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
             'backUrl' => $backUrl,
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
@@ -136,19 +158,20 @@ class {{ controllerName }} extends Controller
         $request->session()->forget('{{ entity['name'] }}.form');
 
         return redirect()
-            ->route('{{ entity['name'] }}.index')
+            ->route($this->routePrefix . '{{ entity['name'] }}.index')
             ->with('message', "Succeeded to update the {{ entity['name'] }}");
     }
 
     public function destroyConfirm(Request $request, {{ modelName }} ${{ entity['name'] }}, $id)
     {
         ${{ entity['name'] }} = ${{ entity['name'] }}->findOrFail($id);
-        $backUrl = $request->input('fromUrl', route('{{ entity['name'] }}.index'));
+        $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity['name'] }}.index'));
         $request->session()->put('{{ entity['name'] }}.destroy_id', $id);
 
         return view('{{ entity['name'] }}.destroyConfirm', [
             '{{ entity['name'] }}' => ${{ entity['name'] }},
             'backUrl' => $backUrl,
+            'routePrefix' => $this->routePrefix,
         ]);
     }
 
@@ -164,13 +187,13 @@ class {{ controllerName }} extends Controller
         ${{ entity['name'] }}->delete();
 
         return redirect()
-            ->route('{{ entity['name'] }}.index')
+            ->route($this->routePrefix . '{{ entity['name'] }}.index')
             ->with('message', "Succeeded to delete the {{ entity['name'] }}");
     }
 {% if authenticatable and loginRequestName is not empty %}
     public function login(Request $request)
     {
-        $submitUrl = route('{{ entity['name'] }}.loginSubmit');
+        $submitUrl = route($this->routePrefix . '{{ plural }}.loginSubmit');
 
         return view('{{ entity['name'] }}.login', [
             'submitUrl' => $submitUrl,
