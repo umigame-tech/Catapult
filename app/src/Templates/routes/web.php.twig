@@ -24,10 +24,10 @@ Route::prefix('{{ authName }}')->group(function () {
 {% for entity in entities %}
 
 {% for route in entity.routes %}
-{{ route|raw }}
+    {{ route|raw }}
 {% endfor %}
+
 {% endfor %}
-{{ route|raw }}
 });
 {% endfor %}
 {# for everyone #}

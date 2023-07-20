@@ -78,9 +78,10 @@ test('authenticatable', function () {
     expect($content)
         ->toBeString()
         ->toContain("Route::prefix('users')->group(function () {")
-        ->toContain("Route::get('user/login', [UserController::class, 'login'])->name('user.login');")
-        ->toContain("Route::post('user/login', [UserController::class, 'loginSubmit'])->name('user.loginSubmit');")
-        ->toContain("Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');");
+        ->toContain("   Route::get('users', [UserController::class, 'index'])->name('user.index');")
+        ->toContain("   Route::get('user/login', [UserController::class, 'login'])->name('user.login');")
+        ->toContain("   Route::post('user/login', [UserController::class, 'loginSubmit'])->name('user.loginSubmit');")
+        ->toContain("   Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');");
 });
 
 test('generate', function () {

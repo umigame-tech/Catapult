@@ -14,14 +14,12 @@ class RouteGenerator extends Generator
         parent::__construct(...$args);
     }
 
-    private function convertActionName($entity, $indentLevel)
+    private function convertActionName($entity)
     {
         $inflector = InflectorFactory::create()->build();
         $converted = [];
         $actions = ControllerGenerator::$actions;
         foreach ($actions as $actionName => $action) {
-            $spaces = $this->indents($indentLevel);
-
             $entityPath = $entity['name'];
             $actionPath = '/' . $actionName;
             if ($actionName === 'index') {
@@ -35,7 +33,7 @@ class RouteGenerator extends Generator
             );
             $params = $params ? '/' . $params : '';
 
-            $converted[$actionName] = "{$spaces}Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
+            $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
                 . "[{$entity['controllerName']}::class, '{$actionName}'])->name('{$entity['name']}.{$actionName}');";
         }
 
@@ -101,17 +99,17 @@ class RouteGenerator extends Generator
         return $this->convertEntitiesForRoute($filtered);
     }
 
-    private function convertEntitiesForRoute($entities, $indentLevel = 0)
+    private function convertEntitiesForRoute($entities)
     {
         $entities = array_map(
-            function ($entity) use ($indentLevel) {
+            function ($entity) {
                 $entity['controllerName'] = ControllerGenerator::controllerName($entity);
-                $routes = $this->convertActionName($entity, $indentLevel);
+                $routes = $this->convertActionName($entity);
                 if ($entity['authenticatable'] ?? false) {
                     $controllerName = $entity['controllerName'];
-                    $routes['login'] = $this->indents($indentLevel) . "Route::get('{$entity['name']}/login', [{$controllerName}::class, 'login'])->name('{$entity['name']}.login');";
-                    $routes['loginSubmit'] = $this->indents($indentLevel) . "Route::post('{$entity['name']}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$entity['name']}.loginSubmit');";
-                    $routes['logout'] = $this->indents($indentLevel) . "Route::post('{$entity['name']}/logout', [{$controllerName}::class, 'logout'])->name('{$entity['name']}.logout');";
+                    $routes['login'] = "Route::get('{$entity['name']}/login', [{$controllerName}::class, 'login'])->name('{$entity['name']}.login');";
+                    $routes['loginSubmit'] = "Route::post('{$entity['name']}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$entity['name']}.loginSubmit');";
+                    $routes['logout'] = "Route::post('{$entity['name']}/logout', [{$controllerName}::class, 'logout'])->name('{$entity['name']}.logout');";
                 }
 
                 $entity['routes'] = $routes;
