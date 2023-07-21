@@ -230,8 +230,17 @@ class ViewGenerator extends Generator
         $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/dashboard.blade.php';
 
         $renderer = Renderer::getInstance();
+        $entities = array_map(
+            function ($entity) {
+                $entity['plural'] = $this->inflector->pluralize($entity['name']);
+                return $entity;
+            },
+            $this->entities
+        );
+
         $view = $renderer->render('views/dashboard.blade.php.twig', [
             'entity' => $entity,
+            'entities' => $entities,
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);

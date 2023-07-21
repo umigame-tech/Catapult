@@ -40,6 +40,7 @@ class RouteGenerator extends Generator
         if ($entity['authenticatable'] ?? false) {
             $converted['dashboard'] = "Route::get('dashboard', "
                 . "[{$entity['controllerName']}::class, 'dashboard'])->name('dashboard');";
+            $converted['home'] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
         }
 
         return $converted;

@@ -59,6 +59,25 @@
           "type": "text"
         }
       ]
+    },
+    {
+      "name": "book",
+      "allowedFor": [
+        "person"
+      ],
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string",
+          "rules": {
+            "max": 60
+          }
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ]
     }
   ]
 }
