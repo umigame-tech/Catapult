@@ -116,3 +116,29 @@ test('generate', function () {
     expect($this->mocked->contents)->toBeArray();
     expect($this->mocked->contents)->toHaveLength(1);
 });
+
+test('dashboardControllerName', function () {
+    $entity = [
+        'name' => 'foo_bar',
+        'authenticatable' => true,
+        'attributes' => [
+            [
+                'name' => 'id',
+                'type' => 'integer',
+            ],
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+        ],
+    ];
+    $generator = new ControllerGenerator([
+        'entities' => [
+            $entity,
+        ],
+    ], $this->mocked);
+    expect($generator::dashboardControllerName($entity))->toBe('FooBarDashboardController');
+
+    $entity['name'] = 'foo_bar_baz';
+    expect($generator::dashboardControllerName($entity))->toBe('FooBarBazDashboardController');
+});
