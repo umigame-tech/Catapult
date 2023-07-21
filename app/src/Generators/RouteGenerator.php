@@ -16,14 +16,14 @@ class RouteGenerator extends Generator
 
     private function convertActionName($entity)
     {
-        $inflector = InflectorFactory::create()->build();
         $converted = [];
+        $plural = $this->inflector->pluralize($entity['name']);
         $actions = ControllerGenerator::$actions;
         foreach ($actions as $actionName => $action) {
             $entityPath = $entity['name'];
             $actionPath = '/' . $actionName;
             if ($actionName === 'index') {
-                $entityPath = $inflector->pluralize($entity['name']);
+                $entityPath = $plural;
                 $actionPath = '';
             }
 
@@ -35,6 +35,11 @@ class RouteGenerator extends Generator
 
             $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
                 . "[{$entity['controllerName']}::class, '{$actionName}'])->name('{$entity['name']}.{$actionName}');";
+        }
+
+        if ($entity['authenticatable'] ?? false) {
+            $converted['dashboard'] = "Route::get('dashboard', "
+                . "[{$entity['controllerName']}::class, 'dashboard'])->name('dashboard');";
         }
 
         return $converted;
@@ -119,7 +124,7 @@ class RouteGenerator extends Generator
                     $controllerName = $entity['controllerName'];
                     $loginRoutes['login'] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
                     $loginRoutes['loginSubmit'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
-                    $loginRoutes['logout'] = "Route::post('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
+                    $loginRoutes['logout'] = "Route::get('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
                 }
 
                 $entity['routes'] = $routes;

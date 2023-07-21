@@ -2,7 +2,6 @@
 
 namespace UmigameTech\Catapult\Generators;
 
-use Doctrine\Inflector\InflectorFactory;
 use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Templates\Renderer;
 
@@ -17,6 +16,14 @@ class ControllerGenerator extends Generator
             fn ($word) => ucfirst($word),
             explode('_', $entity['name'])
         )) . 'Controller';
+    }
+
+    public static function dashboardControllerName($entity)
+    {
+        return implode('', array_map(
+            fn ($word) => ucfirst($word),
+            explode('_', $entity['name'])
+        )) . 'DashboardController';
     }
 
     public static $actions = [
@@ -69,8 +76,7 @@ class ControllerGenerator extends Generator
         $modelName = ModelGenerator::modelName($entity);
         $requestName = RequestGenerator::requestName($entity);
 
-        $inflector = InflectorFactory::create()->build();
-        $plural = $inflector->pluralize($entity['name']);
+        $plural = $this->inflector->pluralize($entity['name']);
 
         $authenticatable = $entity['authenticatable'] ?? false;
 
@@ -122,6 +128,17 @@ class ControllerGenerator extends Generator
         return [
             'path' => $controllerPath,
             'content' => $controller,
+        ];
+    }
+
+    public function generateDashboardContent($entity)
+    {
+        $controllerName = self::dashboardControllerName($entity);
+        $controllerPath = "{$this->projectPath()}/app/Http/Controllers{$controllerName}.php";
+
+        return [
+            'path' => $controllerPath,
+            'content' => '',
         ];
     }
 

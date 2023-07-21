@@ -47,6 +47,7 @@ class ViewGenerator extends Generator
 
         mkdir($dirPath, 0755, true);
 
+        // exclude password
         $visible = clone $entity;
         $visible['attributes'] = array_values(array_filter(
             $visible['attributes'],
@@ -65,6 +66,7 @@ class ViewGenerator extends Generator
 
         if ($authenticatable) {
             $this->generateLoginView($entity);
+            $this->generateDashboardView($entity);
         }
     }
 
@@ -218,6 +220,18 @@ class ViewGenerator extends Generator
             'plural' => $this->inflector->pluralize($entity['name']),
             'loginKeys' => $loginKeys,
             'password' => $password,
+        ]);
+
+        $this->writer->write(path: $viewPath, content: $view);
+    }
+
+    public function generateDashboardView($entity)
+    {
+        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/dashboard.blade.php';
+
+        $renderer = Renderer::getInstance();
+        $view = $renderer->render('views/dashboard.blade.php.twig', [
+            'entity' => $entity,
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
