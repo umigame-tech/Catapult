@@ -7,6 +7,12 @@
   <button class="ml-auto" onclick="this.parentElement.remove()">x</button>
 </div>
 @endif
+<div>
+  <a class="button text-white" href="{{ '{{' }}
+      route($routePrefix . '{{ entity.name }}.new',
+      ['fromUrl' => $fromUrl])
+  {{ '}}' }}">新規作成</a>
+</div>
 {{ '{{' }} ${{ plural }}->links() {{ '}}' }}
 <table class="overflow-x-scroll max-w-screen block whitespace-nowrap" style="max-height: calc(100vh - 200px)">
   <thead>
