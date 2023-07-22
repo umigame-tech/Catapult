@@ -26,6 +26,9 @@ class TailwindCssSetupGenerator extends Generator
     "./resources/**/*.js",
     "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
   ],
+  corePlugins: {
+    preflight: false,
+  },
 EOT,
             $content
         );
@@ -64,8 +67,8 @@ EOT;
         $newConfig = preg_replace('/\ +input: \[.*/', <<<'EOT'
             input: [
                 './resources/js/app.js',
-                './resources/css/app.css',
                 './resources/css/sakura.css',
+                './resources/css/app.css',
                 './resources/css/style.css',
             ],
 EOT
