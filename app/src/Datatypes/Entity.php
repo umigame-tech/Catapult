@@ -15,6 +15,6 @@ class Entity
         foreach ($data['attributes'] ?? [] as $attribute) {
             $this->attributes[] = new Attribute($attribute);
         }
-        $this->authenticatable = $data['authenticatable'];
+        $this->authenticatable = $data['authenticatable'] ?? false;
     }
 }

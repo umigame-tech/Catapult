@@ -4,7 +4,7 @@ namespace UmigameTech\Catapult\Datatypes;
 
 use UmigameTech\Catapult\Datatypes\Rules\RuleFactory;
 
-class attribute
+class Attribute
 {
     public string $name = '';
     public AttributeType $type;
@@ -14,7 +14,7 @@ class attribute
     public function __construct($data)
     {
         $this->name = $data['name'];
-        $this->loginKey = $data['loginKey'];
+        $this->loginKey = $data['loginKey'] ?? false;
 
         $this->type = AttributeType::from($data['type']);
 
