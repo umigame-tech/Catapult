@@ -6,6 +6,9 @@ use SplFileObject;
 use Swaggest\JsonSchema\Schema;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
+use UmigameTech\Catapult\Datatypes\DataList;
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\CopyFileInterface;
 use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
 use UmigameTech\Catapult\FileSystem\FileReaderInterface;
@@ -33,6 +36,8 @@ require_once(__DIR__ . '/../vendor/autoload.php');
 class Main
 {
     use ProjectPath;
+
+    private Project $project;
 
     private $projectName = 'project';
 
@@ -110,9 +115,8 @@ class Main
 
         $schema = Schema::import(json_decode($this->reader->read(__DIR__ . '/JsonSchemas/schema.json')));
         $json = $schema->in(json_decode($inputFile));
-        if (!empty($json['project_name'])) {
-            $this->projectName = $json['project_name'];
-        }
+        $this->project = new Project($json);
+        $this->projectName = $this->project->projectName;
         $projectPath = $this->projectPath();
 
         $skipInstallation = !empty($argv[2]) && $argv[2] === '--skip-installation';
@@ -135,7 +139,9 @@ class Main
             array_unshift($this->generators, CssSetupGenerator::class);
         }
 
-        $authenticatableCount = count(array_filter($json['entities'] ?? [], fn($e) => $e['authenticatable'] ?? false));
+        $entities = $this->project->entities;
+
+        $authenticatableCount = $entities->filter(fn(Entity $e) => $e->isAuthenticatable())->count();
         if ($authenticatableCount > 0) {
             array_unshift($this->generators, AuthGenerator::class);
         }

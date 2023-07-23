@@ -7,7 +7,7 @@ class Entity
     public string $name = '';
     public array $allowedFor = [];
     public array $attributes = [];
-    public bool $authenticatable = false;
+    private bool $authenticatable = false;
 
     public function __construct($data) {
         $this->name = $data['name'];
@@ -16,5 +16,10 @@ class Entity
             $this->attributes[] = new Attribute($attribute);
         }
         $this->authenticatable = $data['authenticatable'] ?? false;
+    }
+
+    public function isAuthenticatable(): bool
+    {
+        return $this->authenticatable;
     }
 }

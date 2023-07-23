@@ -30,7 +30,7 @@ test('construct', function () {
         ->name->toBe('book')
         ->allowedFor->toHaveLength(2)
         ->attributes->toHaveLength(2)
-        ->authenticatable->toBeFalse();
+        ->isAuthenticatable()->toBeFalse();
 });
 
 test('authenticatable', function () {
@@ -70,5 +70,5 @@ test('authenticatable', function () {
         ->name->toBe('person')
         ->allowedFor->toHaveLength(2)
         ->attributes->toHaveLength(3)
-        ->authenticatable->toBeTrue();
+        ->isAuthenticatable()->toBeTrue();
 });

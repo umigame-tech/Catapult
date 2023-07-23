@@ -3,15 +3,16 @@
 namespace UmigameTech\Catapult\Generators;
 
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class ModelGenerator extends Generator
 {
-    static public function modelName($entity)
+    static public function modelName(Entity $entity)
     {
         return implode('', array_map(
             fn ($word) => ucfirst($word),
-            explode('_', $entity['name'])
+            explode('_', $entity->name)
         ));
     }
 

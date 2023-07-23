@@ -1,5 +1,7 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
 use UmigameTech\Catapult\Generators\SeederGenerator;
 
@@ -10,6 +12,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin', 'user'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -26,16 +29,16 @@ test('generateContent', function () {
         ],
     ];
     $generator = new SeederGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
     expect($content)
         ->toBeString()
         ->toContain('class UserSeeder extends Seeder');
@@ -44,6 +47,7 @@ test('generateContent', function () {
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin', 'user'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -60,12 +64,12 @@ test('generate', function () {
         ],
     ];
     $generator = new SeederGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
@@ -90,6 +94,7 @@ test('remove old files', function () {
 
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin', 'user'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -107,12 +112,12 @@ test('remove old files', function () {
     ];
 
     $generator = new SeederGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
