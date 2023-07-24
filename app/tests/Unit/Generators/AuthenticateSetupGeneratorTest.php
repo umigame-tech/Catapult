@@ -1,5 +1,6 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\AuthenticateSetupGenerator;
 
 beforeEach(function () {
@@ -7,19 +8,25 @@ beforeEach(function () {
 });
 
 test('generate', function () {
-    $generator = new AuthenticateSetupGenerator([
-        'project_name' => 'test',
-        'entities' => [
-            [
-                'name' => 'person',
-                'authenticatable' => true,
-                'attributes' => [
-                    'name' => 'string',
-                    'type' => 'string',
-                ],
-            ]
-        ],
-    ], $this->mocked);
+    $generator = new AuthenticateSetupGenerator(
+        new Project([
+            'project_name' => 'test',
+            'entities' => [
+                [
+                    'name' => 'person',
+                    'allowedFor' => ['user', 'admin'],
+                    'authenticatable' => true,
+                    'attributes' => [
+                        [
+                            'name' => 'string',
+                            'type' => 'string',
+                        ]
+                    ],
+                ]
+            ],
+        ]),
+        $this->mocked
+    );
 
     $generator->generate();
     expect($this->mocked->copied)

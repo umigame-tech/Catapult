@@ -89,8 +89,18 @@ class DataList implements IteratorAggregate, Countable, ArrayAccess
         return new DataList($this->type, array_filter($this->items, $callback));
     }
 
-    public function map(callable $callback): mixed
+    public function map(callable $callback): array
     {
         return array_map($callback, $this->items);
+    }
+
+    public function mapWithType(string $type, callable $callback): DataList
+    {
+        return new DataList($type, array_map($callback, $this->items));
+    }
+
+    public function mapWithSameType(callable $callback): DataList
+    {
+        return $this->mapWithType($this->type, $callback);
     }
 }

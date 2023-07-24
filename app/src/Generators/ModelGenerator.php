@@ -16,22 +16,20 @@ class ModelGenerator extends Generator
         ));
     }
 
-    public function generateContent($entity) {
+    public function generateContent(Entity $entity) {
         $modelName = self::modelName($entity);
-        $authenticatable = $entity['authenticatable'] ?? false;
+        $authenticatable = $entity->isAuthenticatable();
         $parentClass = $authenticatable ? 'Authenticatable' : 'Model';
         $parentClassImport = $authenticatable
             ? 'use Illuminate\Foundation\Auth\User as Authenticatable;'
             : 'use Illuminate\Database\Eloquent\Model;';
 
-        $fillableList = array_map(
-            fn ($attribute) => $attribute['name'],
-            $entity['attributes']
+        $fillableList = $entity->attributes->map(
+            fn ($attribute) => $attribute->name,
         );
 
-        $hiddenList = array_filter(
-            $entity['attributes'],
-            fn ($attribute) => $attribute['type'] === AttributeType::Password->value
+        $hiddenList = $entity->attributes->filter(
+            fn ($attribute) => $attribute->type === AttributeType::Password,
         );
 
         $renderer = Renderer::getInstance();

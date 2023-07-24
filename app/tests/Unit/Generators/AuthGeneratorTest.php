@@ -1,37 +1,16 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\AuthGenerator;
 
 beforeEach(function () {
     $this->mocked = mockFileSystems();
 });
 
-test('authName', function () {
-    $entity = [
-        'name' => 'person',
-        'authenticatable' => true,
-        'attributes' => [
-            [
-                'name' => 'name',
-                'type' => 'string',
-            ],
-            [
-                'name' => 'email',
-                'type' => 'string',
-            ],
-            [
-                'name' => 'password',
-                'type' => 'password',
-            ],
-        ],
-        ];
-    $name = (new AuthGenerator([]))->authName($entity);
-    expect($name)->toBe('people');
-});
-
 test('generateContent', function () {
     $entity = [
         'name' => 'person',
+        'allowedFor' => ['user', 'admin'],
         'authenticatable' => true,
         'attributes' => [
             [
@@ -49,12 +28,12 @@ test('generateContent', function () {
         ],
     ];
     $generator = new AuthGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 

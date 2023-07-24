@@ -1,5 +1,7 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\ModelGenerator;
 
 beforeEach(function () {
@@ -9,6 +11,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['web', 'api'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -25,16 +28,16 @@ test('generateContent', function () {
         ],
     ];
     $generator = new ModelGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
 
     expect($content)
         ->toBeString()
@@ -44,6 +47,7 @@ test('generateContent', function () {
 test('authenticatable', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['web', 'api'],
         'authenticatable' => true,
         'attributes' => [
             [
@@ -61,16 +65,16 @@ test('authenticatable', function () {
         ],
     ];
     $generator = new ModelGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
 
     expect($content)
         ->toBeString()
@@ -80,6 +84,7 @@ test('authenticatable', function () {
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['web', 'api'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -96,12 +101,12 @@ test('generate', function () {
         ],
     ];
     $generator = new ModelGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 

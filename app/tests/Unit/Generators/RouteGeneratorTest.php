@@ -1,5 +1,6 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\RouteGenerator;
 
 beforeEach(function () {
@@ -26,12 +27,12 @@ test('generateContent', function () {
         ],
     ];
     $generator = new RouteGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
@@ -65,12 +66,12 @@ test('authenticatable', function () {
         ],
     ];
     $generator = new RouteGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
@@ -82,12 +83,13 @@ test('authenticatable', function () {
         ->toContain("    Route::get('dashboard', [UserController::class, 'dashboard'])->name('dashboard');")
         ->toContain("Route::get('users/login', [UserController::class, 'login'])->name('users.login');")
         ->toContain("Route::post('users/login', [UserController::class, 'loginSubmit'])->name('users.loginSubmit');")
-        ->toContain("Route::post('users/logout', [UserController::class, 'logout'])->name('users.logout');");
+        ->toContain("Route::get('users/logout', [UserController::class, 'logout'])->name('users.logout');");
 });
 
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['everyone'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -104,12 +106,12 @@ test('generate', function () {
         ],
     ];
     $generator = new RouteGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 

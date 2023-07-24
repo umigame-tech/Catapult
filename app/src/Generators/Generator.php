@@ -39,7 +39,7 @@ abstract class Generator
 
     protected $inflector;
 
-    public function __construct(Project $project, $container = null)
+    public function __construct(Project $project, FileSystemContainer $container = null)
     {
         $this->project = $project;
         $this->projectName = $this->project->projectName;

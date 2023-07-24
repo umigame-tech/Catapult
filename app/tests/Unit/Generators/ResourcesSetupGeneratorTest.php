@@ -1,5 +1,6 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\CopyDirectoryInterface;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 
@@ -9,10 +10,10 @@ beforeEach(function () {
 
 test('generate', function () {
     $generator = new ResourcesSetupGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [],
-        ],
+        ]),
         $this->mocked
     );
 

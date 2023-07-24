@@ -2,25 +2,29 @@
 
 namespace UmigameTech\Catapult\Generators;
 
-use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\DataList;
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
+use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class RouteGenerator extends Generator
 {
     const FOR_EVERYONE = ['all', 'everyone', 'any', '*'];
 
-    public function __construct(...$args)
+    public function __construct(Project $project, FileSystemContainer $container)
     {
-        parent::__construct(...$args);
+        parent::__construct($project, $container);
     }
 
-    private function convertActionName($entity)
+    private function convertActionName(Entity $entity)
     {
         $converted = [];
-        $plural = $this->inflector->pluralize($entity['name']);
+        $plural = $this->inflector->pluralize($entity->name);
         $actions = ControllerGenerator::$actions;
+        $controllerName= $entity->controllerName();
         foreach ($actions as $actionName => $action) {
-            $entityPath = $entity['name'];
+            $entityPath = $entity->name;
             $actionPath = '/' . $actionName;
             if ($actionName === 'index') {
                 $entityPath = $plural;
@@ -34,12 +38,12 @@ class RouteGenerator extends Generator
             $params = $params ? '/' . $params : '';
 
             $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
-                . "[{$entity['controllerName']}::class, '{$actionName}'])->name('{$entity['name']}.{$actionName}');";
+                . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
         }
 
-        if ($entity['authenticatable'] ?? false) {
+        if ($entity->isAuthenticatable()) {
             $converted['dashboard'] = "Route::get('dashboard', "
-                . "[{$entity['controllerName']}::class, 'dashboard'])->name('dashboard');";
+                . "[{$controllerName}::class, 'dashboard'])->name('dashboard');";
             $converted['home'] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
         }
 
@@ -69,21 +73,16 @@ class RouteGenerator extends Generator
 
     private function makeAuthList()
     {
-        $authNames = array_values(array_map(
-            fn ($entity) => $this->inflector->pluralize($entity['name']),
-            array_filter(
-                $this->entities,
-                fn ($entity) => $entity['authenticatable'] ?? false
-            )
-        ));
+        $authNames = $this->entities
+            ->filter(fn (Entity $entity) => $entity->isAuthenticatable())
+            ->map(fn (Entity $entity) => $this->inflector->pluralize($entity->name));
         $authList = [];
         foreach ($authNames as $authName) {
-            $filtered = array_filter(
-                $this->entities,
-                function ($entity) use ($authName) {
+            $filtered = $this->entities->filter(
+                function (Entity $entity) use ($authName) {
                     $allowedFor = array_map(
                         fn ($allowed) => $this->inflector->pluralize($allowed),
-                        $entity['allowedFor'] ?? []
+                        $entity->allowedFor
                     );
                     return in_array($authName, $allowedFor);
                 }
@@ -97,10 +96,9 @@ class RouteGenerator extends Generator
 
     private function routesForEveryone()
     {
-        $filtered = array_filter(
-            $this->entities,
+        $filtered = $this->entities->filter(
             function ($entity) {
-                foreach ($entity['allowedFor'] ?? [] as $allowed) {
+                foreach ($entity->allowedFor as $allowed) {
                     if (in_array($allowed, self::FOR_EVERYONE)) {
                         return true;
                     }
@@ -113,26 +111,24 @@ class RouteGenerator extends Generator
         return $this->convertEntitiesForRoute($filtered);
     }
 
-    private function convertEntitiesForRoute($entities)
+    private function convertEntitiesForRoute(DataList $entities)
     {
-        $entities = array_map(
-            function ($entity) {
-                $entity['controllerName'] = ControllerGenerator::controllerName($entity);
+        $entities = $entities->map(
+            function (Entity $entity) {
                 $routes = $this->convertActionName($entity);
-                $authName = $this->inflector->pluralize($entity['name']);
+                $authName = $this->inflector->pluralize($entity->name);
                 $loginRoutes = [];
-                if ($entity['authenticatable'] ?? false) {
-                    $controllerName = $entity['controllerName'];
+                if ($entity->isAuthenticatable()) {
+                    $controllerName = $entity->controllerName();
                     $loginRoutes['login'] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
                     $loginRoutes['loginSubmit'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
                     $loginRoutes['logout'] = "Route::get('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
                 }
 
-                $entity['routes'] = $routes;
-                $entity['loginRoutes'] = $loginRoutes;
+                $entity->routes = $routes;
+                $entity->loginRoutes = $loginRoutes;
                 return $entity;
-            },
-            $entities
+            }
         );
 
         return $entities;

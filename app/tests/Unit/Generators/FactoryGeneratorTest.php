@@ -1,5 +1,7 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 
 beforeEach(function () {
@@ -9,6 +11,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['user', 'admin'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -25,16 +28,16 @@ test('generateContent', function () {
         ],
     ];
     $generator = new FactoryGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked,
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
 
     expect($content)->toBeString();
 });
@@ -42,6 +45,7 @@ test('generateContent', function () {
 test('password', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['user', 'admin'],
         'authenticatable' => true,
         'attributes' => [
             [
@@ -59,16 +63,16 @@ test('password', function () {
         ],
     ];
     $generator = new FactoryGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked,
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
 
     expect($content)
         ->toBeString()

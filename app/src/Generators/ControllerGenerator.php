@@ -2,7 +2,9 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class ControllerGenerator extends Generator
@@ -70,15 +72,15 @@ class ControllerGenerator extends Generator
         ],
     ];
 
-    public function generateContent($entity)
+    public function generateContent(Entity $entity)
     {
-        $controllerName = self::controllerName($entity);
-        $modelName = ModelGenerator::modelName($entity);
-        $requestName = RequestGenerator::requestName($entity);
+        $controllerName = $entity->controllerName();
+        $modelName = $entity->modelName();
+        $requestName = $entity->requestName();
 
-        $plural = $this->inflector->pluralize($entity['name']);
+        $plural = $this->inflector->pluralize($entity->name);
 
-        $authenticatable = $entity['authenticatable'] ?? false;
+        $authenticatable = $entity->isAuthenticatable();
 
         $renderer = Renderer::getInstance();
         $data = [
@@ -91,28 +93,25 @@ class ControllerGenerator extends Generator
         ];
 
         if ($authenticatable) {
-            $loginRequestName = RequestGenerator::loginRequestName($entity);
-            $loginKeys = array_values(array_filter(
-                $entity['attributes'],
-                fn ($attribute) => $attribute['loginKey'] ?? false
-            ));
-            $loginKeys = array_map(
-                fn ($key) => $key['name'],
-                $loginKeys
+            $loginRequestName = $entity->loginRequestName();
+            $loginKeys = $entity->attributes->filter(
+                fn (Attribute $attribute) => $attribute->loginKey
+            );
+            $loginKeys = $loginKeys->map(
+                fn (Attribute $key) => $key->name,
             );
 
-            $password = array_values(array_filter(
-                $entity['attributes'],
-                fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
-            ));
+            $password = $entity->attributes->filter(
+                fn (Attribute $attribute) => $attribute->type === AttributeType::Password
+            );
             if (empty($password)) {
                 throw new \Exception('Password attribute is not found');
             }
             $data = array_merge($data, [
                 'loginRequestName' => $loginRequestName,
-                'authName' => (new AuthGenerator($this->json))->authName($entity),
+                'authName' => $entity->authName(),
                 'loginKeys' => $loginKeys,
-                'password' => $password[0]['name'],
+                'password' => $password[0]->name,
             ]);
         }
 
@@ -131,9 +130,9 @@ class ControllerGenerator extends Generator
         ];
     }
 
-    public function generateDashboardContent($entity)
+    public function generateDashboardContent(Entity $entity)
     {
-        $controllerName = self::dashboardControllerName($entity);
+        $controllerName = $entity->dashboardControllerName();
         $controllerPath = "{$this->projectPath()}/app/Http/Controllers{$controllerName}.php";
 
         return [
