@@ -1,6 +1,6 @@
 @extends('layouts.app')
 @section('content')
-<h1 class="mb-8">index of {{ entity['name'] }}</h1>
+<h1 class="mb-8">index of {{ entity.name }}</h1>
 @if (session('message'))
 <div class="bg-green-500 text-white p-4 mb-4 flex items-center">
   <span>{{ "{{ session('message') }}" }}</span>
@@ -17,8 +17,8 @@
 <table class="overflow-x-scroll max-w-screen block whitespace-nowrap" style="max-height: calc(100vh - 200px)">
   <thead>
     <tr>
-{% for attribute in entity['attributes'] %}
-      <th>{{ attribute['name'] }}</th>
+{% for attribute in entity.attributes %}
+      <th>{{ attribute.name }}</th>
 {% endfor %}
       <th>Actions</th>
     </tr>
@@ -26,15 +26,15 @@
   <tbody>
 @foreach (${{ plural }} as ${{ camelCase }})
     <tr>
-{% for attribute in entity['attributes'] %}
-{% if attribute.type is same as('text') %}
-      <td class="whitespace-normal min-w-[400px]">{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
-{% elseif attribute.type is same as('boolean') %}
+{% for attribute in entity.attributes %}
+{% if attribute.type.value is same as('text') %}
+      <td class="whitespace-normal min-w-[400px]">{{ '{{' }} ${{ camelCase }}->{{ attribute.name }} {{ '}}' }}</td>
+{% elseif attribute.type.value is same as('boolean') %}
       <td>
-        {{ '{{' }} !empty(${{ camelCase }}->{{ attribute['name'] }}) ? 'Yes' : 'No' {{ '}}' }}
+        {{ '{{' }} !empty(${{ camelCase }}->{{ attribute.name }}) ? 'Yes' : 'No' {{ '}}' }}
       </td>
 {% else %}
-      <td>{{ '{{' }} ${{ camelCase }}->{{ attribute['name'] }} {{ '}}' }}</td>
+      <td>{{ '{{' }} ${{ camelCase }}->{{ attribute.name }} {{ '}}' }}</td>
 {% endif %}
 {% endfor %}
       <td>

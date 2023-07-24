@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-4/5 lg:w-2/5 mx-auto">
-    <h1>Confirm create a new {{ entity['name'] }}</h1>
+    <h1>Confirm create a new {{ entity.name }}</h1>
 {% set vars = {'type' : 'create'} %}
 {% include 'views/confirm.twig' with vars %}
 </div>

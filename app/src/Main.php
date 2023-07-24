@@ -147,7 +147,7 @@ class Main
         }
 
         foreach ($this->generators as $generator) {
-            $generator = new $generator($json);
+            $generator = new $generator($this->project);
             $generator->generate();
         }
     }

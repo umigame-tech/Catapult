@@ -103,4 +103,9 @@ class DataList implements IteratorAggregate, Countable, ArrayAccess
     {
         return $this->mapWithType($this->type, $callback);
     }
+
+    public function merge(DataList $list): DataList
+    {
+        return new DataList($this->type, array_merge($this->items, $list->items));
+    }
 }

@@ -12,7 +12,7 @@ class RouteGenerator extends Generator
 {
     const FOR_EVERYONE = ['all', 'everyone', 'any', '*'];
 
-    public function __construct(Project $project, FileSystemContainer $container)
+    public function __construct(Project $project, FileSystemContainer $container = null)
     {
         parent::__construct($project, $container);
     }

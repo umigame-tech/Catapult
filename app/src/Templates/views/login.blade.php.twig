@@ -1,35 +1,35 @@
 @extends('layouts.app')
 @section('content')
 <div class="w-4/5 lg:w-2/5 mx-auto">
-  <h1>Login for {{ entity['name'] }}</h1>
+  <h1>Login for {{ entity.name }}</h1>
   <form method="post" action="{{ '{{' }} route('{{ plural }}.loginSubmit') {{ '}}' }}">
     {{ '{{' }} csrf_field() {{ '}}' }}
 {% for attribute in loginKeys %}
     <div class="mt-8">
-      <label for="{{ attrbute['inputName'] }}">{{ attribute['inputName'] }}</label>
-      @foreach ($errors->get('{{ attribute['inputName'] }}') as $error)
+      <label for="{{ attrbute.inputName }}">{{ attribute.inputName }}</label>
+      @foreach ($errors->get('{{ attribute.inputName }}') as $error)
       <div class="text-red-500">{{ '{{' }} $error {{ '}}' }}</div>
       @endforeach
 {% if attribute.inputType is same as('textarea') %}
-      <textarea name="{{ attribute['inputName'] }}" id="{{ attribute['inputName'] }}">{{ '{{' }} old('{{ attribute['inputName'] }}') {{ '}}' }}</textarea>
+      <textarea name="{{ attribute.inputName }}" id="{{ attribute.inputName }}">{{ '{{' }} old('{{ attribute.inputName }}') {{ '}}' }}</textarea>
 {% else %}
       <input
         type="{{ attribute.inputType }}"
-        name="{{ attribute['inputName'] }}"
-        id="{{ attribute['inputName'] }}"
-        value="{{ '{{' }} old('{{ attribute['inputName'] }}') {{ '}}' }}"
+        name="{{ attribute.inputName }}"
+        id="{{ attribute.inputName }}"
+        value="{{ '{{' }} old('{{ attribute.inputName }}') {{ '}}' }}"
       >
 {% endif %}
 {% endfor %}
-      <label for="{{ password['inputName'] }}">{{ password['inputName'] }}</label>
-      @foreach ($errors->get('{{ password['inputName'] }}') as $error)
+      <label for="{{ password.inputName }}">{{ password.inputName }}</label>
+      @foreach ($errors->get('{{ password.inputName }}') as $error)
       <div class="text-red-500">{{ '{{' }} $error {{ '}}' }}</div>
       @endforeach
       <input
         type="password"
-        name="{{ password['inputName'] }}"
-        id="{{ password['inputName'] }}"
-        value="{{ '{{' }} old('{{ password['inputName'] }}') {{ '}}' }}"
+        name="{{ password.inputName }}"
+        id="{{ password.inputName }}"
+        value="{{ '{{' }} old('{{ password.inputName }}') {{ '}}' }}"
       />
     </div>
     <div class="mt-8">

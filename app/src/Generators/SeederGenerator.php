@@ -12,9 +12,7 @@ class SeederGenerator extends Generator
     {
         $entities = $this->entities;
         $seeders = $entities->map(
-            function (Entity $entity) {
-                return ModelGenerator::modelName($entity) . 'Seeder';
-            }
+            fn (Entity $entity) => $entity->seederName()
         );
 
         $renderer = Renderer::getInstance();
@@ -36,8 +34,8 @@ class SeederGenerator extends Generator
 
     public function generateContent(Entity $entity)
     {
-        $modelName = ModelGenerator::modelName($entity);
-        $seederName = $modelName . 'Seeder';
+        $modelName = $entity->modelName();
+        $seederName = $entity->seederName();
 
         $renderer = Renderer::getInstance();
         $seeder = $renderer->render('seeders/seeder.twig', [

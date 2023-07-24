@@ -1,13 +1,13 @@
   <ul>
-{% for attribute in entity['attributes'] %}
+{% for attribute in entity.attributes %}
     <li>
       <h4>{{ attribute['name'] }}</h4>
-{% if attribute['type'] is same as('boolean') %}
-      <p>{{ '{{' }} !empty(${{ entity['name'] }}->{{ attribute['name'] }}) ? 'Yes' : 'No' {{ '}}' }}</p>
-{% elseif attribute['type'] is same as('password') %}
-      <p>{{ '{{' }} str_repeat('*', strlen( ${{ entity['name'] }}->{{ attribute['name'] }} )) {{ '}}' }}</p>
+{% if attribute.type.value is same as('boolean') %}
+      <p>{{ '{{' }} !empty(${{ entity.name }}->{{ attribute.name }}) ? 'Yes' : 'No' {{ '}}' }}</p>
+{% elseif attribute.type.value is same as('password') %}
+      <p>{{ '{{' }} str_repeat('*', strlen( ${{ entity.name }}->{{ attribute.name }} )) {{ '}}' }}</p>
 {% else %}
-      <p>{{ '{{' }} ${{ entity['name'] }}->{{ attribute['name'] }} {{ '}}' }}</p>
+      <p>{{ '{{' }} ${{ entity.name }}->{{ attribute.name }} {{ '}}' }}</p>
 {% endif %}
     </li>
 {% endfor %}

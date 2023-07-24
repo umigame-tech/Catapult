@@ -12,6 +12,11 @@ class Attribute
     public bool $loginKey = false;
     /** @var RuleInterface[] */
     public DataList $rules;
+
+    /** for html form */
+    public string $inputType = '';
+    public string $inputName = '';
+
     public function __construct($data)
     {
         $this->name = $data['name'];

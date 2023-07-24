@@ -1,9 +1,9 @@
-<h1>Hello {{ entity['name'] }} id {{ '{{' }} ${{entity['name']}}->id {{ '}}' }}</h1>
+<h1>Hello {{ entity.name }} id {{ '{{' }} ${{entity.name}}->id {{ '}}' }}</h1>
 <ul>
 {% for e in entities %}
   <li>
-    <a href="{{ '{{' }} route($routePrefix . '{{ e['name'] }}.index') {{ '}}' }}" >
-      List of {{ e['plural'] }}
+    <a href="{{ '{{' }} route($routePrefix . '{{ e.name }}.index') {{ '}}' }}" >
+      List of {{ e.plural }}
     </a>
   </li>
 {% endfor %}

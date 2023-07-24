@@ -11,16 +11,6 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class RequestGenerator extends Generator
 {
-    public static function requestName($entity)
-    {
-        return ModelGenerator::modelName($entity) . 'Request';
-    }
-
-    public static function loginRequestName($entity)
-    {
-        return ModelGenerator::modelName($entity) . 'LoginRequest';
-    }
-
     // attributeのtypeをLaravelのvalidation ruleに変換する
     private function attributeTypeMap(AttributeType $type): string
     {
@@ -108,32 +98,29 @@ class RequestGenerator extends Generator
 
     public function generateLoginContent(Entity $entity)
     {
-        $requestName = self::loginRequestName($entity);
+        $requestName = $entity->loginRequestName();
 
-        $loginKeys = array_values(array_filter(
-            $entity['attributes'],
-            fn ($attribute) => $attribute['loginKey'] ?? false
-        ));
+        $loginKeys = $entity->attributes->filter(
+            fn (Attribute $attribute) => $attribute->loginKey
+        );
 
-        $password = array_values(array_filter(
-            $entity['attributes'],
-            fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
-        ));
+        $password = $entity->attributes->filter(
+            fn (Attribute $attribute) => $attribute->type === AttributeType::Password
+        );
         if (empty($password)) {
             throw new \Exception('Password attribute is not found');
         }
 
-        $attributes = array_map(
+        $attributes = $loginKeys->merge($password)->map(
             function ($attribute) {
-                $rules = [$this->attributeTypeMap($attribute['type'])];
-                $rules = array_merge($rules, $this->buildValidationRules($attribute['type'], $attribute));
+                $rules = [$this->attributeTypeMap($attribute->type)];
+                $rules = array_merge($rules, $this->buildValidationRules($attribute->type, $attribute));
                 $rules= implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [
-                    'name' => $attribute['name'],
+                    'name' => $attribute->name,
                     'rules' => $rules,
                 ];
             },
-            array_merge($loginKeys, $password)
         );
 
         $renderer = Renderer::getInstance();

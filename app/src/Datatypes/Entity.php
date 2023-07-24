@@ -15,6 +15,9 @@ class Entity
     public array $routes = [];
     public array $loginRoutes = [];
 
+    /** for views */
+    public string $plural = '';
+
     public function __construct($data) {
         $this->name = $data['name'];
         $this->allowedFor = $data['allowedFor'];
@@ -28,28 +31,29 @@ class Entity
         return $this->authenticatable;
     }
 
-    public function controllerName(): string
+    public function modelName(): string
     {
-        return implode('', array_map(
+        $cache = '';
+        if (!empty($cache)) {
+            return $cache;
+        }
+
+        $cache = implode('', array_map(
             fn ($word) => ucfirst($word),
             explode('_', $this->name)
-        )) . 'Controller';
+        ));
+
+        return $cache;
+    }
+
+    public function controllerName(): string
+    {
+        return $this->modelName() . 'Controller';
     }
 
     public function dashboardControllerName(): string
     {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $this->name)
-        )) . 'DashboardController';
-    }
-
-    public function modelName()
-    {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $this->name)
-        ));
+        return $this->modelName() . 'DashboardController';
     }
 
     public function requestName()
@@ -64,10 +68,7 @@ class Entity
 
     public function factoryName()
     {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $this->name)
-        )) . 'Factory';
+        return $this->modelName() . 'Factory';
     }
 
     public function authName(): string
@@ -80,5 +81,10 @@ class Entity
         $inflector = InflectorFactory::create()->build();
         $cache = $inflector->pluralize($this->name);
         return $cache;
+    }
+
+    public function seederName(): string
+    {
+        return $this->modelName() . 'Seeder';
     }
 }

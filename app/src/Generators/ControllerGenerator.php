@@ -12,22 +12,6 @@ class ControllerGenerator extends Generator
     const METHOD_GET = 'get';
     const METHOD_POST = 'post';
 
-    public static function controllerName($entity)
-    {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $entity['name'])
-        )) . 'Controller';
-    }
-
-    public static function dashboardControllerName($entity)
-    {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $entity['name'])
-        )) . 'DashboardController';
-    }
-
     public static $actions = [
         'index' => [
             'method' => self::METHOD_GET,

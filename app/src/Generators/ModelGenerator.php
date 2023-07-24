@@ -8,16 +8,8 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class ModelGenerator extends Generator
 {
-    static public function modelName(Entity $entity)
-    {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $entity->name)
-        ));
-    }
-
     public function generateContent(Entity $entity) {
-        $modelName = self::modelName($entity);
+        $modelName = $entity->modelName();
         $authenticatable = $entity->isAuthenticatable();
         $parentClass = $authenticatable ? 'Authenticatable' : 'Model';
         $parentClassImport = $authenticatable
