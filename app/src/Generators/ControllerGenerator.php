@@ -10,7 +10,10 @@ use UmigameTech\Catapult\Templates\Renderer;
 class ControllerGenerator extends Generator
 {
     const METHOD_GET = 'get';
+    const METHOD_PUT = 'put';
     const METHOD_POST = 'post';
+    const METHOD_PATCH = 'patch';
+    const METHOD_DELETE = 'delete';
 
     public static $actions = [
         'index' => [

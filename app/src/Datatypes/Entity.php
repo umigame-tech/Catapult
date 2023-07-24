@@ -51,6 +51,11 @@ class Entity
         return $this->modelName() . 'Controller';
     }
 
+    public function apiControllerName(): string
+    {
+        return 'Api' . $this->controllerName();
+    }
+
     public function dashboardControllerName(): string
     {
         return $this->modelName() . 'DashboardController';
@@ -59,6 +64,11 @@ class Entity
     public function requestName()
     {
         return $this->modelName() . 'Request';
+    }
+
+    public function apiRequestName()
+    {
+        return 'Api' . $this->requestName();
     }
 
     public function loginRequestName()

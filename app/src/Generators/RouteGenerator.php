@@ -50,6 +50,39 @@ class RouteGenerator extends Generator
         return $converted;
     }
 
+    private function convertApiActionName(Entity $entity)
+    {
+        $converted = [];
+        $plural = $this->inflector->pluralize($entity->name);
+        $actions = ApiControllerGenerator::$apiActions;
+        $controllerName= $entity->apiControllerName();
+        foreach ($actions as $actionName => $action) {
+            $entityPath = $entity->name;
+            $actionPath = '/' . $actionName;
+            if ($actionName === 'index') {
+                $entityPath = $plural;
+                $actionPath = '';
+            }
+
+            $params = implode('/', array_map(
+                fn ($p) => '{' . $p . '}',
+                $action['params'])
+            );
+            $params = $params ? '/' . $params : '';
+
+            $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
+                . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+        }
+
+        if ($entity->isAuthenticatable()) {
+            $converted['dashboard'] = "Route::get('dashboard', "
+                . "[{$controllerName}::class, 'dashboard'])->name('dashboard');";
+            $converted['home'] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
+        }
+
+        return $converted;
+    }
+
     public function generateContent()
     {
         $renderer = Renderer::getInstance();
@@ -109,6 +142,11 @@ class RouteGenerator extends Generator
         );
 
         return $this->convertEntitiesForRoute($filtered);
+    }
+
+    private function makeApiRoutes(Entity $entity)
+    {
+        $routes = $this->convertActionName($entity);
     }
 
     private function convertEntitiesForRoute(DataList $entities)
