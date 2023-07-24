@@ -1,5 +1,7 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\MigrationGenerator;
 
 beforeEach(function () {
@@ -9,6 +11,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -25,16 +28,16 @@ test('generateContent', function () {
         ],
     ];
     $generator = new MigrationGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
 
     expect($content)
         ->toBeString()
@@ -44,6 +47,7 @@ test('generateContent', function () {
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -60,12 +64,12 @@ test('generate', function () {
         ],
     ];
     $generator = new MigrationGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 

@@ -1,4 +1,7 @@
 <?php
+
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
 
 beforeEach(function () {
@@ -8,6 +11,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['user', 'admin'],
         'fields' => [
             [
                 'name' => 'name',
@@ -24,16 +28,16 @@ test('generateContent', function () {
         ],
     ];
     $generator = new ControllerGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked,
     );
 
-    $controller = $generator->generateContent($entity);
+    $controller = $generator->generateContent(new Entity($entity));
     $path = $controller['path'];
     $content = $controller['content'];
     expect($path)->toBeString();
@@ -46,6 +50,7 @@ test('generateContent', function () {
 test('authenticatable', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['user', 'admin'],
         'authenticatable' => true,
         'attributes' => [
             [
@@ -64,16 +69,16 @@ test('authenticatable', function () {
         ],
     ];
     $generator = new ControllerGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked,
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
 
     expect($content)
         ->toBeString()
@@ -87,6 +92,7 @@ test('authenticatable', function () {
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['user', 'admin'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -103,12 +109,12 @@ test('generate', function () {
         ],
     ];
     $generator = new ControllerGenerator(
-        [
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
     $generator->generate();
@@ -117,28 +123,3 @@ test('generate', function () {
     expect($this->mocked->contents)->toHaveLength(1);
 });
 
-test('dashboardControllerName', function () {
-    $entity = [
-        'name' => 'foo_bar',
-        'authenticatable' => true,
-        'attributes' => [
-            [
-                'name' => 'id',
-                'type' => 'integer',
-            ],
-            [
-                'name' => 'name',
-                'type' => 'string',
-            ],
-        ],
-    ];
-    $generator = new ControllerGenerator([
-        'entities' => [
-            $entity,
-        ],
-    ], $this->mocked);
-    expect($generator::dashboardControllerName($entity))->toBe('FooBarDashboardController');
-
-    $entity['name'] = 'foo_bar_baz';
-    expect($generator::dashboardControllerName($entity))->toBe('FooBarBazDashboardController');
-});

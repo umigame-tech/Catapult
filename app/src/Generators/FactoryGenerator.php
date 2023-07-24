@@ -2,43 +2,49 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Rules\RuleType;
+use UmigameTech\Catapult\Datatypes\Rules\RuleInterface;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class FactoryGenerator extends Generator
 {
-    private function attributeTypeMap(string $type): string
+    private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
-            AttributeType::String->value => 'realText',
-            AttributeType::Username->value => 'userName',
-            AttributeType::Email->value => 'email',
-            AttributeType::Password->value => 'password',
-            AttributeType::Tel->value => 'phoneNumber',
-            AttributeType::Integer->value => 'numberBetween',
-            AttributeType::Boolean->value => 'boolean',
-            AttributeType::Date->value => 'date',
-            AttributeType::Datetime->value => 'dateTime',
-            AttributeType::Time->value => 'time',
-            AttributeType::Decimal->value => 'randomFloat',
-            AttributeType::Text->value => 'realText',
+            AttributeType::String => 'realText',
+            AttributeType::Username => 'userName',
+            AttributeType::Email => 'email',
+            AttributeType::Password => 'password',
+            AttributeType::Tel => 'phoneNumber',
+            AttributeType::Integer => 'numberBetween',
+            AttributeType::Boolean => 'boolean',
+            AttributeType::Date => 'date',
+            AttributeType::Datetime => 'dateTime',
+            AttributeType::Time => 'time',
+            AttributeType::Decimal => 'randomFloat',
+            AttributeType::Text => 'realText',
             default => throw new \Exception('Invalid attribute type'),
         };
     }
 
-    private function buildSize($type, $attribute)
+    private function buildSize($type, Attribute $attribute)
     {
         if (!in_array($type, ['realText', 'randomFloat', 'numberBetween'])) {
             return '';
         }
 
         $size = [];
-        foreach ($attribute['rules'] ?? [] as $name => $value) {
-            if ($name === 'min') {
-                $size['min'] = $value;
+        /** @var RuleInterface $rule */
+        foreach ($attribute->rules as $rule) {
+            $ruleType = $rule->getType();
+            if ($ruleType === RuleType::Min) {
+                $size['min'] = $rule->getValue();
             }
-            if ($name === 'max') {
-                $size['max'] = $value;
+            if ($ruleType === RuleType::Max) {
+                $size['max'] = $rule->getValue();
             }
         }
         if ($size === []) {
@@ -76,24 +82,20 @@ class FactoryGenerator extends Generator
         return '';
     }
 
-    public function generateContent($entity)
+    public function generateContent(Entity $entity)
     {
-        $modelName = ModelGenerator::modelName($entity);
-        $factoryName = implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $entity['name'])
-        )) . 'Factory';
+        $modelName = $entity->modelName();
+        $factoryName = $entity->factoryName();
 
-        $fakers = array_map(
-            function ($attribute) {
-                $type = $this->attributeTypeMap($attribute['type']);
+        $fakers = $entity->attributes->map(
+            function (Attribute $attribute) {
+                $type = $this->attributeTypeMap($attribute->type);
                 return [
-                    'name' => $attribute['name'],
+                    'name' => $attribute->name,
                     'type' => $type,
                     'size' => $this->buildSize($type, $attribute),
                 ];
             },
-            $entity['attributes']
         );
 
         $renderer = Renderer::getInstance();
@@ -102,7 +104,7 @@ class FactoryGenerator extends Generator
             'factoryName' => $factoryName,
             'fakers' => $fakers,
             'entity' => $entity,
-            'authenticatable' => $entity['authenticatable'] ?? false,
+            'authenticatable' => $entity->isAuthenticatable(),
         ]);
 
         $projectPath = $this->projectPath();

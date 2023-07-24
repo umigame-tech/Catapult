@@ -3,34 +3,25 @@
 namespace UmigameTech\Catapult\Generators;
 
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class ModelGenerator extends Generator
 {
-    static public function modelName($entity)
-    {
-        return implode('', array_map(
-            fn ($word) => ucfirst($word),
-            explode('_', $entity['name'])
-        ));
-    }
-
-    public function generateContent($entity) {
-        $modelName = self::modelName($entity);
-        $authenticatable = $entity['authenticatable'] ?? false;
+    public function generateContent(Entity $entity) {
+        $modelName = $entity->modelName();
+        $authenticatable = $entity->isAuthenticatable();
         $parentClass = $authenticatable ? 'Authenticatable' : 'Model';
         $parentClassImport = $authenticatable
             ? 'use Illuminate\Foundation\Auth\User as Authenticatable;'
             : 'use Illuminate\Database\Eloquent\Model;';
 
-        $fillableList = array_map(
-            fn ($attribute) => $attribute['name'],
-            $entity['attributes']
+        $fillableList = $entity->attributes->map(
+            fn ($attribute) => $attribute->name,
         );
 
-        $hiddenList = array_filter(
-            $entity['attributes'],
-            fn ($attribute) => $attribute['type'] === AttributeType::Password->value
+        $hiddenList = $entity->attributes->filter(
+            fn ($attribute) => $attribute->type === AttributeType::Password,
         );
 
         $renderer = Renderer::getInstance();

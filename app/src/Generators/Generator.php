@@ -3,6 +3,8 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\DataList;
+use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\CopyFileInterface;
 use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
 use UmigameTech\Catapult\FileSystem\FileReaderInterface;
@@ -17,7 +19,7 @@ abstract class Generator
 
     const INDENT = '    ';
 
-    protected $json = [];
+    protected Project $project;
 
     protected $targetDir = '/dist';
 
@@ -33,15 +35,15 @@ abstract class Generator
 
     protected CopyFileInterface $copier;
 
-    protected array $entities = [];
+    protected DataList $entities;
 
     protected $inflector;
 
-    public function __construct($json, $container = null)
+    public function __construct(Project $project, FileSystemContainer $container = null)
     {
-        $this->json = $json;
-        $this->projectName = $json['project_name'] ?? 'project';
-        $this->entities = $json['entities'] ?? [];
+        $this->project = $project;
+        $this->projectName = $this->project->projectName;
+        $this->entities = $this->project->entities;
 
         if (empty($container)) {
             $container = new FileSystemContainer;

@@ -3,8 +3,10 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Templates\Renderer;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\FileSystem\RemoveDirectory;
 
 class ViewGenerator extends Generator
@@ -12,32 +14,32 @@ class ViewGenerator extends Generator
     private $projectPath = '';
     // view CRUD用のBladeテンプレート
 
-    private function attributeTypeMap(string $type): string
+    private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
-            AttributeType::String->value => 'text',
-            AttributeType::Username->value => 'text',
-            AttributeType::Email->value => 'email',
-            AttributeType::Password->value => 'password',
-            AttributeType::Tel->value => 'tel',
-            AttributeType::Integer->value => 'number',
-            AttributeType::Boolean->value => 'checkbox',
-            AttributeType::Date->value => 'date',
-            AttributeType::Datetime->value => 'datetime-local',
-            AttributeType::Time->value => 'time',
-            AttributeType::Decimal->value => 'number',
-            AttributeType::Text->value => 'textarea',
+            AttributeType::String => 'text',
+            AttributeType::Username => 'text',
+            AttributeType::Email => 'email',
+            AttributeType::Password => 'password',
+            AttributeType::Tel => 'tel',
+            AttributeType::Integer => 'number',
+            AttributeType::Boolean => 'checkbox',
+            AttributeType::Date => 'date',
+            AttributeType::Datetime => 'datetime-local',
+            AttributeType::Time => 'time',
+            AttributeType::Decimal => 'number',
+            AttributeType::Text => 'textarea',
             default => throw new \Exception('Invalid attribute type'),
         };
     }
 
-    public function generateContent($entity)
+    public function generateContent(Entity $entity)
     {
         $projectPath = $this->projectPath();
         $this->projectPath = $projectPath;
-        $authenticatable = $entity['authenticatable'] ?? false;
+        $authenticatable = $entity->isAuthenticatable();
 
-        $dirPath = $this->projectPath . '/resources/views/' . $entity['name'];
+        $dirPath = $this->projectPath . '/resources/views/' . $entity->name;
 
         // 前回のディレクトリが残っている場合は削除する
         if ($this->checker->exists($dirPath)) {
@@ -49,10 +51,9 @@ class ViewGenerator extends Generator
 
         // exclude password
         $visible = clone $entity;
-        $visible['attributes'] = array_values(array_filter(
-            $visible['attributes'],
-            fn ($attribute) => $attribute['type'] !== AttributeType::Password->value
-        ));
+        $visible->attributes = $visible->attributes->filter(
+            fn (Attribute $attribute) => $attribute->type !== AttributeType::Password
+        );
 
         $this->generateIndexView($visible);
         $this->generateShowView($visible);
@@ -72,20 +73,21 @@ class ViewGenerator extends Generator
 
     public function generate()
     {
+        /** @var Entity $entity */
         foreach ($this->entities as $entity) {
             $this->generateContent($entity);
         }
     }
 
-    private function generateIndexView($entity)
+    private function generateIndexView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/index.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/index.blade.php';
 
-        $modelName = ModelGenerator::modelName($entity);
+        $modelName = $entity->modelName();
         $camelCase = lcfirst($modelName);
 
         $inflector = InflectorFactory::create()->build();
-        $plural = $inflector->pluralize($entity['name']);
+        $plural = $inflector->pluralize($entity->name);
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/index.blade.php.twig', [
@@ -97,9 +99,9 @@ class ViewGenerator extends Generator
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateShowView($entity)
+    private function generateShowView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/show.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/show.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/show.blade.php.twig', [
@@ -109,18 +111,17 @@ class ViewGenerator extends Generator
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateNewView($entity)
+    private function generateNewView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/new.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/new.blade.php';
 
-        $entity['attributes'] = array_map(
-            function ($attribute) {
-                $attribute['inputType'] = $this->attributeTypeMap($attribute['type']);
+        $entity->attributes = $entity->attributes->mapWithSameType(
+            function (Attribute $attribute) {
+                $attribute->inputType = $this->attributeTypeMap($attribute->type);
                 // 今後書き換えやすいように
-                $attribute['inputName'] = $attribute['name'];
+                $attribute->inputName = $attribute->name;
                 return $attribute;
-            },
-            $entity['attributes']
+            }
         );
 
         $renderer = Renderer::getInstance();
@@ -131,23 +132,23 @@ class ViewGenerator extends Generator
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateCreateConfirmView($entity)
+    private function generateCreateConfirmView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/createConfirm.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/createConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/createConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route(\$routePrefix . '{$entity['name']}.create') }}",
-            'backUri' => "{{ route(\$routePrefix . '{$entity['name']}.new') }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.create') }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity->name}.new') }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateEditView($entity)
+    private function generateEditView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/edit.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/edit.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/edit.blade.php.twig', [
@@ -157,57 +158,54 @@ class ViewGenerator extends Generator
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateUpdateConfirmView($entity)
+    private function generateUpdateConfirmView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/updateConfirm.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/updateConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/updateConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route(\$routePrefix . '{$entity['name']}.update', ['id' => \${$entity['name']}->id]) }}",
-            'backUri' => "{{ route(\$routePrefix . '{$entity['name']}.edit', ['id' => \${$entity['name']}->id]) }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.update', ['id' => \${$entity->name}->id]) }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity->name}.edit', ['id' => \${$entity->name}->id]) }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateDestroyConfirmView($entity)
+    private function generateDestroyConfirmView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/destroyConfirm.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/destroyConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/destroyConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route(\$routePrefix . '{$entity['name']}.destroy', ['id' => \${$entity['name']}->id]) }}",
-            'backUri' => "{{ route(\$routePrefix . '{$entity['name']}.show', ['id' => \${$entity['name']}->id]) }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.destroy', ['id' => \${$entity->name}->id]) }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity->name}.show', ['id' => \${$entity->name}->id]) }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    private function generateLoginView($entity)
+    private function generateLoginView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/login.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/login.blade.php';
 
-        $entity['attributes'] = array_map(
-            function ($attribute) {
-                $attribute['inputType'] = $this->attributeTypeMap($attribute['type']);
+        $entity->attributes = $entity->attributes->mapWithSameType(
+            function (Attribute $attribute) {
+                $attribute->inputType = $this->attributeTypeMap($attribute->type);
                 // 今後書き換えやすいように
-                $attribute['inputName'] = $attribute['name'];
+                $attribute->inputName = $attribute->name;
                 return $attribute;
-            },
-            $entity['attributes']
+            }
         );
 
-        $loginKeys = array_values(array_filter(
-            $entity['attributes'],
-            fn ($attribute) => $attribute['loginKey'] ?? false
-        ));
+        $loginKeys = $entity->attributes->filter(
+            fn (Attribute $attribute) => $attribute->loginKey
+        );
 
-        $password = array_values(array_filter(
-            $entity['attributes'],
-            fn ($attribute) => $attribute['type'] === AttributeType::Password->value,
-        ));
+        $password = $entity->attributes->filter(
+            fn (Attribute $attribute) => $attribute->type === AttributeType::Password
+        );
         if (empty($password)) {
             throw new \Exception('Password attribute is not found');
         }
@@ -217,7 +215,7 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/login.blade.php.twig', [
             'entity' => $entity,
-            'plural' => $this->inflector->pluralize($entity['name']),
+            'plural' => $this->inflector->pluralize($entity->name),
             'loginKeys' => $loginKeys,
             'password' => $password,
         ]);
@@ -225,17 +223,16 @@ class ViewGenerator extends Generator
         $this->writer->write(path: $viewPath, content: $view);
     }
 
-    public function generateDashboardView($entity)
+    public function generateDashboardView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity['name'] . '/dashboard.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/dashboard.blade.php';
 
         $renderer = Renderer::getInstance();
-        $entities = array_map(
-            function ($entity) {
-                $entity['plural'] = $this->inflector->pluralize($entity['name']);
+        $entities = $this->entities->mapWithSameType(
+            function (Entity $entity) {
+                $entity->plural = $this->inflector->pluralize($entity->name);
                 return $entity;
             },
-            $this->entities
         );
 
         $view = $renderer->render('views/dashboard.blade.php.twig', [

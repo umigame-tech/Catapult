@@ -1,7 +1,7 @@
 <?php
 
-use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
-use UmigameTech\Catapult\Generators\SeederGenerator;
+use UmigameTech\Catapult\Datatypes\Project;
+use UmigameTech\Catapult\Generators\RouteGenerator;
 
 beforeEach(function () {
     $this->mocked = mockFileSystems();
@@ -10,6 +10,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' =>['everyone'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -25,25 +26,70 @@ test('generateContent', function () {
             ],
         ],
     ];
-    $generator = new SeederGenerator(
-        [
+    $generator = new RouteGenerator(
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
+    list('content' => $content) = $generator->generateContent();
     expect($content)
         ->toBeString()
-        ->toContain('class UserSeeder extends Seeder');
+        ->toContain("Route::get('users', [UserController::class, 'index'])->name('user.index');")
+        ->not->toContain("Route::get('user/login', [UserController::class, 'login'])->name('user.login');");
+});
+
+test('authenticatable', function () {
+    $entity = [
+        'name' => 'user',
+        'authenticatable' => true,
+        'allowedFor' => [
+            'user',
+        ],
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'password',
+            ],
+        ],
+    ];
+    $generator = new RouteGenerator(
+        new Project([
+            'project_name' => 'test',
+            'entities' => [
+                $entity,
+            ],
+        ]),
+        $this->mocked
+    );
+
+    list('content' => $content) = $generator->generateContent();
+    expect($content)
+        ->toBeString()
+        ->toContain("Route::prefix('users')->name('users.')->middleware('auth:users')->group(function () {")
+        ->toContain("    Route::get('users', [UserController::class, 'index'])->name('user.index');")
+        ->toContain("    Route::get('dashboard', [UserController::class, 'dashboard'])->name('dashboard');")
+        ->toContain("Route::get('users/login', [UserController::class, 'login'])->name('users.login');")
+        ->toContain("Route::post('users/login', [UserController::class, 'loginSubmit'])->name('users.loginSubmit');")
+        ->toContain("Route::get('users/logout', [UserController::class, 'logout'])->name('users.logout');");
 });
 
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['everyone'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -59,64 +105,18 @@ test('generate', function () {
             ],
         ],
     ];
-    $generator = new SeederGenerator(
-        [
+    $generator = new RouteGenerator(
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
     $generator->generate();
     expect($this->mocked->contents)
         ->toBeArray()
-        ->toHaveLength(2);
-
-    $generator->generate();
-    expect($this->mocked->removed)
-        ->toBeArray()
-        ->toHaveLength(0);
-});
-
-test('remove old files', function () {
-    $this->mocked->checker = new class implements FileCheckerInterface {
-        public function exists($path): bool
-        {
-            return true;
-        }
-    };
-
-    $entity = [
-        'name' => 'user',
-        'attributes' => [
-            [
-                'name' => 'name',
-                'type' => 'string',
-            ],
-            [
-                'name' => 'email',
-                'type' => 'string',
-            ],
-            [
-                'name' => 'password',
-                'type' => 'string',
-            ],
-        ],
-    ];
-
-    $generator = new SeederGenerator(
-        [
-            'project_name' => 'test',
-            'entities' => [
-                $entity,
-            ],
-        ],
-        $this->mocked
-    );
-
-    $generator->generate();
-    expect($this->mocked->removed)
-        ->toHaveLength(2);
+        ->toHaveLength(1);
 });

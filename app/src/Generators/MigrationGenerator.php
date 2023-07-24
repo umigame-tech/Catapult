@@ -3,32 +3,35 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Rules\RuleType;
 use UmigameTech\Catapult\ProjectSettings;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class MigrationGenerator extends Generator
 {
-    private function attributeTypeMap(string $type): string
+    private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
-            AttributeType::String->value => 'string',
-            AttributeType::Username->value => 'string',
-            AttributeType::Email->value => 'string',
-            AttributeType::Password->value => 'string',
-            AttributeType::Tel->value => 'string',
-            AttributeType::Integer->value => 'integer',
-            AttributeType::Boolean->value => 'boolean',
-            AttributeType::Date->value => 'date',
-            AttributeType::Datetime->value => 'dateTime',
-            AttributeType::Time->value => 'time',
-            AttributeType::Decimal->value => 'decimal',
-            AttributeType::Text->value => 'text',
+            AttributeType::String => 'string',
+            AttributeType::Username => 'string',
+            AttributeType::Email => 'string',
+            AttributeType::Password => 'string',
+            AttributeType::Tel => 'string',
+            AttributeType::Integer => 'integer',
+            AttributeType::Boolean => 'boolean',
+            AttributeType::Date => 'date',
+            AttributeType::Datetime => 'dateTime',
+            AttributeType::Time => 'time',
+            AttributeType::Decimal => 'decimal',
+            AttributeType::Text => 'text',
             default => throw new \Exception('Invalid attribute type'),
         };
     }
 
-    private function buildCheckConstraint(string $sqlDataType, $attribute)
+    private function buildCheckConstraint(string $sqlDataType, Attribute $attribute)
     {
         $settings = ProjectSettings::getInstance();
         if ($settings->get('db_engine') === 'sqlite') {
@@ -37,12 +40,12 @@ class MigrationGenerator extends Generator
         }
 
         if ($sqlDataType === 'integer') {
-            $rules = $attribute['rules'] ?? [];
+            $rules = $attribute->rules;
             $constraints = [];
-            foreach ($rules as $name => $value) {
-                $constraints[] = match ($name) {
-                    'min' => "{$attribute['name']}_min CHECK ({$sqlDataType} >= {$value})",
-                    'max' => "{$attribute['name']}_max CHECK ({$sqlDataType} <= {$value})",
+            foreach ($rules as $rule) {
+                $constraints[] = match ($rule->getType()) {
+                    RuleType::Min => "{$attribute->name}_min CHECK ({$sqlDataType} >= {$rule->getValue()})",
+                    RuleType::Max=> "{$attribute->name}_max CHECK ({$sqlDataType} <= {$rule->getValue()})",
                     default => null,
                 };
             }
@@ -58,20 +61,19 @@ class MigrationGenerator extends Generator
         return [];
     }
 
-    public function generateContent($entity)
+    public function generateContent(Entity $entity)
     {
-        $tableName = $entity['name'];
+        $tableName = $entity->name;
 
-        $columns = array_map(
-            function ($attribute) {
-                $type = $this->attributeTypeMap($attribute['type']);
+        $columns = $entity->attributes->map(
+            function (Attribute $attribute) {
+                $type = $this->attributeTypeMap($attribute->type);
                 return [
-                    'name' => $attribute['name'],
+                    'name' => $attribute->name,
                     'type' => $type,
                     'constraints' => $this->buildCheckConstraint($type, $attribute),
                 ];
-            },
-            $entity['attributes']
+            }
         );
 
         $inflector = InflectorFactory::create()->build();
@@ -103,6 +105,7 @@ class MigrationGenerator extends Generator
 
     public function generate()
     {
+        /** @var Entity $entity */
         foreach ($this->entities as $entity) {
             if (empty($entity)) {
                 continue;

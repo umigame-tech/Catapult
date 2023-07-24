@@ -1,6 +1,9 @@
 <?php
 
-use UmigameTech\Catapult\Generators\ModelGenerator;
+use UmigameTech\Catapult\Datatypes\Entity;
+use UmigameTech\Catapult\Datatypes\Project;
+use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
+use UmigameTech\Catapult\Generators\SeederGenerator;
 
 beforeEach(function () {
     $this->mocked = mockFileSystems();
@@ -9,6 +12,7 @@ beforeEach(function () {
 test('generateContent', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin', 'user'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -24,62 +28,26 @@ test('generateContent', function () {
             ],
         ],
     ];
-    $generator = new ModelGenerator(
-        [
+    $generator = new SeederGenerator(
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
-    list('content' => $content) = $generator->generateContent($entity);
-
+    list('content' => $content) = $generator->generateContent(new Entity($entity));
     expect($content)
         ->toBeString()
-        ->toContain('class User extends Model');
-});
-
-test('authenticatable', function () {
-    $entity = [
-        'name' => 'user',
-        'authenticatable' => true,
-        'attributes' => [
-            [
-                'name' => 'name',
-                'type' => 'string',
-            ],
-            [
-                'name' => 'email',
-                'type' => 'string',
-            ],
-            [
-                'name' => 'password',
-                'type' => 'password',
-            ],
-        ],
-    ];
-    $generator = new ModelGenerator(
-        [
-            'project_name' => 'test',
-            'entities' => [
-                $entity,
-            ],
-        ],
-        $this->mocked
-    );
-
-    list('content' => $content) = $generator->generateContent($entity);
-
-    expect($content)
-        ->toBeString()
-        ->toContain('class User extends Authenticatable');
+        ->toContain('class UserSeeder extends Seeder');
 });
 
 test('generate', function () {
     $entity = [
         'name' => 'user',
+        'allowedFor' => ['admin', 'user'],
         'attributes' => [
             [
                 'name' => 'name',
@@ -95,18 +63,65 @@ test('generate', function () {
             ],
         ],
     ];
-    $generator = new ModelGenerator(
-        [
+    $generator = new SeederGenerator(
+        new Project([
             'project_name' => 'test',
             'entities' => [
                 $entity,
             ],
-        ],
+        ]),
         $this->mocked
     );
 
     $generator->generate();
+    expect($this->mocked->contents)
+        ->toBeArray()
+        ->toHaveLength(2);
 
-    expect($this->mocked->contents)->toBeArray();
-    expect($this->mocked->contents)->toHaveLength(1);
+    $generator->generate();
+    expect($this->mocked->removed)
+        ->toBeArray()
+        ->toHaveLength(0);
+});
+
+test('remove old files', function () {
+    $this->mocked->checker = new class implements FileCheckerInterface {
+        public function exists($path): bool
+        {
+            return true;
+        }
+    };
+
+    $entity = [
+        'name' => 'user',
+        'allowedFor' => ['admin', 'user'],
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'string',
+            ],
+        ],
+    ];
+
+    $generator = new SeederGenerator(
+        new Project([
+            'project_name' => 'test',
+            'entities' => [
+                $entity,
+            ],
+        ]),
+        $this->mocked
+    );
+
+    $generator->generate();
+    expect($this->mocked->removed)
+        ->toHaveLength(2);
 });

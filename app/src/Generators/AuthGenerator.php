@@ -3,61 +3,45 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
+use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
 class AuthGenerator extends Generator
 {
-    public function authName($entity)
-    {
-        return $this->inflector->pluralize($entity['name']);
-    }
-
     public function generateContent()
     {
         $renderer = Renderer::getInstance();
         $authPhpPath = $this->projectPath() . '/config/auth.php';
 
-        $authenticatableList = array_values(array_filter(
-            $this->entities,
-            fn ($entity) => $entity['authenticatable'] ?? false
-        ));
+        $authenticatableList = $this->entities->filter(
+            fn (Entity $entity) => $entity->isAuthenticatable()
+        );
 
         $inflector = InflectorFactory::create()->build();
-        $authenticatableList = array_map(
-            function ($entity) use ($inflector) {
-                $entity['plural'] = $inflector->pluralize($entity['name']);
-                return $entity;
-            },
-            $authenticatableList
-        );
 
-        $guards = array_map(
-            fn ($entity) => "'{$entity['plural']}' => [
+        $guards = $authenticatableList->map(
+            fn (Entity $entity) => "'{$entity->authName()}' => [
             'driver' => 'session',
-            'provider' => '{$entity['plural']}',
+            'provider' => '{$entity->authName()}',
         ]",
-            $authenticatableList
         );
 
-        $providers = array_map(
-            function ($entity) {
-                $modelName = ModelGenerator::modelName($entity);
-                return "'{$entity['plural']}' => [
+        $providers = $authenticatableList->map(
+            function (Entity $entity) {
+                return "'{$entity->authName()}' => [
             'driver' => 'eloquent',
-            'model' => App\\Models\\{$modelName}::class,
+            'model' => App\\Models\\{$entity->modelName()}::class,
         ]";
             },
-            $authenticatableList
         );
 
-        $passwords = array_map(
-            fn ($entity) => "'{$entity['plural']}' => [
-            'provider' => '{$entity['plural']}',
+        $passwords = $authenticatableList->map(
+            fn (Entity $entity) => "'{$entity->authName()}' => [
+            'provider' => '{$entity->authName()}',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,
         ]",
-            $authenticatableList
         );
 
         $authPhp = $renderer->render('auth.php.twig', [
