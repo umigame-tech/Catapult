@@ -97,4 +97,14 @@ class Entity
     {
         return $this->modelName() . 'Seeder';
     }
+
+    public function resourceName(): string
+    {
+        return $this->modelName() . 'Resource';
+    }
+
+    public function resourceCollectionName(): string
+    {
+        return $this->modelName() . 'ResourceCollection';
+    }
 }
