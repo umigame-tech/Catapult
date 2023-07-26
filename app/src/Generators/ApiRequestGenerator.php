@@ -41,7 +41,7 @@ class ApiRequestGenerator extends RequestGenerator
         }
 
         if (!$this->checker->exists(dirname($requestPath))) {
-            mkdir(dirname($requestPath), 0755, true);
+            $this->makeDirectory->mkdir(dirname($requestPath), 0755, true);
         }
 
         return [
@@ -52,9 +52,10 @@ class ApiRequestGenerator extends RequestGenerator
 
     public function generate()
     {
+        $relativePath = 'app/Http/Requests/Api/ApiRequest.php';
         // Copy ApiRequest.php file.
-        $source = __DIR__ . '/../Templates/ApiRequest.php';
-        $dest = $this->projectPath() . '/app/Http/Requests/Api/ApiRequest.php';
+        $source = __DIR__ . '/../Templates/' . $relativePath;
+        $dest = $this->projectPath() . '/' . $relativePath;
         $this->copier->copyFile($source, $dest);
 
         /** @var Entity $entity */

@@ -11,6 +11,7 @@ use UmigameTech\Catapult\FileSystem\FileReaderInterface;
 use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\FileSystem\MakeDirectoryInterface;
 use UmigameTech\Catapult\Traits\ProjectPath;
 
 abstract class Generator
@@ -39,6 +40,8 @@ abstract class Generator
 
     protected $inflector;
 
+    protected $makeDirectory;
+
     public function __construct(Project $project, FileSystemContainer $container = null)
     {
         $this->project = $project;
@@ -54,6 +57,7 @@ abstract class Generator
         $this->remover = $container->remover;
         $this->checker = $container->checker;
         $this->copier = $container->copier;
+        $this->makeDirectory = $container->makeDirectory;
 
         $this->inflector = InflectorFactory::create()->build();
     }
@@ -71,5 +75,10 @@ abstract class Generator
 
         $prefix = $this->inflector->pluralize($entity['name']);
         return '/' . (!empty($prefix) ? "{$prefix}/" : '') . $entity['name'];
+    }
+
+    public function setMakeDirectory(MakeDirectoryInterface $makeDirectory)
+    {
+        $this->makeDirectory = $makeDirectory;
     }
 }

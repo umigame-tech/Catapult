@@ -30,6 +30,7 @@ use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileReaderInterface;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
+use UmigameTech\Catapult\FileSystem\MakeDirectoryInterface;
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);
@@ -111,6 +112,13 @@ function mockFileSystems()
         public function copyFile($source, $dest)
         {
             $this->outer->copied[] = compact('source', 'dest');
+        }
+    };
+
+    $mocked->makeDirectory = new class implements MakeDirectoryInterface {
+        public function mkdir(string $path, int $mode = 0755, bool $recursive = false): bool
+        {
+            return true;
         }
     };
 

@@ -87,7 +87,7 @@ class RequestGenerator extends Generator
         }
 
         if (!$this->checker->exists(dirname($requestPath))) {
-            mkdir(dirname($requestPath), 0755, true);
+            $this->makeDirectory->mkdir(dirname($requestPath), 0755, true);
         }
 
         return [
@@ -137,7 +137,7 @@ class RequestGenerator extends Generator
         }
 
         if (!file_exists(dirname($requestPath))) {
-            mkdir(dirname($requestPath), 0755, true);
+            $this->makeDirectory->mkdir(dirname($requestPath), 0755, true);
         }
 
         return [

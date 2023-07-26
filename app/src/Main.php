@@ -15,6 +15,7 @@ use UmigameTech\Catapult\FileSystem\FileReaderInterface;
 use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\Generators\ApiRequestGenerator;
 use UmigameTech\Catapult\Generators\AuthenticateSetupGenerator;
 use UmigameTech\Catapult\Generators\AuthGenerator;
 use UmigameTech\Catapult\Generators\ModelGenerator;
@@ -59,6 +60,8 @@ class Main
         SeederGenerator::class,
         ViewGenerator::class,
         AuthenticateSetupGenerator::class,
+
+        ApiRequestGenerator::class,
     ];
 
     public function __construct(FileSystemContainer $container = null)
