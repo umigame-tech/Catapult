@@ -6,7 +6,6 @@ use SplFileObject;
 use Swaggest\JsonSchema\Schema;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
-use UmigameTech\Catapult\Datatypes\DataList;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\CopyFileInterface;
@@ -15,7 +14,9 @@ use UmigameTech\Catapult\FileSystem\FileReaderInterface;
 use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
+use UmigameTech\Catapult\Generators\ApiControllerGenerator;
 use UmigameTech\Catapult\Generators\ApiRequestGenerator;
+use UmigameTech\Catapult\Generators\ApiRouteGenerator;
 use UmigameTech\Catapult\Generators\AuthenticateSetupGenerator;
 use UmigameTech\Catapult\Generators\AuthGenerator;
 use UmigameTech\Catapult\Generators\ModelGenerator;
@@ -24,6 +25,7 @@ use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
 use UmigameTech\Catapult\Generators\CssSetupGenerator;
 use UmigameTech\Catapult\Generators\RequestGenerator;
+use UmigameTech\Catapult\Generators\ResourceGenerator;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
 use UmigameTech\Catapult\Generators\SeederGenerator;
@@ -61,7 +63,10 @@ class Main
         ViewGenerator::class,
         AuthenticateSetupGenerator::class,
 
+        ResourceGenerator::class,
         ApiRequestGenerator::class,
+        ApiRouteGenerator::class,
+        ApiControllerGenerator::class,
     ];
 
     public function __construct(FileSystemContainer $container = null)

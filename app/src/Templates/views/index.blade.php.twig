@@ -11,7 +11,7 @@
   <a class="button text-white visited:text-white" href="{{ '{{' }}
       route($routePrefix . '{{ entity.name }}.new',
       ['fromUrl' => $fromUrl])
-  {{ '}}' }}">新規作成</a>
+  {{ '}}' }}">New</a>
 </div>
 {{ '{{' }} ${{ plural }}->links() {{ '}}' }}
 <table class="overflow-x-scroll max-w-screen block whitespace-nowrap" style="max-height: calc(100vh - 200px)">
@@ -43,19 +43,19 @@
             'id' => ${{ camelCase }}->id,
             'fromUrl' => $fromUrl,
           ])
-        {{ '}}' }}">詳細</a>
+        {{ '}}' }}">Detail</a>
         <a href="{{ '{{' }}
           route($routePrefix . '{{ entity.name }}.edit', [
             'id' => ${{ camelCase }}->id,
             'fromUrl' => $fromUrl,
           ])
-        {{ '}}' }}">編集</a>
+        {{ '}}' }}">Edit</a>
         <a href="{{ '{{' }}
           route($routePrefix . '{{ entity.name }}.destroyConfirm', [
             'id' => ${{ camelCase }}->id,
             'fromUrl' => $fromUrl,
           ])
-        {{ '}}' }}">削除</a>
+        {{ '}}' }}">Delete</a>
       </td>
     </tr>
 @endforeach

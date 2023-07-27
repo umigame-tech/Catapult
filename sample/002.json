@@ -63,7 +63,8 @@
     {
       "name": "book",
       "allowedFor": [
-        "person"
+        "person",
+        "everyone"
       ],
       "attributes": [
         {

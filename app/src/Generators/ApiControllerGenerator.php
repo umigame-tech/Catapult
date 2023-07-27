@@ -35,6 +35,8 @@ class ApiControllerGenerator extends ControllerGenerator
         $controllerName = $entity->apiControllerName();
         $modelName = $entity->modelName();
         $requestName = $entity->apiRequestName();
+        $resourceName = $entity->resourceName();
+        $resourceCollectionName = $entity->resourceCollectionName();
 
         $plural = $this->inflector->pluralize($entity->name);
 
@@ -48,13 +50,15 @@ class ApiControllerGenerator extends ControllerGenerator
             'plural' => $plural,
             'entity' => $entity,
             'authenticatable' => $authenticatable,
+            'resourceName' => $resourceName,
+            'resourceCollectionName' => $resourceCollectionName,
         ];
 
         if ($authenticatable) {
             // TODO: ログイン可能エンティティの場合の処理
         }
 
-        $controller = $renderer->render('api/controller', $data);
+        $controller = $renderer->render('api/controller.twig', $data);
 
         $projectPath = $this->projectPath();
         $controllerPath = "{$projectPath}/app/Http/Controllers/Api/{$controllerName}.php";

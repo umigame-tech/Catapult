@@ -18,7 +18,6 @@ use App\Http\Controllers\{{ entity.controllerName }};
 */
 
 {# for authenticated users #}
-{# TODO: routeのnameにもプレフィックスを付けるようにする。各画面でroute関数を使っている箇所でも対応が必要。 #}
 {% for authName, entities in authList %}
 Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ authName }}')->group(function () {
 {% for entity in entities %}
