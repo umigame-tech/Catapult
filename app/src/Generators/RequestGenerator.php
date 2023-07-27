@@ -41,7 +41,7 @@ class RequestGenerator extends Generator
             $validationRules[] = match ($rule->getType()) {
                 RuleType::Min => "min:{$rule->getValue()}",
                 RuleType::Max => "max:{$rule->getValue()}",
-                RuleType::Required=> 'required',
+                RuleType::Required => 'required',
                 // 'unique' => "unique:{$attribute->name}",
                 default => null,
             };

@@ -37,8 +37,11 @@ class RouteGenerator extends Generator
             );
             $params = $params ? '/' . $params : '';
 
-            $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
-                . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+            $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
+            foreach ($methods as $method) {
+                $converted[$actionName . '_' . $method] = "Route::{$method}('{$entityPath}{$actionPath}{$params}', "
+                    . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+            }
         }
 
         if ($entity->isAuthenticatable()) {

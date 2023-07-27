@@ -17,11 +17,11 @@ class ApiControllerGenerator extends ControllerGenerator
             'params' => ['id'],
         ],
         'create' => [
-            'method' => self::METHOD_PUT,
+            'method' => self::METHOD_POST,
             'params' => [],
         ],
         'update' => [
-            'method' => self::METHOD_PATCH,
+            'method' => [self::METHOD_PATCH, self::METHOD_PUT],
             'params' => ['id'],
         ],
         'destroy' => [
@@ -34,7 +34,8 @@ class ApiControllerGenerator extends ControllerGenerator
     {
         $controllerName = $entity->apiControllerName();
         $modelName = $entity->modelName();
-        $requestName = $entity->apiRequestName();
+        $storeRequestName = $entity->apiStoreRequestName();
+        $updateRequestName = $entity->apiUpdateRequestName();
         $resourceName = $entity->resourceName();
         $resourceCollectionName = $entity->resourceCollectionName();
 
@@ -46,7 +47,8 @@ class ApiControllerGenerator extends ControllerGenerator
         $data = [
             'controllerName' => $controllerName,
             'modelName' => $modelName,
-            'requestName' => $requestName,
+            'storeRequestName' => $storeRequestName,
+            'updateRequestName' => $updateRequestName,
             'plural' => $plural,
             'entity' => $entity,
             'authenticatable' => $authenticatable,

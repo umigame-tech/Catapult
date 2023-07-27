@@ -1,14 +1,14 @@
 <?php
 
 use UmigameTech\Catapult\Datatypes\Project;
-use UmigameTech\Catapult\Generators\ApiRequestGenerator;
+use UmigameTech\Catapult\Generators\ApiStoreRequestGenerator;
 
 beforeEach(function () {
     $this->mocked = mockFileSystems();
 });
 
 test('generate', function () {
-    $generator = new ApiRequestGenerator(
+    $generator = new ApiStoreRequestGenerator(
         new Project([
             'project_name' => 'test',
             'entities' => [
@@ -45,4 +45,7 @@ test('generate', function () {
             'source' => '/app/src/Generators/../Templates/app/Http/Requests/Api/ApiRequest.php',
             'dest' => '/dist/test/app/Http/Requests/Api/ApiRequest.php',
         ]);
+
+    expect($this->mocked->contents[0])
+        ->toContain('class ApiStoreUserRequest extends ApiRequest');
 });

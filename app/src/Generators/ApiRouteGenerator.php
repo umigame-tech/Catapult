@@ -25,8 +25,11 @@ class ApiRouteGenerator extends RouteGenerator
             );
             $params = $params ? '/' . $params : '';
 
-            $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
-                . "[{$entity->apiControllerName()}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+            $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
+            foreach ($methods as $method) {
+                $converted[$actionName . '_' . $method] = "Route::{$method}('{$entityPath}{$actionPath}{$params}', "
+                    . "[{$entity->apiControllerName()}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+            }
         }
 
         return $converted;

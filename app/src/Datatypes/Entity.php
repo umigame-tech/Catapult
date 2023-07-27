@@ -66,9 +66,14 @@ class Entity
         return $this->modelName() . 'Request';
     }
 
-    public function apiRequestName()
+    public function apiStoreRequestName()
     {
-        return 'Api' . $this->requestName();
+        return 'ApiStore' . $this->requestName();
+    }
+
+    public function apiUpdateRequestName()
+    {
+        return 'ApiUpdate' . $this->requestName();
     }
 
     public function loginRequestName()

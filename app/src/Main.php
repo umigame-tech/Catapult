@@ -15,7 +15,8 @@ use UmigameTech\Catapult\FileSystem\FileRemoverInterface;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
 use UmigameTech\Catapult\FileSystem\FileWriterInterface;
 use UmigameTech\Catapult\Generators\ApiControllerGenerator;
-use UmigameTech\Catapult\Generators\ApiRequestGenerator;
+use UmigameTech\Catapult\Generators\ApiStoreRequestGenerator;
+use UmigameTech\Catapult\Generators\ApiUpdateRequestGenerator;
 use UmigameTech\Catapult\Generators\ApiRouteGenerator;
 use UmigameTech\Catapult\Generators\AuthenticateSetupGenerator;
 use UmigameTech\Catapult\Generators\AuthGenerator;
@@ -64,7 +65,8 @@ class Main
         AuthenticateSetupGenerator::class,
 
         ResourceGenerator::class,
-        ApiRequestGenerator::class,
+        ApiStoreRequestGenerator::class,
+        ApiUpdateRequestGenerator::class,
         ApiRouteGenerator::class,
         ApiControllerGenerator::class,
     ];

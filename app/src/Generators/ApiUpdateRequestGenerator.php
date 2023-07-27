@@ -3,21 +3,18 @@
 namespace UmigameTech\Catapult\Generators;
 
 use UmigameTech\Catapult\Datatypes\Attribute;
-use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
-class ApiRequestGenerator extends RequestGenerator
+class ApiUpdateRequestGenerator extends RequestGenerator
 {
     public function generateContent(Entity $entity)
     {
-        $requestName = $entity->apiRequestName();
+        $requestName = $entity->apiUpdateRequestName();
         $attributes = $entity->attributes->map(
             function (Attribute $attribute) {
-                $rules = [$this->attributeTypeMap($attribute->type)];
-                if ($attribute->type === AttributeType::Password) {
-                    $rules[] = 'nullable';
-                }
+                // updateの場合はすべてのカラムがnullableでOK
+                $rules = ['nullable', $this->attributeTypeMap($attribute->type)];
                 $rules = array_merge($rules, $this->buildValidationRules($attribute->type, $attribute));
                 $rules = implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [
@@ -67,12 +64,11 @@ class ApiRequestGenerator extends RequestGenerator
 
             $this->writer->write(...$content);
 
-            // ログイン可能なエンティティの場合はログイン用のリクエストも生成する
             if (!($entity->isAuthenticatable())) {
                 continue;
             }
 
-            // TODO: ログイン用のリクエストを生成する処理
+            // TODO: ログイン可能なエンティティの場合の処理
         }
     }
 }

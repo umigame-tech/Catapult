@@ -4,7 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Http\Requests\Api\{{ requestName }};
+use App\Http\Requests\Api\{{ storeRequestName }};
+use App\Http\Requests\Api\{{ updateRequestName }};
 use App\Models\{{ modelName }};
 use App\Http\Resources\{{ resourceName }};
 use App\Http\Resources\{{ resourceCollectionName }};
@@ -22,9 +23,9 @@ class {{ controllerName }} extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function create(Request $request)
+    public function create({{ storeRequestName }} $request)
     {
-        //
+        return new {{ resourceName }}({{ modelName }}::create($request->all()));
     }
 
     /**
@@ -32,15 +33,17 @@ class {{ controllerName }} extends Controller
      */
     public function show(string $id)
     {
-        //
+        return new {{ resourceName }}({{ modelName }}::findOrFail($id));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update({{ updateRequestName }} $request, string $id)
     {
-        //
+        ${{ entity.name }} = {{ modelName }}::findOrFail($id);
+        ${{ entity.name }}->update($request->all());
+        return new {{ resourceName }}(${{ entity.name }});
     }
 
     /**
@@ -48,6 +51,6 @@ class {{ controllerName }} extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        return {{ modelName }}::destroy($id);
     }
 }
