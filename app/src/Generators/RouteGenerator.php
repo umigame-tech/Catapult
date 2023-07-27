@@ -17,7 +17,7 @@ class RouteGenerator extends Generator
         parent::__construct($project, $container);
     }
 
-    private function convertActionName(Entity $entity)
+    protected function convertActionName(Entity $entity)
     {
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
@@ -37,8 +37,11 @@ class RouteGenerator extends Generator
             );
             $params = $params ? '/' . $params : '';
 
-            $converted[$actionName] = "Route::{$action['method']}('{$entityPath}{$actionPath}{$params}', "
-                . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+            $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
+            foreach ($methods as $method) {
+                $converted[$actionName . '_' . $method] = "Route::{$method}('{$entityPath}{$actionPath}{$params}', "
+                    . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
+            }
         }
 
         if ($entity->isAuthenticatable()) {
@@ -94,7 +97,7 @@ class RouteGenerator extends Generator
         return $authList;
     }
 
-    private function routesForEveryone()
+    protected function routesForEveryone()
     {
         $filtered = $this->entities->filter(
             function ($entity) {
@@ -111,7 +114,7 @@ class RouteGenerator extends Generator
         return $this->convertEntitiesForRoute($filtered);
     }
 
-    private function convertEntitiesForRoute(DataList $entities)
+    protected function convertEntitiesForRoute(DataList $entities)
     {
         $entities = $entities->map(
             function (Entity $entity) {

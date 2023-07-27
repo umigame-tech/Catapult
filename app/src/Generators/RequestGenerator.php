@@ -12,7 +12,7 @@ use UmigameTech\Catapult\Templates\Renderer;
 class RequestGenerator extends Generator
 {
     // attributeのtypeをLaravelのvalidation ruleに変換する
-    private function attributeTypeMap(AttributeType $type): string
+    protected function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
             AttributeType::String => 'string',
@@ -32,7 +32,7 @@ class RequestGenerator extends Generator
     }
 
     // $type は今は使わないが、型によってルールを加える可能性がある（emailやtelなど）
-    private function buildValidationRules(AttributeType $type, Attribute $attribute)
+    protected function buildValidationRules(AttributeType $type, Attribute $attribute)
     {
         $rules = $attribute->rules ?? [];
         $validationRules = [];
@@ -41,7 +41,7 @@ class RequestGenerator extends Generator
             $validationRules[] = match ($rule->getType()) {
                 RuleType::Min => "min:{$rule->getValue()}",
                 RuleType::Max => "max:{$rule->getValue()}",
-                RuleType::Required=> 'required',
+                RuleType::Required => 'required',
                 // 'unique' => "unique:{$attribute->name}",
                 default => null,
             };
@@ -65,7 +65,7 @@ class RequestGenerator extends Generator
                     $rules[] = 'nullable';
                 }
                 $rules = array_merge($rules, $this->buildValidationRules($attribute->type, $attribute));
-                $rules= implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
+                $rules = implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [
                     'name' => $attribute->name,
                     'rules' => $rules,
@@ -82,12 +82,12 @@ class RequestGenerator extends Generator
 
         $projectPath = $this->projectPath();
         $requestPath = "{$projectPath}/app/Http/Requests/{$requestName}.php";
-        if (file_exists($requestPath)) {
-            unlink($requestPath);
+        if ($this->checker->exists($requestPath)) {
+            $this->remover->remove($requestPath);
         }
 
-        if (!file_exists(dirname($requestPath))) {
-            mkdir(dirname($requestPath), 0755, true);
+        if (!$this->checker->exists(dirname($requestPath))) {
+            $this->makeDirectory->mkdir(dirname($requestPath), 0755, true);
         }
 
         return [
@@ -137,7 +137,7 @@ class RequestGenerator extends Generator
         }
 
         if (!file_exists(dirname($requestPath))) {
-            mkdir(dirname($requestPath), 0755, true);
+            $this->makeDirectory->mkdir(dirname($requestPath), 0755, true);
         }
 
         return [

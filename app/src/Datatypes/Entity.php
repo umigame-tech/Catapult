@@ -51,6 +51,11 @@ class Entity
         return $this->modelName() . 'Controller';
     }
 
+    public function apiControllerName(): string
+    {
+        return 'Api' . $this->controllerName();
+    }
+
     public function dashboardControllerName(): string
     {
         return $this->modelName() . 'DashboardController';
@@ -59,6 +64,16 @@ class Entity
     public function requestName()
     {
         return $this->modelName() . 'Request';
+    }
+
+    public function apiStoreRequestName()
+    {
+        return 'ApiStore' . $this->requestName();
+    }
+
+    public function apiUpdateRequestName()
+    {
+        return 'ApiUpdate' . $this->requestName();
     }
 
     public function loginRequestName()
@@ -86,5 +101,15 @@ class Entity
     public function seederName(): string
     {
         return $this->modelName() . 'Seeder';
+    }
+
+    public function resourceName(): string
+    {
+        return $this->modelName() . 'Resource';
+    }
+
+    public function resourceCollectionName(): string
+    {
+        return $this->modelName() . 'ResourceCollection';
     }
 }
