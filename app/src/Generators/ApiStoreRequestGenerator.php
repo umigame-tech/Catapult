@@ -22,7 +22,12 @@ class ApiStoreRequestGenerator extends RequestGenerator
                 } else {
                     $rules[] = 'required';
                 }
-                $rules = array_merge($rules, $this->buildValidationRules($attribute->type, $attribute));
+                $rules = array_values(array_unique(
+                    array_merge(
+                        $rules,
+                        $this->buildValidationRules($attribute->type, $attribute)
+                    )
+                ));
                 $rules = implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [
                     'name' => $attribute->name,

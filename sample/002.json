@@ -24,7 +24,10 @@
         },
         {
           "name": "tel",
-          "type": "tel"
+          "type": "tel",
+          "rules": {
+            "nullable": true
+          }
         },
         {
           "name": "age",

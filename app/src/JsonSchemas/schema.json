@@ -74,6 +74,10 @@
                     "max": {
                       "description": "Maximum value or length of the attribute",
                       "type": "integer"
+                    },
+                    "nullable": {
+                      "description": "Is the attribute nullable?",
+                      "type": "boolean"
                     }
                   }
                 }
