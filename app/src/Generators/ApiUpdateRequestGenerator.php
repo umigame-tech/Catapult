@@ -14,7 +14,10 @@ class ApiUpdateRequestGenerator extends RequestGenerator
         $attributes = $entity->attributes->map(
             function (Attribute $attribute) {
                 // updateの場合はすべてのカラムがnullableでOK
-                $rules = ['nullable', $this->attributeTypeMap($attribute->type)];
+                $rules = array_values(array_unique([
+                    'nullable',
+                    $this->attributeTypeMap($attribute->type),
+                ]));
                 $rules = array_merge($rules, $this->buildValidationRules($attribute->type, $attribute));
                 $rules = implode(",\n" . $this->indents(4), array_map(fn ($rule) => "'" . $rule . "'", $rules));
                 return [

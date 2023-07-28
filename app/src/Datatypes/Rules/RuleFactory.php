@@ -11,6 +11,7 @@ class RuleFactory
             RuleType::Required => new RuleRequired($data),
             RuleType::Min => new RuleMin($data),
             RuleType::Max => new RuleMax($data),
+            RuleType::Nullable => new RuleNullable($data),
             default => throw new \Exception('Invalid rule type'),
         };
     }

@@ -42,6 +42,7 @@ class RequestGenerator extends Generator
                 RuleType::Min => "min:{$rule->getValue()}",
                 RuleType::Max => "max:{$rule->getValue()}",
                 RuleType::Required => 'required',
+                RuleType::Nullable => 'nullable',
                 // 'unique' => "unique:{$attribute->name}",
                 default => null,
             };
