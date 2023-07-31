@@ -3,7 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use Doctrine\Inflector\InflectorFactory;
-use UmigameTech\Catapult\Datatypes\DataList;
+use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\CopyFileInterface;
 use UmigameTech\Catapult\FileSystem\FileCheckerInterface;
@@ -36,7 +36,7 @@ abstract class Generator
 
     protected CopyFileInterface $copier;
 
-    protected DataList $entities;
+    protected TypedArray $entities;
 
     protected $inflector;
 

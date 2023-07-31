@@ -4,6 +4,7 @@ namespace UmigameTech\Catapult\Datatypes;
 
 use UmigameTech\Catapult\Datatypes\Rules\RuleFactory;
 use UmigameTech\Catapult\Datatypes\Rules\RuleInterface;
+use Newnakashima\TypedArray\TypedArray;
 
 class Attribute
 {
@@ -11,7 +12,7 @@ class Attribute
     public AttributeType $type;
     public bool $loginKey = false;
     /** @var RuleInterface[] */
-    public DataList $rules;
+    public TypedArray $rules;
 
     /** for html form */
     public string $inputType = '';
@@ -24,7 +25,7 @@ class Attribute
 
         $this->type = AttributeType::from($data['type']);
 
-        $this->rules = new DataList(RuleInterface::class, []);
+        $this->rules = new TypedArray(RuleInterface::class, []);
         foreach ($data['rules'] ?? [] as $type => $rule) {
             $this->rules[] = RuleFactory::create($type, $rule);
         }

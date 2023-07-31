@@ -3,12 +3,13 @@
 namespace UmigameTech\Catapult\Datatypes;
 
 use Doctrine\Inflector\InflectorFactory;
+use Newnakashima\TypedArray\TypedArray;
 
 class Entity
 {
     public string $name = '';
     public array $allowedFor = [];
-    public DataList $attributes;
+    public TypedArray $attributes;
     private bool $authenticatable = false;
 
     /** for routes */
@@ -22,7 +23,7 @@ class Entity
         $this->name = $data['name'];
         $this->allowedFor = $data['allowedFor'];
 
-        $this->attributes = new DataList(Attribute::class, $data['attributes'] ?? []);
+        $this->attributes = new TypedArray(Attribute::class, $data['attributes'] ?? []);
         $this->authenticatable = $data['authenticatable'] ?? false;
     }
 
