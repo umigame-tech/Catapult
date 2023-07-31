@@ -1,11 +1,12 @@
 <?php
 
 namespace UmigameTech\Catapult\Datatypes;
+use Newnakashima\TypedArray\TypedArray;
 
 class Project
 {
     public string $projectName = '';
-    public DataList $entities;
+    public TypedArray $entities;
 
     public function __construct($data) {
         if (empty($data['project_name'])) {
@@ -13,6 +14,6 @@ class Project
         }
 
         $this->projectName = $data['project_name'];
-        $this->entities = new DataList(Entity::class, $data['entities'] ?? []);
+        $this->entities = new TypedArray(Entity::class, $data['entities'] ?? []);
     }
 }

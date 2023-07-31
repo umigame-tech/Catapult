@@ -2,7 +2,7 @@
 
 namespace UmigameTech\Catapult\Generators;
 
-use UmigameTech\Catapult\Datatypes\DataList;
+use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\FileSystem\FileSystemContainer;
@@ -114,7 +114,7 @@ class RouteGenerator extends Generator
         return $this->convertEntitiesForRoute($filtered);
     }
 
-    protected function convertEntitiesForRoute(DataList $entities)
+    protected function convertEntitiesForRoute(TypedArray $entities)
     {
         $entities = $entities->map(
             function (Entity $entity) {
