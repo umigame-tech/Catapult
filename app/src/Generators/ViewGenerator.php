@@ -113,7 +113,7 @@ class ViewGenerator extends Generator
 
     private function generateNewView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/new.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/create.blade.php';
 
         $entity->attributes = $entity->attributes->mapWithSameType(
             function (Attribute $attribute) {
@@ -125,7 +125,7 @@ class ViewGenerator extends Generator
         );
 
         $renderer = Renderer::getInstance();
-        $view = $renderer->render('views/new.blade.php.twig', [
+        $view = $renderer->render('views/create.blade.php.twig', [
             'entity' => $entity,
         ]);
 
@@ -134,13 +134,13 @@ class ViewGenerator extends Generator
 
     private function generateCreateConfirmView(Entity $entity)
     {
-        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/createConfirm.blade.php';
+        $viewPath = $this->projectPath . '/resources/views/' . $entity->name . '/storeConfirm.blade.php';
 
         $renderer = Renderer::getInstance();
-        $view = $renderer->render('views/createConfirm.blade.php.twig', [
+        $view = $renderer->render('views/storeConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.create') }}",
-            'backUri' => "{{ route(\$routePrefix . '{$entity->name}.new') }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.storeConfirm') }}",
+            'backUri' => "{{ route(\$routePrefix . '{$entity->name}.create') }}",
         ]);
 
         $this->writer->write(path: $viewPath, content: $view);

@@ -24,22 +24,10 @@ class RouteGenerator extends Generator
         $actions = ControllerGenerator::$actions;
         $controllerName= $entity->controllerName();
         foreach ($actions as $actionName => $action) {
-            $entityPath = $entity->name;
-            $actionPath = '/' . $actionName;
-            if ($actionName === 'index') {
-                $entityPath = $plural;
-                $actionPath = '';
-            }
-
-            $params = implode('/', array_map(
-                fn ($p) => '{' . $p . '}',
-                $action['params'])
-            );
-            $params = $params ? '/' . $params : '';
-
             $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
+            $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
             foreach ($methods as $method) {
-                $converted[$actionName . '_' . $method] = "Route::{$method}('{$entityPath}{$actionPath}{$params}', "
+                $converted[$actionName . '_' . $method] = "Route::{$method}('{$plural}{$actionPath}', "
                     . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
             }
         }

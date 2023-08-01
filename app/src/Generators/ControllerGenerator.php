@@ -18,44 +18,43 @@ class ControllerGenerator extends Generator
     public static $actions = [
         'index' => [
             'method' => self::METHOD_GET,
-            'params' => [],
+            'route' => '',
+        ],
+        'create' => [
+            'method' => self::METHOD_GET,
+            'route' => 'create',
         ],
         'show' => [
             'method' => self::METHOD_GET,
-            'params' => ['id'],
+            'route' => '{id}',
         ],
-        'new' => [
-            'method' => self::METHOD_GET,
-            'params' => [],
-        ],
-        'createConfirm' => [
+        'storeConfirm' => [
             'method' => self::METHOD_POST,
-            'params' => [],
+            'route' => 'storeConfirm',
         ],
-        'create' => [
+        'store' => [
             'method' => self::METHOD_POST,
-            'params' => [],
+            'route' => '',
         ],
         'edit' => [
             'method' => self::METHOD_GET,
-            'params' => ['id'],
+            'route' => '{id}/edit',
         ],
         'updateConfirm' => [
             'method' => self::METHOD_POST,
-            'params' => ['id'],
+            'route' => '{id}/updateConfirm',
         ],
         'update' => [
-            'method' => self::METHOD_POST,
-            'params' => ['id'],
+            'method' => [self::METHOD_PUT, self::METHOD_PATCH],
+            'route' => '{id}',
         ],
         'destroyConfirm' => [
             'method' => self::METHOD_GET,
-            'params' => ['id'],
+            'route' => '{id}/destroyConfirm',
         ],
         'destroy' => [
-            // HTMLフォームからの送信だとDELETEメソッドは使えないので
-            'method' => self::METHOD_POST,
-            'params' => ['id'],
+            'method' => self::METHOD_DELETE,
+            'route' => '{id}',
         ],
     ];
 
