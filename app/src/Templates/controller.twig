@@ -62,40 +62,45 @@ class {{ controllerName }} extends Controller
         ]);
     }
 
-    public function new({{ requestName }} $request, {{ modelName }} ${{ entity.name }})
+    public function create({{ requestName }} $request, {{ modelName }} ${{ entity.name }})
     {
         // Cancelで戻ってきた場合にセッションから値を取得する処理
         ${{ entity.name }}->fill($request->session()->get('{{ entity.name }}.form', []));
 
         $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity.name }}.index'));
         $fromUrl = $this->buildFromUrl($request);
-        $submitUrl = route($this->routePrefix . '{{ entity.name }}.createConfirm', [
+        $submitUrl = route($this->routePrefix . '{{ entity.name }}.storeConfirm', [
             'fromUrl' => $fromUrl,
         ]);
 
-        return view('{{ entity.name }}.new', [
+        return view('{{ entity.name }}.create', [
             '{{ entity.name }}' => ${{ entity.name }},
             'backUrl' => $backUrl,
             'submitUrl' => $submitUrl,
         ]);
     }
 
-    public function createConfirm({{ requestName }} $request, {{ modelName }} ${{ entity.name }})
+    public function storeConfirm({{ requestName }} $request, {{ modelName }} ${{ entity.name }})
     {
         ${{ entity.name }}->fill($request->all());
         $request->session()->put('{{ entity.name }}.form', ${{ entity.name }}->toArray());
 
         $backUrl = $request->input('fromUrl', route($this->routePrefix . '{{ entity.name }}.index'));
-        return view('{{ entity.name }}.createConfirm', [
+        return view('{{ entity.name }}.storeConfirm', [
             '{{ entity.name }}' => ${{ entity.name }},
             'backUrl' => $backUrl,
             'routePrefix' => $this->routePrefix,
         ]);
     }
 
-    public function create(Request $request, {{ modelName }} ${{ entity.name }})
+    public function store(Request $request, {{ modelName }} ${{ entity.name }})
     {
         ${{ entity.name }}->fill($request->session()->get('{{ entity.name }}.form', []));
+{% for attribute in entity.attributes %}
+{% if attribute.type.value == 'password' %}
+        ${{ entity.name }}->{{ attribute.name }} = bcrypt(${{ entity.name }}->{{ attribute.name }});
+{% endif %}
+{% endfor %}
         ${{ entity.name }}->save();
         $request->session()->forget('{{ entity.name }}.form');
 
