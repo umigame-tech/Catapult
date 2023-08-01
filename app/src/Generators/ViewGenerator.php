@@ -139,7 +139,7 @@ class ViewGenerator extends Generator
         $renderer = Renderer::getInstance();
         $view = $renderer->render('views/storeConfirm.blade.php.twig', [
             'entity' => $entity,
-            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.storeConfirm') }}",
+            'submitUri' => "{{ route(\$routePrefix . '{$entity->name}.store') }}",
             'backUri' => "{{ route(\$routePrefix . '{$entity->name}.create') }}",
         ]);
 

@@ -2,6 +2,18 @@
 
   <form method="post" action="{{ submitUri|raw }}">
     {% verbatim %}{{ csrf_field() }}{% endverbatim %}
+{% if type == 'update' %}
+    @method('PUT')
+{% elseif type == 'destroy' %}
+    @method('DELETE')
+{% endif %}
+{% if type == 'create' or type == 'update' %}
+{% for attribute in entity.attributes %}
+{% if attribute.type.value == 'password' %}
+    <input type="hidden" name="{{ attribute.name }}" value="{{ '{{' }} ${{ entity.name }}->{{ attribute.name }} {{ '}}' }}">
+{% endif %}
+{% endfor %}
+{% endif %}
     <input type="submit" value="{{ type|capitalize }}">
     <a href="{{ '{{' }} $backUrl {{ '}}' }}">Cancel</a>
   </form>

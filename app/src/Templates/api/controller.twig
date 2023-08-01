@@ -23,7 +23,7 @@ class {{ controllerName }} extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function create({{ storeRequestName }} $request)
+    public function store({{ storeRequestName }} $request)
     {
         return new {{ resourceName }}({{ modelName }}::create($request->all()));
     }

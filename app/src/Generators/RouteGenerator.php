@@ -22,7 +22,7 @@ class RouteGenerator extends Generator
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
         $actions = ControllerGenerator::$actions;
-        $controllerName= $entity->controllerName();
+        $controllerName = $entity->controllerName();
         foreach ($actions as $actionName => $action) {
             $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
             $actionPath = empty($action['route']) ? '' : '/' . $action['route'];

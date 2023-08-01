@@ -96,6 +96,11 @@ class {{ controllerName }} extends Controller
     public function store(Request $request, {{ modelName }} ${{ entity.name }})
     {
         ${{ entity.name }}->fill($request->session()->get('{{ entity.name }}.form', []));
+{% for attribute in entity.attributes %}
+{% if attribute.type.value == 'password' %}
+        ${{ entity.name }}->{{ attribute.name }} = bcrypt(${{ entity.name }}->{{ attribute.name }});
+{% endif %}
+{% endfor %}
         ${{ entity.name }}->save();
         $request->session()->forget('{{ entity.name }}.form');
 

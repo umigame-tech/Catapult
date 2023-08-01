@@ -10,23 +10,23 @@ class ApiControllerGenerator extends ControllerGenerator
     public static $apiActions = [
         'index' => [
             'method' => self::METHOD_GET,
-            'params' => [],
+            'route' => '',
         ],
         'show' => [
             'method' => self::METHOD_GET,
-            'params' => ['id'],
+            'route' => '{id}',
         ],
-        'create' => [
+        'store' => [
             'method' => self::METHOD_POST,
-            'params' => [],
+            'route' => '',
         ],
         'update' => [
             'method' => [self::METHOD_PATCH, self::METHOD_PUT],
-            'params' => ['id'],
+            'route' => '{id}',
         ],
         'destroy' => [
             'method' => self::METHOD_DELETE,
-            'params' => ['id'],
+            'route' => '{id}',
         ],
     ];
 
