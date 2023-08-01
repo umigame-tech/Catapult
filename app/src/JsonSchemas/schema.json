@@ -88,6 +88,10 @@
           "authenticatable": {
             "description": "Is the entity authenticatable?",
             "type": "boolean"
+          },
+          "dataPath": {
+            "description": "Path of the initial data file",
+            "type": "string"
           }
         },
         "required": ["name", "attributes", "allowedFor"]

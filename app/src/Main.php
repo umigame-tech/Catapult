@@ -25,6 +25,7 @@ use UmigameTech\Catapult\Generators\MigrationGenerator;
 use UmigameTech\Catapult\Generators\FactoryGenerator;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
 use UmigameTech\Catapult\Generators\CssSetupGenerator;
+use UmigameTech\Catapult\Generators\InitialDataSeederGenerator;
 use UmigameTech\Catapult\Generators\RequestGenerator;
 use UmigameTech\Catapult\Generators\ResourceGenerator;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
@@ -61,6 +62,7 @@ class Main
         RequestGenerator::class,
         RouteGenerator::class,
         SeederGenerator::class,
+        InitialDataSeederGenerator::class,
         ViewGenerator::class,
         AuthenticateSetupGenerator::class,
 
@@ -122,6 +124,10 @@ class Main
             echo "File not found: {$argv[1]}\n";
             exit(1);
         }
+
+        $dir = dirname($argv[1]);
+        $settings = ProjectSettings::getInstance();
+        $settings->set('input_dir', $dir);
 
         $schema = Schema::import(json_decode($this->reader->read(__DIR__ . '/JsonSchemas/schema.json')));
         $json = $schema->in(json_decode($inputFile));

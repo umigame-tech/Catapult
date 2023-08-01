@@ -11,6 +11,7 @@ class Entity
     public array $allowedFor = [];
     public TypedArray $attributes;
     private bool $authenticatable = false;
+    public string $dataPath = '';
 
     /** for routes */
     public array $routes = [];
@@ -25,6 +26,10 @@ class Entity
 
         $this->attributes = new TypedArray(Attribute::class, $data['attributes'] ?? []);
         $this->authenticatable = $data['authenticatable'] ?? false;
+
+        if (!empty($data['dataPath'])) {
+            $this->dataPath = $data['dataPath'];
+        }
     }
 
     public function isAuthenticatable(): bool
@@ -112,5 +117,15 @@ class Entity
     public function resourceCollectionName(): string
     {
         return $this->modelName() . 'ResourceCollection';
+    }
+
+    public function initialDataSeederName(): string
+    {
+        return "Initial{$this->modelName()}DataSeeder";
+    }
+
+    public function hasInitialData(): bool
+    {
+        return !empty($this->dataPath);
     }
 }

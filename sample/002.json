@@ -82,6 +82,23 @@
           "type": "text"
         }
       ]
+    },
+    {
+      "name": "role",
+      "allowedFor": [
+        "person"
+      ],
+      "attributes": [
+        {
+          "name": "level",
+          "type": "integer"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ],
+      "dataPath": "002/roles.json"
     }
   ]
 }
