@@ -7,6 +7,8 @@
             "email": "newnakashima2014@gmail.com"
         }
     ],
+    "description": "Laravel Project Generator",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "UmigameTech\\Catapult\\": "src/"
