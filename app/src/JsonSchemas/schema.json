@@ -27,6 +27,14 @@
               "type": "string"
             }
           },
+          "belongsTo": {
+            "description": "List of entities that the entity belongs to",
+            "type": "array",
+            "items": {
+              "description": "Entity that the entity belongs to",
+              "type": "string"
+            }
+          },
           "attributes": {
             "description": "List of attributes",
             "type": "array",

@@ -20,6 +20,8 @@ class Entity
     /** for views */
     public string $plural = '';
 
+    public TypedArray $belongsTo;
+
     public function __construct($data) {
         $this->name = $data['name'];
         $this->allowedFor = $data['allowedFor'];
@@ -30,6 +32,8 @@ class Entity
         if (!empty($data['dataPath'])) {
             $this->dataPath = $data['dataPath'];
         }
+
+        $this->belongsTo = new TypedArray(BelongsTo::class, $data['belongsTo'] ?? []);
     }
 
     public function isAuthenticatable(): bool
