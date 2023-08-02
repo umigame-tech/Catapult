@@ -1,0 +1,24 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use App\Models\{{ modelName }};
+
+class {{ seederName }} extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+{% for data in initialData %}
+        {{ modelName }}::create([
+{% for attribute in entity.attributes %}
+            '{{ attribute.name }}' => '{{ data[attribute.name] }}',
+{% endfor %}
+        ]);
+{% endfor %}
+    }
+}

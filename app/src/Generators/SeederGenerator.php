@@ -2,6 +2,7 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
@@ -11,9 +12,15 @@ class SeederGenerator extends Generator
     public function generateDatabaseSeeder()
     {
         $entities = $this->entities;
-        $seeders = $entities->map(
-            fn (Entity $entity) => $entity->seederName()
-        );
+        $seeders = new TypedArray('string', $entities->map(
+            function (Entity $entity) {
+                if ($entity->hasInitialData()) {
+                    return $entity->initialDataSeederName();
+                } else {
+                    return $entity->seederName();
+                }
+            }
+        ));
 
         $renderer = Renderer::getInstance();
         $seeder = $renderer->render('seeders/database.twig', [
