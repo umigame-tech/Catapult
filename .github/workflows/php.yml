@@ -37,6 +37,6 @@ jobs:
 
     # - name: Run test suite
     #   run: composer run-script test
-    
+
     - name: Run test
-      run: composer test
+      run: cd ./app; composer test
