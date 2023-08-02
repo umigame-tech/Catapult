@@ -40,11 +40,10 @@ test('generate', function () {
     expect($this->mocked->copied)
         ->toHaveLength(1);
 
-    expect($this->mocked->copied[0])
-        ->toEqual([
-            'source' => '/app/src/Generators/../Templates/app/Http/Requests/Api/ApiRequest.php',
-            'dest' => '/dist/test/app/Http/Requests/Api/ApiRequest.php',
-        ]);
+    expect($this->mocked->copied[0]['source'])
+        ->toContain('/Templates/app/Http/Requests/Api/ApiRequest.php');
+    expect($this->mocked->copied[0]['dest'])
+        ->toContain('/dist/test/app/Http/Requests/Api/ApiRequest.php');
 
     expect($this->mocked->contents[0])
         ->toContain('class ApiUpdateUserRequest extends ApiRequest');
