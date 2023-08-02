@@ -61,8 +61,8 @@ class Main
         ModelGenerator::class,
         RequestGenerator::class,
         RouteGenerator::class,
-        SeederGenerator::class,
         InitialDataSeederGenerator::class,
+        SeederGenerator::class,
         ViewGenerator::class,
         AuthenticateSetupGenerator::class,
 
