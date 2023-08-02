@@ -33,7 +33,7 @@ class Entity
             $this->dataPath = $data['dataPath'];
         }
 
-        $this->belongsTo = new TypedArray(BelongsTo::class, $data['belongsTo'] ?? []);
+        $this->belongsTo = new TypedArray('string', $data['belongsTo'] ?? []);
     }
 
     public function isAuthenticatable(): bool
