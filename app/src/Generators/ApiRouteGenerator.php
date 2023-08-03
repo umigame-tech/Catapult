@@ -7,7 +7,7 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class ApiRouteGenerator extends RouteGenerator
 {
-    protected function convertActionName(Entity $entity)
+    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $parent = null)
     {
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
@@ -15,7 +15,8 @@ class ApiRouteGenerator extends RouteGenerator
             $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
             $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
             foreach ($methods as $method) {
-                $converted[$actionName . '_' . $method] = "Route::{$method}('{$plural}{$actionPath}', "
+                $converted[] = $this->indents($indentLevel)
+                    . "Route::{$method}('{$plural}{$actionPath}', "
                     . "[{$entity->apiControllerName()}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
             }
         }

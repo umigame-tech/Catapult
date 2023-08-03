@@ -64,6 +64,22 @@
       ]
     },
     {
+      "name": "author",
+      "allowedFor": [
+        "everyone"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ]
+    },
+    {
       "name": "book",
       "allowedFor": [
         "person",
@@ -84,22 +100,6 @@
       ],
       "belongsTo": [
         "author"
-      ]
-    },
-    {
-      "name": "author",
-      "allowedFor": [
-        "everyone"
-      ],
-      "attributes": [
-        {
-          "name": "name",
-          "type": "string"
-        },
-        {
-          "name": "description",
-          "type": "text"
-        }
       ]
     },
     {

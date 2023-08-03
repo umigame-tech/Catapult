@@ -32,4 +32,10 @@ class Renderer
     {
         return $this->twig->render($template, $context);
     }
+
+    public function renderFromString($templateString, $context = [])
+    {
+        $template = $this->twig->createTemplate($templateString);
+        return $template->render($context);
+    }
 }

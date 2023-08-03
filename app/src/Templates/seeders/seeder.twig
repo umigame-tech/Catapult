@@ -5,6 +5,12 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\{{ modelName }};
+{% for hasManyEntity in entity.hasManyEntities %}
+use App\Models\{{ hasManyEntity.modelName }};
+{% endfor %}
+{% for belongsToEntity in entity.belongsToEntities %}
+use App\Models\{{ belongsToEntity.modelName }};
+{% endfor %}
 
 class {{ seederName }} extends Seeder
 {
@@ -13,6 +19,22 @@ class {{ seederName }} extends Seeder
      */
     public function run(): void
     {
+{% if entity.hasHasManyEntities %}
+        {{ modelName }}::factory()->count(10)
+{% for hasManyEntity in entity.hasManyEntities %}
+            ->has({{ hasManyEntity.modelName }}::factory())->count(10)
+{% endfor %}
+            ->create();
+{% endif %}
+{% if entity.hasBelongsToEntities %}
+        {{ modelName }}::factory([
+{% for belongsToEntity in entity.belongsToEntities %}
+            '{{ belongsToEntity.foreignIdName }}' => {{ belongsToEntity.modelName }}::factory()->create()->id,
+{% endfor %}
+        ])->count(10)->create();
+{% endif %}
+{% if not entity.hasHasManyEntities and not entity.hasBelongsToEntities %}
         {{ modelName }}::factory()->count(10)->create();
+{% endif %}
     }
 }

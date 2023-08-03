@@ -2,6 +2,7 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use InvalidArgumentException;
 use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
@@ -17,7 +18,17 @@ class RouteGenerator extends Generator
         parent::__construct($project, $container);
     }
 
-    protected function convertActionName(Entity $entity)
+    protected function routesGrouping(Entity $entity, $indentLevel = 1)
+    {
+        if ($indentLevel === 0) {
+            throw new InvalidArgumentException('indentLevel must be greater than 0');
+        }
+
+        return $this->indents($indentLevel - 1)
+            . "Route::prefix('{$entity->plural}/{{$entity->name}}')->name('{$entity->name}.')->group(function () {";
+    }
+
+    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $parent = null)
     {
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
@@ -27,16 +38,28 @@ class RouteGenerator extends Generator
             $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
             $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
             foreach ($methods as $method) {
-                $converted[$actionName . '_' . $method] = "Route::{$method}('{$plural}{$actionPath}', "
+                $converted[] = $this->indents($indentLevel)
+                    . "Route::{$method}('{$plural}{$actionPath}', "
                     . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
             }
         }
 
-        if ($entity->isAuthenticatable()) {
-            $converted['dashboard'] = "Route::get('dashboard', "
+        if ($entity->isAuthenticatable() && $parent === null) {
+            $converted[] = "Route::get('dashboard', "
                 . "[{$controllerName}::class, 'dashboard'])->name('dashboard');";
-            $converted['home'] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
+            $converted[] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
         }
+
+        // relationがなければここで終了
+        if (! $entity->hasHasManyEntities()) {
+            return $converted;
+        }
+
+        $converted[] = $this->routesGrouping($entity, $indentLevel + 1);
+        foreach ($entity->hasManyEntities as $subEntity) {
+            $converted = array_merge($converted, $this->convertActionName($subEntity, $indentLevel + 1, $entity));
+        }
+        $converted[] = '});';
 
         return $converted;
     }

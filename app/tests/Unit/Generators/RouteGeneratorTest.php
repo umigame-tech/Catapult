@@ -120,3 +120,48 @@ test('generate', function () {
         ->toBeArray()
         ->toHaveLength(1);
 });
+
+test('relation', function () {
+    $book = [
+        'name' => 'book',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'title',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'description',
+                'type' => 'string',
+            ],
+        ],
+        'belongsTo' => ['author'],
+    ];
+    $author = [
+        'name' => 'author',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+        ],
+    ];
+
+    $generator = new RouteGenerator(
+        new Project([
+            'project_name' => 'test',
+            'entities' => [
+                $book,
+                $author,
+            ],
+        ]),
+        $this->mocked
+    );
+
+    $generator->generate();
+
+    var_dump($this->mocked->contents);
+
+    expect(true)->toBeTrue();
+});
