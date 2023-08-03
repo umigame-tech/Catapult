@@ -81,6 +81,25 @@
           "name": "description",
           "type": "text"
         }
+      ],
+      "belongsTo": [
+        "author"
+      ]
+    },
+    {
+      "name": "author",
+      "allowedFor": [
+        "everyone"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
       ]
     },
     {

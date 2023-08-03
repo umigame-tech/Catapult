@@ -21,6 +21,8 @@ class Entity
     public string $plural = '';
 
     public TypedArray $belongsTo;
+    public TypedArray $belongsToEntities;
+    public TypedArray $hasManyEntities;
 
     public function __construct($data) {
         $this->name = $data['name'];
@@ -34,6 +36,9 @@ class Entity
         }
 
         $this->belongsTo = new TypedArray('string', $data['belongsTo'] ?? []);
+        $this->plural = InflectorFactory::create()->build()->pluralize($this->name);
+        $this->belongsToEntities = new TypedArray(Entity::class);
+        $this->hasManyEntities = new TypedArray(Entity::class);
     }
 
     public function isAuthenticatable(): bool
@@ -131,5 +136,20 @@ class Entity
     public function hasInitialData(): bool
     {
         return !empty($this->dataPath);
+    }
+
+    public function foreignIdName(): string
+    {
+        return $this->name . '_id';
+    }
+
+    public function hasBelongsToEntities(): bool
+    {
+        return !$this->belongsToEntities->isEmpty();
+    }
+
+    public function hasHasManyEntities(): bool
+    {
+        return !$this->hasManyEntities->isEmpty();
     }
 }

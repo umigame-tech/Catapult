@@ -15,6 +15,7 @@ class RequestGenerator extends Generator
     protected function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
+            AttributeType::ForeignId => 'integer',
             AttributeType::String => 'string',
             AttributeType::Username => 'string',
             AttributeType::Email => 'email',

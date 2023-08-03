@@ -15,6 +15,7 @@ class MigrationGenerator extends Generator
     private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
+            AttributeType::ForeignId => 'foreignId',
             AttributeType::String => 'string',
             AttributeType::Username => 'string',
             AttributeType::Email => 'string',

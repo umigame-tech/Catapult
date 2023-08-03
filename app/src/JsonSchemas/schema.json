@@ -49,6 +49,7 @@
                 "type": {
                   "description": "Type of the attribute",
                   "enum": [
+                    "foreignId",
                     "string",
                     "username",
                     "email",

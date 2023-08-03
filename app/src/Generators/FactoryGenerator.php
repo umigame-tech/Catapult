@@ -14,6 +14,7 @@ class FactoryGenerator extends Generator
     private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
+            AttributeType::ForeignId => 'foreignId',
             AttributeType::String => 'realText',
             AttributeType::Username => 'userName',
             AttributeType::Email => 'email',
