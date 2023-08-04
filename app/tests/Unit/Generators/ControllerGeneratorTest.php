@@ -123,3 +123,77 @@ test('generate', function () {
     expect($this->mocked->contents)->toHaveLength(1);
 });
 
+test('subActions', function () {
+    $author = [
+        'name' => 'author',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'birth_year',
+                'type' => 'integer',
+            ]
+        ],
+    ];
+
+    $book = [
+        'name' => 'book',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'title',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'description',
+                'type' => 'string',
+            ],
+        ],
+        'belongsTo' => ['author'],
+    ];
+
+    $chapter = [
+        'name' => 'chapter',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'title',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'description',
+                'type' => 'string',
+            ],
+        ],
+        'belongsTo' => ['book'],
+    ];
+
+    $project = new Project([
+        'project_name' => 'test',
+        'entities' => [
+            $author,
+            $book,
+            $chapter,
+        ],
+    ]);
+
+    $generator = new ControllerGenerator(
+        $project,
+        $this->mocked
+    );
+
+    $actions = $generator->subActions($project->entities[2]);
+    expect($actions->map(fn ($action) => $action['actionMethodName']))
+        ->toBeArray()
+        ->toContain('author_book_chapter_index')
+        ->toContain('book_chapter_index');
+
+    $entities = $actions->map(fn ($action) => $action['entities'])[$actions->count() - 1];
+    $entityNames = $entities->map(fn ($entity) => $entity->name);
+    expect($entityNames)
+        ->toBeArray()
+        ->toContain('chapter', 'book', 'author');
+});

@@ -2,6 +2,7 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Datatypes\Entity;
@@ -57,6 +58,39 @@ class ControllerGenerator extends Generator
             'route' => '{id}',
         ],
     ];
+
+    // if author entity has hasMany books entity,
+    // generate actions like author_books_index, author_books_show, author_books_create... etc.
+    public function subActions(Entity $entity, $context = []): TypedArray
+    {
+        if (empty($context)) {
+            $context = [
+                'prefix' => $entity->name,
+                'entities' => new TypedArray(Entity::class, [$entity]),
+            ];
+        }
+        $actions = new TypedArray('array');
+        foreach ($entity->belongsToEntities as $parentEntity) {
+            $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
+            $newEntities = $context['entities']->merge(new TypedArray(Entity::class, [$parentEntity]));
+            foreach (array_keys(self::$actions) as $actionName) {
+                $actions[] = [
+                    'actionMethodName' => "{$newPrefix}_{$actionName}",
+                    'entities' => $newEntities,
+                ];
+            }
+
+            $newContext = [
+                'prefix' => $newPrefix,
+                'entities' => $newEntities,
+            ];
+            $actions = $actions->merge(
+                $this->subActions($parentEntity, $newContext)
+            );
+        }
+
+        return $actions;
+    }
 
     public function generateContent(Entity $entity)
     {
