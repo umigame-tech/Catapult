@@ -152,4 +152,39 @@ class Entity
     {
         return !$this->hasManyEntities->isEmpty();
     }
+
+    private function hasManyEntitiesTowardLeafs(): TypedArray
+    {
+        $entities = new TypedArray(Entity::class);
+        foreach ($this->hasManyEntities as $entity) {
+            if ($entity->hasManyEntities->isEmpty()) {
+                $entities->push($entity);
+            } else {
+                $entities = $entities->merge($entity->hasManyEntitiesTowardLeafs());
+            }
+        }
+
+        return $entities;
+    }
+
+    private function belongsToEntitiesTowardRoot(): TypedArray
+    {
+        $entities = new TypedArray(Entity::class);
+        foreach ($this->belongsToEntities as $entity) {
+            if ($entity->belongsToEntities->isEmpty()) {
+                $entities->push($entity);
+            } else {
+                $entities = $entities->merge($entity->belongsToEntitiesTowardRoot());
+            }
+        }
+
+        return $entities;
+    }
+
+    public function dependentEntities(): TypedArray
+    {
+        $hasManyEntitiesTowardLeafs = $this->hasManyEntitiesTowardLeafs();
+        $belongsToEntitiesTowardRoot = $this->belongsToEntitiesTowardRoot();
+        return $hasManyEntitiesTowardLeafs->merge($belongsToEntitiesTowardRoot);
+    }
 }

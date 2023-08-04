@@ -5,6 +5,7 @@ namespace UmigameTech\Catapult\Generators;
 use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\ControllerSubAction;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
@@ -69,15 +70,15 @@ class ControllerGenerator extends Generator
                 'entities' => new TypedArray(Entity::class, [$entity]),
             ];
         }
-        $actions = new TypedArray('array');
+        $actions = new TypedArray(ControllerSubAction::class);
         foreach ($entity->belongsToEntities as $parentEntity) {
             $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
             $newEntities = $context['entities']->merge(new TypedArray(Entity::class, [$parentEntity]));
             foreach (array_keys(self::$actions) as $actionName) {
-                $actions[] = [
-                    'actionMethodName' => "{$newPrefix}_{$actionName}",
-                    'entities' => $newEntities,
-                ];
+                $actions[] = new ControllerSubAction(
+                    actionMethodName: "{$newPrefix}_{$actionName}",
+                    entities: $newEntities
+                );
             }
 
             $newContext = [
@@ -110,6 +111,7 @@ class ControllerGenerator extends Generator
             'plural' => $plural,
             'entity' => $entity,
             'authenticatable' => $authenticatable,
+            'subActions' => $this->subActions($entity),
         ];
 
         if ($authenticatable) {

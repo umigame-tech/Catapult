@@ -8,6 +8,9 @@ use App\Http\Requests\{{ requestName }};
 use App\Http\Requests\{{ loginRequestName }};
 {% endif %}
 use App\Models\{{ modelName }};
+{% for dependentEntity in entity.dependentEntities %}
+use App\Models\{{ dependentEntity.modelName }};
+{% endfor %}
 
 class {{ controllerName }} extends Controller
 {
@@ -234,4 +237,25 @@ class {{ controllerName }} extends Controller
         ]);
     }
 {% endif %}
+
+{% for action in subActions %}
+{% if action.actionMethodName ends with 'index' %}
+    public function {{ action.actionMethodName }}(Request $request, {{ action.argString }})
+    {
+        $request->session()->forget('{{ entity.name }}');
+        $fromUrl = $this->buildFromUrl($request);
+        $paginate = ${{ entity.name }}
+{% for related in action.entities|filter(v => v.name is not same as(entity.name)) %}
+            ->of{{ related.modelName }}(${{ related.name }})
+{% endfor %}
+            ->paginate(10);
+
+        return view('{{ entity.name }}.index', [
+            '{{ plural }}' => $paginate,
+            'fromUrl' => $fromUrl,
+            'routePrefix' => $this->routePrefix,
+        ]);
+    }
+{% endif %}
+{% endfor %}
 }

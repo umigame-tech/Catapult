@@ -1,5 +1,6 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\ControllerSubAction;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
@@ -186,14 +187,14 @@ test('subActions', function () {
     );
 
     $actions = $generator->subActions($project->entities[2]);
-    expect($actions->map(fn ($action) => $action['actionMethodName']))
+    expect($actions->map(fn (ControllerSubAction $action) => $action->actionMethodName))
         ->toBeArray()
         ->toContain('author_book_chapter_index')
         ->toContain('book_chapter_index');
 
-    $entities = $actions->map(fn ($action) => $action['entities'])[$actions->count() - 1];
+    $entities = $actions->map(fn (ControllerSubAction $action) => $action->entities)[$actions->count() - 1];
     $entityNames = $entities->map(fn ($entity) => $entity->name);
     expect($entityNames)
         ->toBeArray()
-        ->toContain('chapter', 'book', 'author');
+        ->toMatchArray(['chapter', 'book', 'author']);
 });

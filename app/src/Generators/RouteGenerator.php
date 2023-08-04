@@ -3,6 +3,7 @@
 namespace UmigameTech\Catapult\Generators;
 
 use InvalidArgumentException;
+use Newnakashima\TypedArray\Primitives;
 use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
@@ -26,6 +27,40 @@ class RouteGenerator extends Generator
 
         return $this->indents($indentLevel - 1)
             . "Route::prefix('{$entity->plural}/{{$entity->name}}')->name('{$entity->name}.')->group(function () {";
+    }
+
+    public function subActions(Entity $entity, $context = []): TypedArray
+    {
+        if (empty($context)) {
+            $context = [
+                'prefix' => $entity->name,
+                'indentLevel' => 1,
+            ];
+        }
+        $actions = new TypedArray(Primitives::String->value);
+        foreach ($entity->belongsToEntities as $parentEntity) {
+            $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
+            foreach (ControllerGenerator::$actions as $actionName => $action) {
+                // Routeの文字列
+                $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
+                $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
+                foreach ($methods as $method) {
+                    $actions[] = $this->indents($context['indentLevel'])
+                        . "Route::{$method}('{$entity->plural}{$actionPath}', "
+                        . "[{$entity->controllerName()}::class, '{$newPrefix}_{$actionName}'])->name('{$entity->name}.{$actionName}');";
+                }
+            }
+
+            $newContext = [
+                'prefix' => $newPrefix,
+                'indentLevel' => $context['indentLevel'] + 1,
+            ];
+            $actions = $actions->merge(
+                $this->subActions($parentEntity, $newContext)
+            );
+        }
+
+        return $actions;
     }
 
     protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $parent = null)
@@ -57,7 +92,8 @@ class RouteGenerator extends Generator
 
         $converted[] = $this->routesGrouping($entity, $indentLevel + 1);
         foreach ($entity->hasManyEntities as $subEntity) {
-            $converted = array_merge($converted, $this->convertActionName($subEntity, $indentLevel + 1, $entity));
+            // $converted = array_merge($converted, $this->convertActionName($subEntity, $indentLevel + 1, $entity));
+            $converted = array_merge($converted, $this->subActions($subEntity)->toArray());
         }
         $converted[] = '});';
 
