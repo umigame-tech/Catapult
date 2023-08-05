@@ -64,6 +64,22 @@
       ]
     },
     {
+      "name": "author",
+      "allowedFor": [
+        "everyone"
+      ],
+      "attributes": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ]
+    },
+    {
       "name": "book",
       "allowedFor": [
         "person",
@@ -81,6 +97,26 @@
           "name": "description",
           "type": "text"
         }
+      ],
+      "belongsTo": [
+        "author"
+      ]
+    },
+    {
+      "name": "chapter",
+      "allowedFor": [ "everyone" ],
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ],
+      "belongsTo": [
+        "book"
       ]
     },
     {

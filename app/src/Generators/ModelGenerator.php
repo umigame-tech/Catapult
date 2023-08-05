@@ -31,6 +31,7 @@ class ModelGenerator extends Generator
             'hiddenList' => $hiddenList,
             'parentClass' => $parentClass,
             'parentClassImport' => $parentClassImport,
+            'entity' => $entity,
         ]);
 
         $projectPath = $this->projectPath();

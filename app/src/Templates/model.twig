@@ -6,6 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 {{ parentClassImport }}
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+{% if entity.hasBelongsToEntities %}
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+{% endif %}
+{% if entity.hasHasManyEntities %}
+use Illuminate\Database\Eloquent\Relations\HasMany;
+{% endif %}
 
 class {{ modelName }} extends {{ parentClass }}
 {
@@ -27,4 +33,23 @@ class {{ modelName }} extends {{ parentClass }}
         '{{ hidden.name }}',
 {% endfor %}
     ];
+
+{% for belonging in entity.belongsToEntities %}
+    public function {{ belonging.name }}(): BelongsTo
+    {
+        return $this->belongsTo({{ belonging.modelName }}::class);
+    }
+
+    public function scopeOf{{ belonging.modelName }}($query, {{ belonging.modelName }} ${{ belonging.name }})
+    {
+        return $query->where('{{ belonging.name }}_id', ${{ belonging.name }}->id);
+    }
+{% endfor %}
+
+{% for hasMany in entity.hasManyEntities %}
+    public function {{ hasMany.plural }}(): HasMany
+    {
+        return $this->hasMany({{ hasMany.modelName }}::class);
+    }
+{% endfor %}
 }

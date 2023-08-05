@@ -1,5 +1,6 @@
 <?php
 
+use UmigameTech\Catapult\Datatypes\ControllerSubAction;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
 use UmigameTech\Catapult\Generators\ControllerGenerator;
@@ -122,4 +123,3 @@ test('generate', function () {
     expect($this->mocked->contents)->toBeArray();
     expect($this->mocked->contents)->toHaveLength(1);
 });
-

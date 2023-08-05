@@ -17,6 +17,7 @@ class ViewGenerator extends Generator
     private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
+            AttributeType::ForeignId => 'select',
             AttributeType::String => 'text',
             AttributeType::Username => 'text',
             AttributeType::Email => 'email',

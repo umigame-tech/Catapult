@@ -54,6 +54,7 @@ class ApiControllerGenerator extends ControllerGenerator
             'authenticatable' => $authenticatable,
             'resourceName' => $resourceName,
             'resourceCollectionName' => $resourceCollectionName,
+            'subActions' => $this->subActions(entity: $entity, forApi: true),
         ];
 
         if ($authenticatable) {

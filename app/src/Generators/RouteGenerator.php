@@ -2,6 +2,8 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use InvalidArgumentException;
+use Newnakashima\TypedArray\Primitives;
 use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Datatypes\Project;
@@ -17,7 +19,63 @@ class RouteGenerator extends Generator
         parent::__construct($project, $container);
     }
 
-    protected function convertActionName(Entity $entity)
+    protected function routesGrouping(Entity $entity, $indentLevel = 1)
+    {
+        if ($indentLevel === 0) {
+            throw new InvalidArgumentException('indentLevel must be greater than 0');
+        }
+
+        return $this->indents($indentLevel - 1)
+            . "Route::prefix('{$entity->plural}/{{$entity->name}}')->name('{$entity->name}.')->group(function () {";
+    }
+
+    public function subActions(Entity $entity, $context = [], $forApi = false): TypedArray
+    {
+        if (empty($context)) {
+            $context = [
+                'prefix' => $entity->name,
+                'indentLevel' => 1,
+            ];
+        }
+        $actions = new TypedArray(Primitives::String->value);
+        foreach ($entity->hasManyEntities as $childEntity) {
+            $newPrefix = "{$context['prefix']}_{$childEntity->name}";
+            $controllerName = $forApi ? $childEntity->apiControllerName() : $childEntity->controllerName();
+            $controllerActions = $forApi
+                ? ApiControllerGenerator::$apiActions
+                : ControllerGenerator::$actions;
+            foreach ($controllerActions as $actionName => $action) {
+                // temporally skip actions other than index
+                if ($actionName !== 'index') {
+                    continue;
+                }
+                $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
+                $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
+                foreach ($methods as $method) {
+                    $actions[] = $this->indents($context['indentLevel'])
+                        . "Route::{$method}('{$childEntity->plural}{$actionPath}', "
+                        . "[{$controllerName}::class, '{$newPrefix}_{$actionName}'])->name('{$childEntity->name}.{$actionName}');";
+                }
+            }
+
+            $newContext = [
+                'prefix' => $newPrefix,
+                'indentLevel' => $context['indentLevel'] + 1,
+            ];
+            $actions = $actions->merge(
+                $this->subActions($childEntity, $newContext, $forApi)
+            );
+        }
+
+        if ($actions->count() > 0) {
+            $actions->unshift($this->routesGrouping($entity, $context['indentLevel']));
+            $actions->push($this->indents($context['indentLevel'] - 1) . '});');
+        }
+
+        return $actions;
+    }
+
+    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $parent = null)
     {
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
@@ -27,16 +85,24 @@ class RouteGenerator extends Generator
             $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
             $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
             foreach ($methods as $method) {
-                $converted[$actionName . '_' . $method] = "Route::{$method}('{$plural}{$actionPath}', "
+                $converted[] = $this->indents($indentLevel)
+                    . "Route::{$method}('{$plural}{$actionPath}', "
                     . "[{$controllerName}::class, '{$actionName}'])->name('{$entity->name}.{$actionName}');";
             }
         }
 
-        if ($entity->isAuthenticatable()) {
-            $converted['dashboard'] = "Route::get('dashboard', "
+        if ($entity->isAuthenticatable() && $parent === null) {
+            $converted[] = "Route::get('dashboard', "
                 . "[{$controllerName}::class, 'dashboard'])->name('dashboard');";
-            $converted['home'] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
+            $converted[] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
         }
+
+        // relationがなければここで終了
+        if (! $entity->hasHasManyEntities()) {
+            return $converted;
+        }
+
+        $converted = array_merge($converted, $this->subActions($entity)->toArray());
 
         return $converted;
     }

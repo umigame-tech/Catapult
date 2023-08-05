@@ -115,3 +115,52 @@ test('generate', function () {
     expect($this->mocked->contents)->toBeArray();
     expect($this->mocked->contents)->toHaveLength(1);
 });
+
+test('relation', function () {
+    $book = [
+        'name' => 'book',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'title',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'description',
+                'type' => 'string',
+            ],
+        ],
+        'belongsTo' => ['author'],
+    ];
+    $author = [
+        'name' => 'author',
+        'allowedFor' => ['everyone'],
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+        ],
+    ];
+
+    $generator = new ModelGenerator(
+        new Project([
+            'project_name' => 'test',
+            'entities' => [
+                $book,
+                $author,
+            ],
+        ]),
+        $this->mocked
+    );
+
+    $generator->generate();
+
+    expect($this->mocked->contents[0])
+        ->toContain('public function author()')
+        ->toContain('return $this->belongsTo(Author::class);');
+
+    expect($this->mocked->contents[1])
+        ->toContain('public function books()')
+        ->toContain('return $this->hasMany(Book::class);');
+});

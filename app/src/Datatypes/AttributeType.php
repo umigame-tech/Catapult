@@ -4,6 +4,7 @@ namespace UmigameTech\Catapult\Datatypes;
 
 enum AttributeType: string
 {
+    case ForeignId = 'foreignId';
     case String = 'string';
     case Username = 'username';
     case Email = 'email';

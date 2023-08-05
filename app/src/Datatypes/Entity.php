@@ -20,6 +20,10 @@ class Entity
     /** for views */
     public string $plural = '';
 
+    public TypedArray $belongsTo;
+    public TypedArray $belongsToEntities;
+    public TypedArray $hasManyEntities;
+
     public function __construct($data) {
         $this->name = $data['name'];
         $this->allowedFor = $data['allowedFor'];
@@ -30,6 +34,11 @@ class Entity
         if (!empty($data['dataPath'])) {
             $this->dataPath = $data['dataPath'];
         }
+
+        $this->belongsTo = new TypedArray('string', $data['belongsTo'] ?? []);
+        $this->plural = InflectorFactory::create()->build()->pluralize($this->name);
+        $this->belongsToEntities = new TypedArray(Entity::class);
+        $this->hasManyEntities = new TypedArray(Entity::class);
     }
 
     public function isAuthenticatable(): bool
@@ -127,5 +136,53 @@ class Entity
     public function hasInitialData(): bool
     {
         return !empty($this->dataPath);
+    }
+
+    public function foreignIdName(): string
+    {
+        return $this->name . '_id';
+    }
+
+    public function hasBelongsToEntities(): bool
+    {
+        return !$this->belongsToEntities->isEmpty();
+    }
+
+    public function hasHasManyEntities(): bool
+    {
+        return !$this->hasManyEntities->isEmpty();
+    }
+
+    private function hasManyEntitiesTowardLeafs(): TypedArray
+    {
+        $entities = new TypedArray(Entity::class);
+        foreach ($this->hasManyEntities as $entity) {
+            $entities->push($entity);
+            if (! $entity->hasManyEntities->isEmpty()) {
+                $entities = $entities->merge($entity->hasManyEntitiesTowardLeafs());
+            }
+        }
+
+        return $entities;
+    }
+
+    private function belongsToEntitiesTowardRoot(): TypedArray
+    {
+        $entities = new TypedArray(Entity::class);
+        foreach ($this->belongsToEntities as $entity) {
+            $entities->push($entity);
+            if (! $entity->belongsToEntities->isEmpty()) {
+                $entities = $entities->merge($entity->belongsToEntitiesTowardRoot());
+            }
+        }
+
+        return $entities;
+    }
+
+    public function dependentEntities(): TypedArray
+    {
+        $hasManyEntitiesTowardLeafs = $this->hasManyEntitiesTowardLeafs();
+        $belongsToEntitiesTowardRoot = $this->belongsToEntitiesTowardRoot();
+        return $hasManyEntitiesTowardLeafs->merge($belongsToEntitiesTowardRoot);
     }
 }

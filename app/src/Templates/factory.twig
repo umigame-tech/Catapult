@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 {% if authenticatable %}
 use Illuminate\Support\Facades\Hash;
 {% endif %}
+{% for belongsToEntity in entity.belongsToEntities %}
+use App\Models\{{ belongsToEntity.modelName }};
+{% endfor %}
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\{{ modelName }}>
@@ -20,7 +23,10 @@ class {{ factoryName }} extends Factory
     public function definition(): array
     {
         return [
-{% for faker in fakers %}
+{% for belongsTo in entity.belongsToEntities %}
+            '{{ belongsTo.name }}_id' => {{ belongsTo.modelName }}::factory()->create()->id,
+{% endfor %}
+{% for faker in fakers|filter(faker => faker.type is not same as('foreignId')) %}
 {% if faker.type is same as('password') %}
             '{{ faker.name }}' => Hash::make('password'),
 {% else %}

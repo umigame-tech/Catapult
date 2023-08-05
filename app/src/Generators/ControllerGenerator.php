@@ -2,8 +2,10 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Attribute;
 use UmigameTech\Catapult\Datatypes\AttributeType;
+use UmigameTech\Catapult\Datatypes\ControllerSubAction;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
@@ -58,6 +60,44 @@ class ControllerGenerator extends Generator
         ],
     ];
 
+    // e.g. if author entity has hasMany books entity,
+    // generate actions like author_books_index, author_books_show, author_books_create... etc.
+    protected function subActions(Entity $entity, $context = [], $forApi = false): TypedArray
+    {
+        if (empty($context)) {
+            $context = [
+                'prefix' => $entity->name,
+                'entities' => new TypedArray(Entity::class, [$entity]),
+            ];
+        }
+        $actions = new TypedArray(ControllerSubAction::class);
+        $controllerActions = $forApi ? ApiControllerGenerator::$apiActions : self::$actions;
+        foreach ($entity->belongsToEntities as $parentEntity) {
+            $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
+            $newEntities = $context['entities']->merge(new TypedArray(Entity::class, [$parentEntity]));
+            foreach (array_keys($controllerActions) as $actionName) {
+                // temporally skip actions other than index
+                if ($actionName !== 'index') {
+                    continue;
+                }
+                $actions[] = new ControllerSubAction(
+                    actionMethodName: "{$newPrefix}_{$actionName}",
+                    entities: $newEntities
+                );
+            }
+
+            $newContext = [
+                'prefix' => $newPrefix,
+                'entities' => $newEntities,
+            ];
+            $actions = $actions->merge(
+                $this->subActions($parentEntity, $newContext)
+            );
+        }
+
+        return $actions;
+    }
+
     public function generateContent(Entity $entity)
     {
         $controllerName = $entity->controllerName();
@@ -76,6 +116,7 @@ class ControllerGenerator extends Generator
             'plural' => $plural,
             'entity' => $entity,
             'authenticatable' => $authenticatable,
+            'subActions' => $this->subActions($entity),
         ];
 
         if ($authenticatable) {

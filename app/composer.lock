@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7efe3ae7d52290ddc4b1673482e0e36",
+    "content-hash": "88b8c7f2b4da7d0a2f32596361b2ff3c",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -798,16 +798,16 @@
         },
         {
             "name": "newnakashima/typedarray",
-            "version": "0.1.x-dev",
+            "version": "0.1.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/newnakashima/TypedArray.git",
-                "reference": "45c4544318dc62cdb382709b3f379bedd0df7195"
+                "reference": "ea85d49898c86319f12d89458bf1a80c9ee91f66"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/newnakashima/TypedArray/zipball/45c4544318dc62cdb382709b3f379bedd0df7195",
-                "reference": "45c4544318dc62cdb382709b3f379bedd0df7195",
+                "url": "https://api.github.com/repos/newnakashima/TypedArray/zipball/ea85d49898c86319f12d89458bf1a80c9ee91f66",
+                "reference": "ea85d49898c86319f12d89458bf1a80c9ee91f66",
                 "shasum": ""
             },
             "require-dev": {
@@ -832,9 +832,9 @@
             "description": "Typed Array for PHP",
             "support": {
                 "issues": "https://github.com/newnakashima/TypedArray/issues",
-                "source": "https://github.com/newnakashima/TypedArray/tree/0.1"
+                "source": "https://github.com/newnakashima/TypedArray/tree/0.1.5"
             },
-            "time": "2023-07-31T11:05:16+00:00"
+            "time": "2023-08-04T07:29:29+00:00"
         },
         {
             "name": "phplang/scope-exit",
@@ -5176,9 +5176,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "newnakashima/typedarray": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
