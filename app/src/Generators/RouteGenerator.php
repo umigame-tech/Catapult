@@ -38,20 +38,23 @@ class RouteGenerator extends Generator
             ];
         }
         $actions = new TypedArray(Primitives::String->value);
-        $controllerName = $forApi ? $entity->apiControllerName() : $entity->controllerName();
-        foreach ($entity->belongsToEntities as $parentEntity) {
-            $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
+        foreach ($entity->hasManyEntities as $childEntity) {
+            $newPrefix = "{$context['prefix']}_{$childEntity->name}";
+            $controllerName = $forApi ? $childEntity->apiControllerName() : $childEntity->controllerName();
             $controllerActions = $forApi
                 ? ApiControllerGenerator::$apiActions
                 : ControllerGenerator::$actions;
             foreach ($controllerActions as $actionName => $action) {
-                // Routeの文字列
+                // temporally skip actions other than index
+                if ($actionName !== 'index') {
+                    continue;
+                }
                 $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
                 $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
                 foreach ($methods as $method) {
                     $actions[] = $this->indents($context['indentLevel'])
-                        . "Route::{$method}('{$entity->plural}{$actionPath}', "
-                        . "[{$controllerName}::class, '{$newPrefix}_{$actionName}'])->name('{$entity->name}.{$actionName}');";
+                        . "Route::{$method}('{$childEntity->plural}{$actionPath}', "
+                        . "[{$controllerName}::class, '{$newPrefix}_{$actionName}'])->name('{$childEntity->name}.{$actionName}');";
                 }
             }
 
@@ -60,8 +63,13 @@ class RouteGenerator extends Generator
                 'indentLevel' => $context['indentLevel'] + 1,
             ];
             $actions = $actions->merge(
-                $this->subActions($parentEntity, $newContext)
+                $this->subActions($childEntity, $newContext, $forApi)
             );
+        }
+
+        if ($actions->count() > 0) {
+            $actions->unshift($this->routesGrouping($entity, $context['indentLevel']));
+            $actions->push($this->indents($context['indentLevel'] - 1) . '});');
         }
 
         return $actions;
@@ -94,11 +102,7 @@ class RouteGenerator extends Generator
             return $converted;
         }
 
-        $converted[] = $this->routesGrouping($entity, $indentLevel + 1);
-        foreach ($entity->hasManyEntities as $subEntity) {
-            $converted = array_merge($converted, $this->subActions($subEntity)->toArray());
-        }
-        $converted[] = '});';
+        $converted = array_merge($converted, $this->subActions($entity)->toArray());
 
         return $converted;
     }

@@ -19,22 +19,18 @@ class {{ seederName }} extends Seeder
      */
     public function run(): void
     {
-{% if entity.hasHasManyEntities %}
-        {{ modelName }}::factory()->count(10)
-{% for hasManyEntity in entity.hasManyEntities %}
-            ->has({{ hasManyEntity.modelName }}::factory())->count(10)
-{% endfor %}
-            ->create();
-{% endif %}
-{% if entity.hasBelongsToEntities %}
         {{ modelName }}::factory([
+{% if entity.hasBelongsToEntities %}
 {% for belongsToEntity in entity.belongsToEntities %}
             '{{ belongsToEntity.foreignIdName }}' => {{ belongsToEntity.modelName }}::factory()->create()->id,
 {% endfor %}
-        ])->count(10)->create();
 {% endif %}
-{% if not entity.hasHasManyEntities and not entity.hasBelongsToEntities %}
-        {{ modelName }}::factory()->count(10)->create();
+        ])
+{% if entity.hasHasManyEntities %}
+{% for hasManyEntity in entity.hasManyEntities %}
+        ->has({{ hasManyEntity.modelName }}::factory())
+{% endfor %}
 {% endif %}
+        ->count(10)->create();
     }
 }

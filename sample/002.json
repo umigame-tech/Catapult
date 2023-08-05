@@ -103,6 +103,23 @@
       ]
     },
     {
+      "name": "chapter",
+      "allowedFor": [ "everyone" ],
+      "attributes": [
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "text"
+        }
+      ],
+      "belongsTo": [
+        "book"
+      ]
+    },
+    {
       "name": "role",
       "allowedFor": [
         "person"

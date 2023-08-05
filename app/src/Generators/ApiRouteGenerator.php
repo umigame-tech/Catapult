@@ -26,11 +26,7 @@ class ApiRouteGenerator extends RouteGenerator
             return $converted;
         }
 
-        $converted[] = $this->routesGrouping($entity, $indentLevel + 1);
-        foreach ($entity->hasManyEntities as $subEntity) {
-            $converted = array_merge($converted, $this->subActions(entity: $subEntity, forApi: true)->toArray());
-        }
-        $converted[] = '});';
+        $converted = array_merge($converted, $this->subActions(entity: $entity, forApi: true)->toArray());
 
         return $converted;
     }

@@ -62,13 +62,8 @@ class {{ controllerName }} extends Controller
     public function {{action.actionMethodName}}({{ action.argString }})
     {
         return new {{ resourceCollectionName }}(
-{% for related in action.entities|filter(v => v.name is not same as(entity.name)) %}
-    {% if loop.index is same as 1 %}
-        {{ modelName }}::of{{ related.modelName }}(${{ related.name }})
-    {% else %}
-            ->of{{ related.modelName }}(${{ related.name }})
-    {% endif %}
-{% endfor %}
+{% set related = action.entities[1] %}
+            {{ modelName }}::of{{ related.modelName }}(${{ related.name }})
             ->get()
         );
     }

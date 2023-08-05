@@ -157,9 +157,8 @@ class Entity
     {
         $entities = new TypedArray(Entity::class);
         foreach ($this->hasManyEntities as $entity) {
-            if ($entity->hasManyEntities->isEmpty()) {
-                $entities->push($entity);
-            } else {
+            $entities->push($entity);
+            if (! $entity->hasManyEntities->isEmpty()) {
                 $entities = $entities->merge($entity->hasManyEntitiesTowardLeafs());
             }
         }
@@ -171,9 +170,8 @@ class Entity
     {
         $entities = new TypedArray(Entity::class);
         foreach ($this->belongsToEntities as $entity) {
-            if ($entity->belongsToEntities->isEmpty()) {
-                $entities->push($entity);
-            } else {
+            $entities->push($entity);
+            if (! $entity->belongsToEntities->isEmpty()) {
                 $entities = $entities->merge($entity->belongsToEntitiesTowardRoot());
             }
         }

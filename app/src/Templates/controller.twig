@@ -245,9 +245,8 @@ class {{ controllerName }} extends Controller
         $request->session()->forget('{{ entity.name }}');
         $fromUrl = $this->buildFromUrl($request);
         $paginate = ${{ entity.name }}
-{% for related in action.entities|filter(v => v.name is not same as(entity.name)) %}
+{% set related = action.entities[1] %}
             ->of{{ related.modelName }}(${{ related.name }})
-{% endfor %}
             ->paginate(10);
 
         return view('{{ entity.name }}.index', [

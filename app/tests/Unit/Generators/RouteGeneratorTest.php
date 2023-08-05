@@ -161,7 +161,5 @@ test('relation', function () {
 
     $generator->generate();
 
-    var_dump($this->mocked->contents);
-
     expect(true)->toBeTrue();
 });

@@ -76,6 +76,10 @@ class ControllerGenerator extends Generator
             $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
             $newEntities = $context['entities']->merge(new TypedArray(Entity::class, [$parentEntity]));
             foreach (array_keys($controllerActions) as $actionName) {
+                // temporally skip actions other than index
+                if ($actionName !== 'index') {
+                    continue;
+                }
                 $actions[] = new ControllerSubAction(
                     actionMethodName: "{$newPrefix}_{$actionName}",
                     entities: $newEntities
