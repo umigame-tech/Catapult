@@ -9,6 +9,9 @@ use App\Http\Requests\Api\{{ updateRequestName }};
 use App\Models\{{ modelName }};
 use App\Http\Resources\{{ resourceName }};
 use App\Http\Resources\{{ resourceCollectionName }};
+{% for dependentEntity in entity.dependentEntities %}
+use App\Models\{{ dependentEntity.modelName }};
+{% endfor %}
 
 class {{ controllerName }} extends Controller
 {
@@ -53,4 +56,22 @@ class {{ controllerName }} extends Controller
     {
         return {{ modelName }}::destroy($id);
     }
+
+{% for action in subActions %}
+{% if action.actionMethodName ends with 'index' %}
+    public function {{action.actionMethodName}}({{ action.argString }})
+    {
+        return new {{ resourceCollectionName }}(
+{% for related in action.entities|filter(v => v.name is not same as(entity.name)) %}
+    {% if loop.index is same as 1 %}
+        {{ modelName }}::of{{ related.modelName }}(${{ related.name }})
+    {% else %}
+            ->of{{ related.modelName }}(${{ related.name }})
+    {% endif %}
+{% endfor %}
+            ->get()
+        );
+    }
+{% endif %}
+{% endfor %}
 }

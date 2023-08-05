@@ -60,9 +60,9 @@ class ControllerGenerator extends Generator
         ],
     ];
 
-    // if author entity has hasMany books entity,
+    // e.g. if author entity has hasMany books entity,
     // generate actions like author_books_index, author_books_show, author_books_create... etc.
-    public function subActions(Entity $entity, $context = []): TypedArray
+    protected function subActions(Entity $entity, $context = [], $forApi = false): TypedArray
     {
         if (empty($context)) {
             $context = [
@@ -71,10 +71,11 @@ class ControllerGenerator extends Generator
             ];
         }
         $actions = new TypedArray(ControllerSubAction::class);
+        $controllerActions = $forApi ? ApiControllerGenerator::$apiActions : self::$actions;
         foreach ($entity->belongsToEntities as $parentEntity) {
             $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
             $newEntities = $context['entities']->merge(new TypedArray(Entity::class, [$parentEntity]));
-            foreach (array_keys(self::$actions) as $actionName) {
+            foreach (array_keys($controllerActions) as $actionName) {
                 $actions[] = new ControllerSubAction(
                     actionMethodName: "{$newPrefix}_{$actionName}",
                     entities: $newEntities

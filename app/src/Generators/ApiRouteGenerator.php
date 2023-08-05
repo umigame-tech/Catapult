@@ -21,6 +21,17 @@ class ApiRouteGenerator extends RouteGenerator
             }
         }
 
+        // relationがなければここで終了
+        if (! $entity->hasHasManyEntities()) {
+            return $converted;
+        }
+
+        $converted[] = $this->routesGrouping($entity, $indentLevel + 1);
+        foreach ($entity->hasManyEntities as $subEntity) {
+            $converted = array_merge($converted, $this->subActions(entity: $subEntity, forApi: true)->toArray());
+        }
+        $converted[] = '});';
+
         return $converted;
     }
 

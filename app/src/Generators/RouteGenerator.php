@@ -29,7 +29,7 @@ class RouteGenerator extends Generator
             . "Route::prefix('{$entity->plural}/{{$entity->name}}')->name('{$entity->name}.')->group(function () {";
     }
 
-    public function subActions(Entity $entity, $context = []): TypedArray
+    public function subActions(Entity $entity, $context = [], $forApi = false): TypedArray
     {
         if (empty($context)) {
             $context = [
@@ -38,16 +38,20 @@ class RouteGenerator extends Generator
             ];
         }
         $actions = new TypedArray(Primitives::String->value);
+        $controllerName = $forApi ? $entity->apiControllerName() : $entity->controllerName();
         foreach ($entity->belongsToEntities as $parentEntity) {
             $newPrefix = "{$parentEntity->name}_{$context['prefix']}";
-            foreach (ControllerGenerator::$actions as $actionName => $action) {
+            $controllerActions = $forApi
+                ? ApiControllerGenerator::$apiActions
+                : ControllerGenerator::$actions;
+            foreach ($controllerActions as $actionName => $action) {
                 // Routeの文字列
                 $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
                 $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
                 foreach ($methods as $method) {
                     $actions[] = $this->indents($context['indentLevel'])
                         . "Route::{$method}('{$entity->plural}{$actionPath}', "
-                        . "[{$entity->controllerName()}::class, '{$newPrefix}_{$actionName}'])->name('{$entity->name}.{$actionName}');";
+                        . "[{$controllerName}::class, '{$newPrefix}_{$actionName}'])->name('{$entity->name}.{$actionName}');";
                 }
             }
 
@@ -92,7 +96,6 @@ class RouteGenerator extends Generator
 
         $converted[] = $this->routesGrouping($entity, $indentLevel + 1);
         foreach ($entity->hasManyEntities as $subEntity) {
-            // $converted = array_merge($converted, $this->convertActionName($subEntity, $indentLevel + 1, $entity));
             $converted = array_merge($converted, $this->subActions($subEntity)->toArray());
         }
         $converted[] = '});';
