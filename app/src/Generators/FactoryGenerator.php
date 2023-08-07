@@ -14,7 +14,9 @@ class FactoryGenerator extends Generator
     private function attributeTypeMap(AttributeType $type): string
     {
         return match ($type) {
-            AttributeType::ForeignId => 'foreignId',
+            AttributeType::Select, AttributeType::Radio => 'foreignId',
+            // TODO: Add support for multiple select
+            AttributeType::Multiple => 'text',
             AttributeType::String => 'realText',
             AttributeType::Username => 'userName',
             AttributeType::Email => 'email',

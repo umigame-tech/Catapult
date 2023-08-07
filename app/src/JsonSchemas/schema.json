@@ -32,7 +32,17 @@
             "type": "array",
             "items": {
               "description": "Entity that the entity belongs to",
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "Name of the entity",
+                  "type": "string"
+                },
+                "type": {
+                  "description": "Type of the UI",
+                  "enum": ["select", "radio"]
+                }
+              }
             }
           },
           "attributes": {
@@ -61,7 +71,10 @@
                     "date",
                     "datetime",
                     "time",
-                    "text"
+                    "text",
+                    "select",
+                    "radio",
+                    "multiple"
                   ]
                 },
                 "loginKey": {

@@ -35,7 +35,7 @@ class Entity
             $this->dataPath = $data['dataPath'];
         }
 
-        $this->belongsTo = new TypedArray('string', $data['belongsTo'] ?? []);
+        $this->belongsTo = new TypedArray(BelongsTo::class, $data['belongsTo'] ?? []);
         $this->plural = InflectorFactory::create()->build()->pluralize($this->name);
         $this->belongsToEntities = new TypedArray(Entity::class);
         $this->hasManyEntities = new TypedArray(Entity::class);

@@ -99,7 +99,10 @@
         }
       ],
       "belongsTo": [
-        "author"
+        {
+          "name": "author",
+          "type": "select"
+        }
       ]
     },
     {
@@ -116,7 +119,10 @@
         }
       ],
       "belongsTo": [
-        "book"
+        {
+          "name": "book",
+          "type": "radio"
+        }
       ]
     },
     {

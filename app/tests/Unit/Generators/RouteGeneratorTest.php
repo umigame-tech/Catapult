@@ -135,7 +135,12 @@ test('relation', function () {
                 'type' => 'string',
             ],
         ],
-        'belongsTo' => ['author'],
+        'belongsTo' => [
+            [
+                'name' => 'author',
+                'type' => 'select',
+            ]
+        ],
     ];
     $author = [
         'name' => 'author',
