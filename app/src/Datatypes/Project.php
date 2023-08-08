@@ -22,16 +22,16 @@ class Project
     private function prepareBelongsTo()
     {
         $this->entities->each(function (Entity $entity) {
-            $entity->belongsTo->each(function (string $belongsTo) use ($entity) {
+            $entity->belongsTo->each(function (BelongsTo $belongsTo) use ($entity) {
                 /** @var Entity */
-                $havingEntity = $this->entities->find(fn ($e) => $e->name === $belongsTo);
+                $havingEntity = $this->entities->find(fn ($e) => $e->name === $belongsTo->name);
                 if (empty($havingEntity)) {
                     throw new \Exception("Entity {$entity->name} has a belongsTo relationship with {$belongsTo} but {$belongsTo} does not exist");
                 }
 
                 $entity->attributes->push(new Attribute([
                     'name' => $havingEntity->foreignIdName(),
-                    'type' => AttributeType::ForeignId->value,
+                    'type' => $belongsTo->type,
                     'nullable' => true,
                     'default' => null,
                 ]));
@@ -41,8 +41,8 @@ class Project
 
             $entity->belongsToEntities = new TypedArray(
                 Entity::class,
-                $entity->belongsTo->map(function (string $belongsTo) {
-                    return $this->entities->find(fn ($e) => $e->name === $belongsTo);
+                $entity->belongsTo->map(function (BelongsTo $belongsTo) {
+                    return $this->entities->find(fn ($e) => $e->name === $belongsTo->name);
                 })
             );
         });
