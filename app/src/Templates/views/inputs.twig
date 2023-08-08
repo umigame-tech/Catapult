@@ -8,6 +8,16 @@
       @endforeach
 {% if attribute.inputType is same as('textarea') %}
       <textarea name="{{ attribute.inputName }}" id="{{ attribute.inputName }}">{{ '{{' }} old('{{ attribute.inputName }}') ?? ${{ entity.name }}->{{ attribute.name }} {{ '}}' }}</textarea>
+{% elseif attribute.inputType is same as('select') %}
+      <select name="{{ attribute.inputName }}" id="{{ attribute.inputName }}">
+        <option>Select {{ attribute.inputName }}</option>
+{% set belongsTo = entity.belongsToEntities|filter(v => attribute.inputName matches '/' ~ v.name ~ '/')|first %}
+@foreach (App\Models\{{ belongsTo.modelName }}::all() as ${{ belongsTo.name }})
+        <option value="{{ '{{' }} ${{ belongsTo.name }}->id {{ '}}' }}" @if (${{ belongsTo.name }}->id == (old('{{ attribute.inputName }}') ?? ${{ entity.name }}->{{ attribute.name }})) {{ 'selected' }} @endif>
+          {{ '{{' }} ${{ belongsTo.name }}->id {{ '}}' }}
+        </option>
+@endforeach
+      </select>
 {% else %}
       <input
         type="{{ attribute.inputType }}"
