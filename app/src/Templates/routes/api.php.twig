@@ -22,6 +22,24 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
+{# for authenticated users #}
+{% for authName, entities in authList %}
+Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ authName }}')->group(function () {
+{% for entity in entities %}
+
+{% for route in entity.routes %}
+    {{ route|raw }}
+{% endfor %}
+
+{% endfor %}
+});
+
+{% for entity in entities %}
+{% for loginRoute in entity.loginRoutes %}
+{{ loginRoute|raw }}
+{% endfor %}
+{% endfor %}
+{% endfor %}
 {# routes for everyone #}
 {% for entity in forEveryone %}
 {% for route in entity.routes %}

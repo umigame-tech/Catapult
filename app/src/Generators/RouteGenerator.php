@@ -128,7 +128,7 @@ class RouteGenerator extends Generator
         ];
     }
 
-    private function makeAuthList()
+    protected function makeAuthList()
     {
         $authNames = $this->entities
             ->filter(fn (Entity $entity) => $entity->isAuthenticatable())
@@ -179,7 +179,7 @@ class RouteGenerator extends Generator
                     $controllerName = $entity->controllerName();
                     $loginRoutes['login'] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
                     $loginRoutes['loginSubmit'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
-                    $loginRoutes['logout'] = "Route::get('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
+                    $loginRoutes['logout'] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
                 }
 
                 $entity->routes = $routes;

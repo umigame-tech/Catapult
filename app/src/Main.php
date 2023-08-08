@@ -30,6 +30,7 @@ use UmigameTech\Catapult\Generators\RequestGenerator;
 use UmigameTech\Catapult\Generators\ResourceGenerator;
 use UmigameTech\Catapult\Generators\ResourcesSetupGenerator;
 use UmigameTech\Catapult\Generators\RouteGenerator;
+use UmigameTech\Catapult\Generators\RouteServiceProviderGenerator;
 use UmigameTech\Catapult\Generators\SeederGenerator;
 use UmigameTech\Catapult\Generators\TailwindCssSetupGenerator;
 use UmigameTech\Catapult\Generators\ViewGenerator;
@@ -71,6 +72,7 @@ class Main
         ApiUpdateRequestGenerator::class,
         ApiRouteGenerator::class,
         ApiControllerGenerator::class,
+        RouteServiceProviderGenerator::class,
     ];
 
     public function __construct(FileSystemContainer $container = null)
