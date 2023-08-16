@@ -17,11 +17,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// TODO: sanctumの設定を生成できるようにしたらここも修正する
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 {# for authenticated users #}
 {% for authName, entities in authList %}
 Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ authName }}')->group(function () {
