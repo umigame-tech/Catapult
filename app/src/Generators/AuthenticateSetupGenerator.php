@@ -8,7 +8,7 @@ class AuthenticateSetupGenerator extends Generator
     {
         $projectPath = $this->projectPath();
 
-        $source =  __DIR__ . '/../Templates/app/Http/Middleware/Authenticate.php';
+        $source =  __DIR__ . '/../Templates/Application/app/Http/Middleware/Authenticate.php';
         $dist = $projectPath . '/app/Http/Middleware/Authenticate.php';
 
         $this->copier->copyFile($source, $dist);

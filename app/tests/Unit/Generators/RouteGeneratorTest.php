@@ -83,7 +83,7 @@ test('authenticatable', function () {
         ->toContain("    Route::get('dashboard', [UserController::class, 'dashboard'])->name('dashboard');")
         ->toContain("Route::get('users/login', [UserController::class, 'login'])->name('users.login');")
         ->toContain("Route::post('users/login', [UserController::class, 'loginSubmit'])->name('users.loginSubmit');")
-        ->toContain("Route::get('users/logout', [UserController::class, 'logout'])->name('users.logout');");
+        ->toContain("Route::delete('users/logout', [UserController::class, 'logout'])->name('users.logout');");
 });
 
 test('generate', function () {

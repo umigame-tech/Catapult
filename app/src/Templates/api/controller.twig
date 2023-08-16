@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+{% if loginRequestName is not empty %}
+use App\Http\Requests\{{ loginRequestName }};
+{% endif %}
 use App\Http\Requests\Api\{{ storeRequestName }};
 use App\Http\Requests\Api\{{ updateRequestName }};
 use App\Models\{{ modelName }};
@@ -56,6 +59,42 @@ class {{ controllerName }} extends Controller
     {
         return {{ modelName }}::destroy($id);
     }
+
+{% if authenticatable and loginRequestName is not empty %}
+    /**
+     * Login
+     */
+    public function login({{ loginRequestName }} $request)
+    {
+        $credentials = $request->only('{{ loginKeys|join("', '") }}');
+        if (auth('{{ authName }}')->attempt($credentials)) {
+            $request->session()->regenerate();
+            return response()->json(auth('{{ authName }}')->user());
+        }
+
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function logout(Request $request)
+    {
+        auth('{{ authName }}')->logout();
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+{% endif %}
+
+{% for action in subActions %}
+{% if action.actionMethodName ends with 'index' %}
+    public function {{action.actionMethodName}}({{ action.argString }})
+    {
+        return new {{ resourceCollectionName }}(
+{% set related = action.entities[1] %}
+            {{ modelName }}::of{{ related.modelName }}(${{ related.name }})
+            ->get()
+        );
+    }
+{% endif %}
+{% endfor %}
+}
 
 {% for action in subActions %}
 {% if action.actionMethodName ends with 'index' %}

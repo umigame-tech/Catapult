@@ -34,7 +34,7 @@ test('generate', function () {
         ->toHaveLength(1);
 
     expect($this->mocked->copied[0]['source'])
-        ->toContain('/Templates/app/Http/Middleware/Authenticate.php');
+        ->toContain('/Templates/Application/app/Http/Middleware/Authenticate.php');
     expect($this->mocked->copied[0]['dest'])
         ->toContain('/app/Http/Middleware/Authenticate.php');
 });

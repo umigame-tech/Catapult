@@ -2,6 +2,7 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use Newnakashima\TypedArray\TypedArray;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
@@ -36,9 +37,12 @@ class ApiRouteGenerator extends RouteGenerator
         $renderer = Renderer::getInstance();
         $apiRoutePath = $this->projectPath() . '/routes/api.php';
 
+        $authList = $this->makeAuthList();
+
         $forEveryone = $this->routesForEveryone();
 
         $routes = $renderer->render('routes/api.php.twig', [
+            'authList' => $authList,
             'forEveryone' => $forEveryone,
             'entities' => $this->entities,
         ]);
@@ -47,5 +51,27 @@ class ApiRouteGenerator extends RouteGenerator
             'path' => $apiRoutePath,
             'content' => $routes,
         ];
+    }
+
+    protected function convertEntitiesForRoute(TypedArray $entities)
+    {
+        $entities = $entities->map(
+            function (Entity $entity) {
+                $routes = $this->convertActionName($entity);
+                $authName = $this->inflector->pluralize($entity->name);
+                $loginRoutes = [];
+                if ($entity->isAuthenticatable()) {
+                    $controllerName = $entity->apiControllerName();
+                    $loginRoutes['login'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
+                    $loginRoutes['logout'] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
+                }
+
+                $entity->routes = $routes;
+                $entity->loginRoutes = $loginRoutes;
+                return $entity;
+            }
+        );
+
+        return $entities;
     }
 }
