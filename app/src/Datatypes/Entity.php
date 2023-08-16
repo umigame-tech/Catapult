@@ -103,14 +103,14 @@ class Entity
 
     public function authName(): string
     {
-        static $cache = '';
-        if (!empty($cache)) {
-            return $cache;
+        static $cache = [];
+        if (!empty($cache[$this->name])) {
+            return $cache[$this->name];
         }
 
         $inflector = InflectorFactory::create()->build();
-        $cache = $inflector->pluralize($this->name);
-        return $cache;
+        $cache[$this->name] = $inflector->pluralize($this->name);
+        return $cache[$this->name];
     }
 
     public function seederName(): string

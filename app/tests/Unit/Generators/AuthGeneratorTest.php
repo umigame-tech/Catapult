@@ -49,3 +49,63 @@ test('generateContent', function () {
             'throttle' => 60,
         ],");
 });
+
+test('generateSanctumContent', function () {
+    $person = [
+        'name' => 'person',
+        'allowedFor' => ['user', 'admin'],
+        'authenticatable' => true,
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'password',
+            ],
+        ],
+    ];
+    $user = [
+        'name' => 'user',
+        'allowedFor' => ['user', 'admin'],
+        'authenticatable' => true,
+        'attributes' => [
+            [
+                'name' => 'name',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'email',
+                'type' => 'string',
+            ],
+            [
+                'name' => 'password',
+                'type' => 'password',
+            ],
+        ],
+    ];
+    $generator = new AuthGenerator(
+        new Project([
+            'project_name' => 'test',
+            'entities' => [
+                $person,
+                $user,
+            ],
+        ]),
+        $this->mocked
+    );
+
+    list('content' => $content) = $generator->generateSanctumContent();
+    expect($content)
+        ->toBeString()
+        ->toContain("
+    'guard' => [
+        'people',
+        'users',
+    ],");
+});
