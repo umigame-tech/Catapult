@@ -7,6 +7,9 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class AuthGenerator extends Generator
 {
+
+    private $authenticatableList = [];
+
     public function generateContent()
     {
         $renderer = Renderer::getInstance();
@@ -55,16 +58,15 @@ class AuthGenerator extends Generator
 
     private function authenticatableList()
     {
-        static $authenticatableList;
-        if (!empty($authenticatableList)) {
-            return $authenticatableList;
+        if (!empty($this->authenticatableList)) {
+            return $this->authenticatableList;
         }
 
-        $authenticatableList = $this->entities->filter(
+        $this->authenticatableList = $this->entities->filter(
             fn (Entity $entity) => $entity->isAuthenticatable()
         );
 
-        return $authenticatableList;
+        return $this->authenticatableList;
     }
 
     private function guardNames()
