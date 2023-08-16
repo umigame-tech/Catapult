@@ -41,7 +41,7 @@ test('generate', function () {
         ->toHaveLength(1);
 
     expect($this->mocked->copied[0]['source'])
-        ->toContain('/Templates/app/Http/Requests/Api/ApiRequest.php');
+        ->toContain('/Templates/Application/app/Http/Requests/Api/ApiRequest.php');
     expect($this->mocked->copied[0]['dest'])
         ->toContain('/dist/test/app/Http/Requests/Api/ApiRequest.php');
 

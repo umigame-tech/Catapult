@@ -54,7 +54,7 @@ class ApiUpdateRequestGenerator extends RequestGenerator
     {
         $relativePath = 'app/Http/Requests/Api/ApiRequest.php';
         // Copy ApiRequest.php file.
-        $source = __DIR__ . '/../Templates/' . $relativePath;
+        $source = __DIR__ . '/../Templates/Application/' . $relativePath;
         $dest = $this->projectPath() . '/' . $relativePath;
         $this->copier->copyFile($source, $dest);
 

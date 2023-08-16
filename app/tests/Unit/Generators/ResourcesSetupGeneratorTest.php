@@ -31,6 +31,6 @@ test('generate', function () {
         }
     });
 
-    expect($this->result['source'])->toContain('/Templates/resources');
+    expect($this->result['source'])->toContain('/Templates/Application/resources');
     expect($this->result['dest'])->toContain('/dist/test/resources');
 });
