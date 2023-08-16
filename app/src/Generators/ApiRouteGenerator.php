@@ -61,7 +61,7 @@ class ApiRouteGenerator extends RouteGenerator
                 $authName = $this->inflector->pluralize($entity->name);
                 $loginRoutes = [];
                 if ($entity->isAuthenticatable()) {
-                    $controllerName = $entity->controllerName();
+                    $controllerName = $entity->apiControllerName();
                     $loginRoutes['login'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
                     $loginRoutes['logout'] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
                 }

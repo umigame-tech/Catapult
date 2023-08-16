@@ -42,6 +42,7 @@ Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ au
 {% endfor %}
 {# routes for everyone #}
 {% for entity in forEveryone %}
+
 {% for route in entity.routes %}
 {{ route|raw }}
 {% endfor %}

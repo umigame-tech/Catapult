@@ -2,6 +2,8 @@
 
 namespace UmigameTech\Catapult\Generators;
 
+use UmigameTech\Catapult\Datatypes\Attribute;
+use UmigameTech\Catapult\Datatypes\AttributeType;
 use UmigameTech\Catapult\Datatypes\Entity;
 use UmigameTech\Catapult\Templates\Renderer;
 
@@ -59,6 +61,26 @@ class ApiControllerGenerator extends ControllerGenerator
 
         if ($authenticatable) {
             // TODO: ログイン可能エンティティの場合の処理
+            $loginRequestName = $entity->loginRequestName();
+            $loginKeys = $entity->attributes->filter(
+                fn (Attribute $attribute) => $attribute->loginKey
+            );
+            $loginKeys = $loginKeys->map(
+                fn (Attribute $key) => $key->name,
+            );
+
+            $password = $entity->attributes->filter(
+                fn (Attribute $attribute) => $attribute->type === AttributeType::Password
+            );
+            if (empty($password)) {
+                throw new \Exception('Password attribute is not found');
+            }
+            $data = array_merge($data, [
+                'loginRequestName' => $loginRequestName,
+                'authName' => $entity->authName(),
+                'loginKeys' => $loginKeys,
+                'password' => $password[0]->name,
+            ]);
         }
 
         $controller = $renderer->render('api/controller.twig', $data);
