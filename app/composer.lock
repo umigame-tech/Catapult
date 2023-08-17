@@ -798,16 +798,16 @@
         },
         {
             "name": "newnakashima/typedarray",
-            "version": "0.1.5",
+            "version": "0.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/newnakashima/TypedArray.git",
-                "reference": "ea85d49898c86319f12d89458bf1a80c9ee91f66"
+                "reference": "f1063e5f7191da113331545d3dd3467d98b312af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/newnakashima/TypedArray/zipball/ea85d49898c86319f12d89458bf1a80c9ee91f66",
-                "reference": "ea85d49898c86319f12d89458bf1a80c9ee91f66",
+                "url": "https://api.github.com/repos/newnakashima/TypedArray/zipball/f1063e5f7191da113331545d3dd3467d98b312af",
+                "reference": "f1063e5f7191da113331545d3dd3467d98b312af",
                 "shasum": ""
             },
             "require-dev": {
@@ -832,9 +832,9 @@
             "description": "Typed Array for PHP",
             "support": {
                 "issues": "https://github.com/newnakashima/TypedArray/issues",
-                "source": "https://github.com/newnakashima/TypedArray/tree/0.1.5"
+                "source": "https://github.com/newnakashima/TypedArray/tree/0.1.8"
             },
-            "time": "2023-08-04T07:29:29+00:00"
+            "time": "2023-08-17T08:25:47+00:00"
         },
         {
             "name": "phplang/scope-exit",
