@@ -42,6 +42,31 @@
                 { "name": "password", "type": "password" },
                 { "name": "icon", "type": "string" }
             ]
+        },
+        {
+            "name": "customer",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "authenticatable": true,
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email", "loginKey": true },
+                { "name": "password", "type": "password", "rules": { "min": 16 } },
+                { "name": "icon", "type": "string" }
+            ]
+        },
+        {
+            "name": "visit_log",
+            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "visited_at", "type": "datetime" },
+                { "name": "memo", "type": "text" },
+                { "name": "rating", "type": "integer" }
+            ]
         }
     ]
 }
