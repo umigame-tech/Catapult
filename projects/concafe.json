@@ -1,0 +1,47 @@
+{
+    "$schema": "../app/src/JsonSchemas/schema.json",
+    "project_name": "concafe",
+    "entities": [
+        {
+            "name": "admin",
+            "allowedFor": ["admin"],
+            "authenticatable": true,
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email", "loginKey": true },
+                { "name": "password", "type": "password", "rules": { "min": 16 } }
+            ]
+        },
+        {
+            "name": "cafe",
+            "allowedFor": ["admin"],
+            "authenticatable": true,
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email", "loginKey": true },
+                { "name": "password", "type": "password", "rules": { "min": 16 } },
+                { "name": "zipCode", "type": "string" },
+                { "name": "address", "type": "string" },
+                { "name": "tel", "type": "tel" },
+                { "name": "description", "type": "text" },
+                { "name": "icon", "type": "string" },
+                { "name": "lat", "type": "decimal" },
+                { "name": "lng", "type": "decimal" }
+            ]
+        },
+        {
+            "name": "cast",
+            "allowedFor": ["admin", "cafe"],
+            "authenticatable": true,
+            "belongsTo": [
+                { "name": "cafe", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email" },
+                { "name": "password", "type": "password" },
+                { "name": "icon", "type": "string" }
+            ]
+        }
+    ]
+}
