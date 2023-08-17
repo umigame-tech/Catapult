@@ -52,6 +52,10 @@
               "description": "Attribute of the entity",
               "type": "object",
               "properties": {
+                "$comment": {
+                  "description": "Comment of the attribute",
+                  "type": "string"
+                },
                 "name": {
                   "description": "Name of the attribute",
                   "type": "string"
