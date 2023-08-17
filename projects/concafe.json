@@ -59,13 +59,52 @@
             "allowedFor": ["admin", "cafe", "cast", "customer"],
             "belongsTo": [
                 { "name": "cafe", "type": "select" },
-                { "name": "cast", "type": "select" },
+                { "name": "cast", "type": "select", "$comment": "お見送りしてくれたキャスト" },
                 { "name": "customer", "type": "select" }
             ],
             "attributes": [
                 { "name": "visited_at", "type": "datetime" },
                 { "name": "memo", "type": "text" },
                 { "name": "rating", "type": "integer" }
+            ]
+        },
+        {
+            "name": "stamp_card",
+            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select", "$comment": "スタンプカードを作ってくれたキャスト" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "published_at", "type": "datetime" },
+                { "name": "expired_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "stamp",
+            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "belongsTo": [
+                { "name": "stamp_card", "type": "select" },
+                { "name": "cast", "type": "select", "$comment": "スタンプを押してくれたキャスト" }
+            ],
+            "attributes": [
+                { "name": "stamped_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "shift",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "started_at", "type": "datetime" },
+                { "name": "finished_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
             ]
         }
     ]
