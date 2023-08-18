@@ -20,6 +20,8 @@ class Entity
     /** for views */
     public string $plural = '';
 
+    public string $camelPlural = '';
+
     public TypedArray $belongsTo;
     public TypedArray $belongsToEntities;
     public TypedArray $hasManyEntities;
@@ -36,7 +38,9 @@ class Entity
         }
 
         $this->belongsTo = new TypedArray(BelongsTo::class, $data['belongsTo'] ?? []);
-        $this->plural = InflectorFactory::create()->build()->pluralize($this->name);
+        $inflector = InflectorFactory::create()->build();
+        $this->plural = $inflector->pluralize($this->name);
+        $this->camelPlural = $inflector->pluralize($this->modelName());
         $this->belongsToEntities = new TypedArray(Entity::class);
         $this->hasManyEntities = new TypedArray(Entity::class);
     }

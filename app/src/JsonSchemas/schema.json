@@ -34,6 +34,10 @@
               "description": "Entity that the entity belongs to",
               "type": "object",
               "properties": {
+                "$comment": {
+                  "description": "Comment of the relation",
+                  "type": "string"
+                },
                 "name": {
                   "description": "Name of the entity",
                   "type": "string"

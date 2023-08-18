@@ -47,9 +47,10 @@ class {{ modelName }} extends {{ parentClass }}
 {% endfor %}
 
 {% for hasMany in entity.hasManyEntities %}
-    public function {{ hasMany.plural }}(): HasMany
+    public function {{ hasMany.camelPlural }}(): HasMany
     {
         return $this->hasMany({{ hasMany.modelName }}::class);
     }
+
 {% endfor %}
 }
