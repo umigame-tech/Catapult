@@ -56,7 +56,7 @@
         },
         {
             "name": "visit_log",
-            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "allowedFor": ["admin", "cafe", "cast"],
             "belongsTo": [
                 { "name": "cafe", "type": "select" },
                 { "name": "cast", "type": "select", "$comment": "お見送りしてくれたキャスト" },
@@ -70,7 +70,7 @@
         },
         {
             "name": "stamp_card",
-            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "allowedFor": ["admin", "cafe", "cast"],
             "belongsTo": [
                 { "name": "cafe", "type": "select" },
                 { "name": "cast", "type": "select", "$comment": "スタンプカードを作ってくれたキャスト" },
@@ -84,7 +84,7 @@
         },
         {
             "name": "stamp",
-            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "allowedFor": ["admin", "cafe", "cast"],
             "belongsTo": [
                 { "name": "stamp_card", "type": "select" },
                 { "name": "cast", "type": "select", "$comment": "スタンプを押してくれたキャスト" }
@@ -104,6 +104,111 @@
             "attributes": [
                 { "name": "started_at", "type": "datetime" },
                 { "name": "finished_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "shift_request",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "requested_at", "type": "datetime" },
+                { "name": "started_at", "type": "datetime" },
+                { "name": "finished_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "message",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "attributes": [
+                { "name": "title", "type": "string" },
+                { "name": "body", "type": "text" },
+                { "name": "sent_at", "type": "datetime" },
+                { "name": "read_at", "type": "datetime" },
+                { "name": "from", "type": "integer" },
+                { "name": "from_type", "type": "string", "$comment": "cafe, cast, customer のいずれか" },
+                { "name": "to", "type": "integer" },
+                { "name": "to_type", "type": "string", "$comment": "cafe, cast, customer のいずれか" }
+            ]
+        },
+        {
+            "name": "information",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "title", "type": "string" },
+                { "name": "body", "type": "text" },
+                { "name": "published_at", "type": "datetime" },
+                { "name": "expired_at", "type": "datetime" }
+            ]
+        },
+        {
+            "name": "information_target",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "information", "type": "select" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "read_at", "type": "datetime" }
+            ]
+        },
+        {
+            "name": "cheki_log",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "cheki_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "drink_log",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "drunk_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "champagne",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "stock", "type": "integer" },
+                { "name": "price", "type": "integer" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "champagne_log",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" },
+                { "name": "customer", "type": "select" },
+                { "name": "champagne", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "drunk_at", "type": "datetime" },
                 { "name": "memo", "type": "text" }
             ]
         }
