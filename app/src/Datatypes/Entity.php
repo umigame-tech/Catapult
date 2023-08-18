@@ -40,7 +40,7 @@ class Entity
         $this->belongsTo = new TypedArray(BelongsTo::class, $data['belongsTo'] ?? []);
         $inflector = InflectorFactory::create()->build();
         $this->plural = $inflector->pluralize($this->name);
-        $this->camelPlural = $inflector->pluralize($this->modelName());
+        $this->camelPlural = $inflector->pluralize(lcfirst($this->modelName()));
         $this->belongsToEntities = new TypedArray(Entity::class);
         $this->hasManyEntities = new TypedArray(Entity::class);
     }
