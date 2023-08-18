@@ -183,6 +183,12 @@ class Entity
     {
         $hasManyEntitiesTowardLeafs = $this->hasManyEntitiesTowardLeafs();
         $belongsToEntitiesTowardRoot = $this->belongsToEntitiesTowardRoot();
-        return $hasManyEntitiesTowardLeafs->merge($belongsToEntitiesTowardRoot);
+        return $hasManyEntitiesTowardLeafs->merge($belongsToEntitiesTowardRoot)->unique();
+    }
+
+    public function __toString(): string
+    {
+        // temporary
+        return $this->name;
     }
 }

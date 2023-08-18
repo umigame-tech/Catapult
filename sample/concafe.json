@@ -1,0 +1,111 @@
+{
+    "$schema": "../app/src/JsonSchemas/schema.json",
+    "project_name": "concafe",
+    "entities": [
+        {
+            "name": "admin",
+            "allowedFor": ["admin"],
+            "authenticatable": true,
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email", "loginKey": true },
+                { "name": "password", "type": "password", "rules": { "min": 16 } }
+            ]
+        },
+        {
+            "name": "cafe",
+            "allowedFor": ["admin"],
+            "authenticatable": true,
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email", "loginKey": true },
+                { "name": "password", "type": "password", "rules": { "min": 16 } },
+                { "name": "zipCode", "type": "string" },
+                { "name": "address", "type": "string" },
+                { "name": "tel", "type": "tel" },
+                { "name": "description", "type": "text" },
+                { "name": "icon", "type": "string" },
+                { "name": "lat", "type": "decimal" },
+                { "name": "lng", "type": "decimal" }
+            ]
+        },
+        {
+            "name": "cast",
+            "allowedFor": ["admin", "cafe"],
+            "authenticatable": true,
+            "belongsTo": [
+                { "name": "cafe", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email" },
+                { "name": "password", "type": "password" },
+                { "name": "icon", "type": "string" }
+            ]
+        },
+        {
+            "name": "customer",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "authenticatable": true,
+            "attributes": [
+                { "name": "name", "type": "string" },
+                { "name": "email", "type": "email", "loginKey": true },
+                { "name": "password", "type": "password", "rules": { "min": 16 } },
+                { "name": "icon", "type": "string" }
+            ]
+        },
+        {
+            "name": "visit_log",
+            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select", "$comment": "お見送りしてくれたキャスト" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "visited_at", "type": "datetime" },
+                { "name": "memo", "type": "text" },
+                { "name": "rating", "type": "integer" }
+            ]
+        },
+        {
+            "name": "stamp_card",
+            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select", "$comment": "スタンプカードを作ってくれたキャスト" },
+                { "name": "customer", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "published_at", "type": "datetime" },
+                { "name": "expired_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "stamp",
+            "allowedFor": ["admin", "cafe", "cast", "customer"],
+            "belongsTo": [
+                { "name": "stamp_card", "type": "select" },
+                { "name": "cast", "type": "select", "$comment": "スタンプを押してくれたキャスト" }
+            ],
+            "attributes": [
+                { "name": "stamped_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        },
+        {
+            "name": "shift",
+            "allowedFor": ["admin", "cafe", "cast"],
+            "belongsTo": [
+                { "name": "cafe", "type": "select" },
+                { "name": "cast", "type": "select" }
+            ],
+            "attributes": [
+                { "name": "started_at", "type": "datetime" },
+                { "name": "finished_at", "type": "datetime" },
+                { "name": "memo", "type": "text" }
+            ]
+        }
+    ]
+}

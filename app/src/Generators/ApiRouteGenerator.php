@@ -40,11 +40,21 @@ class ApiRouteGenerator extends RouteGenerator
         $authList = $this->makeAuthList();
 
         $forEveryone = $this->routesForEveryone();
+        $loginRoutes = [];
+        $this->entities->filter(fn (Entity $entity) => $entity->isAuthenticatable())
+            ->each(function (Entity $entity) use (&$loginRoutes) {
+                $authName = $entity->authName();
+                $controllerName = $entity->controllerName();
+                $loginRoutes[] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
+                $loginRoutes[] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
+                $loginRoutes[] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
+            });
 
         $routes = $renderer->render('routes/api.php.twig', [
             'authList' => $authList,
             'forEveryone' => $forEveryone,
             'entities' => $this->entities,
+            'loginRoutes' => $loginRoutes,
         ]);
 
         return [
@@ -58,16 +68,7 @@ class ApiRouteGenerator extends RouteGenerator
         $entities = $entities->map(
             function (Entity $entity) {
                 $routes = $this->convertActionName($entity);
-                $authName = $this->inflector->pluralize($entity->name);
-                $loginRoutes = [];
-                if ($entity->isAuthenticatable()) {
-                    $controllerName = $entity->apiControllerName();
-                    $loginRoutes['login'] = "Route::post('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
-                    $loginRoutes['logout'] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
-                }
-
                 $entity->routes = $routes;
-                $entity->loginRoutes = $loginRoutes;
                 return $entity;
             }
         );

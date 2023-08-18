@@ -17,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+{% for loginRoute in loginRoutes %}
+{{ loginRoute|raw }}
+{% endfor %}
+
 {# for authenticated users #}
 {% for authName, entities in authList %}
 Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ authName }}')->group(function () {
@@ -29,11 +33,6 @@ Route::prefix('{{ authName }}')->name('{{ authName }}.')->middleware('auth:{{ au
 {% endfor %}
 });
 
-{% for entity in entities %}
-{% for loginRoute in entity.loginRoutes %}
-{{ loginRoute|raw }}
-{% endfor %}
-{% endfor %}
 {% endfor %}
 {# routes for everyone #}
 {% for entity in forEveryone %}
