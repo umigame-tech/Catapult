@@ -1,6 +1,5 @@
 {
   "project_name": "data_types",
-  "sealed_prefix": "admin",
   "entities": [
     {
       "name": "person",
