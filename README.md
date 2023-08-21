@@ -1,10 +1,8 @@
 # Catapult
 
-Catapult is a tool to generate Laravel project with CRUD pages from a json file.
+Catapult is a tool to generate Laravel project with simple admin pages and CRUD APIs from a json file.
 
-Catapult generates simple admin pages and CRUD APIs.
-
-Catapult automatically create classes below.
+It automatically creates classes below.
 
 - web.php and api.php (routes)
 - Models
