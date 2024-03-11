@@ -1,6 +1,6 @@
 # Catapult
 
-Catapult is a tool to generate Laravel project with simple admin pages and CRUD APIs from a json file.
+Catapult is a tool that generates a Laravel project with simple admin pages and CRUD APIs from a JSON file.
 
 It automatically creates classes below.
 
@@ -17,7 +17,7 @@ It automatically creates classes below.
 
 This tool is under development.
 
-## How to use
+## How to Use
 
 First, start docker containers.
 
@@ -25,7 +25,7 @@ First, start docker containers.
 docker compose up
 ```
 
-Login to php container.
+Log in to php container.
 
 ```sh
 docker compose exec php bash
@@ -37,20 +37,20 @@ Install PHP dependencies.
 composer install
 ```
 
-main.php takes a json file path as an argument.
+`src/Main.php` takes a JSON file path as an argument.
 
 ```sh
-php src/main.php /sample/001.json
+php src/Main.php /sample/001.json
 ```
 
 If you want to skip Laravel installation, use `--skip-installation` option.  
-This options is useful when you already created a Laravel project with Catapult.
+These options are useful when you already created a Laravel project with Catapult.
 
 ```sh
-php src/main.php /sample/001.json --skip-installation
+php src/Main.php /sample/001.json --skip-installation
 ```
 
-## JSON example
+## Example JSON configuration for project setup
 
 ```json
 {
@@ -200,17 +200,17 @@ php src/main.php /sample/001.json --skip-installation
 }
 ```
 
-For more detail, see `app/src/JsonSchemas/schema.json`.
+For more detail, see [app/src/JsonSchemas/schema.json](app/src/JsonSchemas/schema.json).
 
-## Preview the generated Laravel project
+## Previewing generated Laravel projects
 
-If you defined `my_great_project` as `project_name` in your json file, you can preview the generated Laravel project like this.
+If you defined `my_great_project` as `project_name` in your json file, you can preview generated Laravel projects like this.
 
 ```sh
 cd /dist/my_great_project
 ```
 
-Watch TailwindCSS classes.
+Watch TailwindCSS classes. `npm run build -- --watch` command watches the project's front-end source code and build classes of TailwindCSS.
 
 ```sh
 npm run build -- --watch
@@ -224,4 +224,4 @@ php artisan serve --host 0.0.0.0
 
 Open `http://localhost:8000/{plural_entity_name}` in your browser.
 
-e.g. http://localhost:8000/books or http://localhost:8000/people or something like that.
+e.g. http://localhost:8000/books , http://localhost:8000/people or something like that.

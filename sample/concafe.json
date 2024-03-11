@@ -9,7 +9,7 @@
             "attributes": [
                 { "name": "name", "type": "string" },
                 { "name": "email", "type": "email", "loginKey": true },
-                { "name": "password", "type": "password", "rules": { "min": 16 } }
+                { "name": "password", "type": "password", "rules": { "min": 8 } }
             ]
         },
         {
