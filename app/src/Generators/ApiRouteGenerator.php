@@ -63,11 +63,11 @@ class ApiRouteGenerator extends RouteGenerator
         ];
     }
 
-    protected function convertEntitiesForRoute(TypedArray $entities)
+    protected function convertEntitiesForRoute(TypedArray $entities, $indentLevel = 0)
     {
         $entities = $entities->map(
-            function (Entity $entity) {
-                $routes = $this->convertActionName($entity);
+            function (Entity $entity) use ($indentLevel) {
+                $routes = $this->convertActionName($entity, $indentLevel);
                 $entity->routes = $routes;
                 return $entity;
             }

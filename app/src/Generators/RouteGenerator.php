@@ -25,7 +25,7 @@ class RouteGenerator extends Generator
             throw new InvalidArgumentException('indentLevel must be greater than 0');
         }
 
-        return $this->indents($indentLevel - 1)
+        return $this->indents($indentLevel)
             . "Route::prefix('{$entity->plural}/{{$entity->name}}')->name('{$entity->name}.')->group(function () {";
     }
 
@@ -52,7 +52,7 @@ class RouteGenerator extends Generator
                 $methods = is_array($action['method']) ? $action['method'] : [$action['method']];
                 $actionPath = empty($action['route']) ? '' : '/' . $action['route'];
                 foreach ($methods as $method) {
-                    $actions[] = $this->indents($context['indentLevel'])
+                    $actions[] = $this->indents($context['indentLevel'] + 1)
                         . "Route::{$method}('{$childEntity->plural}{$actionPath}', "
                         . "[{$controllerName}::class, '{$newPrefix}_{$actionName}'])->name('{$childEntity->name}.{$actionName}');";
                 }
@@ -69,7 +69,7 @@ class RouteGenerator extends Generator
 
         if ($actions->count() > 0) {
             $actions->unshift($this->routesGrouping($entity, $context['indentLevel']));
-            $actions->push($this->indents($context['indentLevel'] - 1) . '});');
+            $actions->push($this->indents($context['indentLevel']) . '});');
         }
 
         return $actions;
@@ -91,10 +91,12 @@ class RouteGenerator extends Generator
             }
         }
 
-        if ($entity->isAuthenticatable() && $parent === null) {
-            $converted[] = "Route::get('dashboard', "
-                . "[{$controllerName}::class, 'dashboard'])->name('dashboard');";
-            $converted[] = "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
+        // TODO: indentLevelじゃなくてparentを使いたい。。
+        if ($entity->isAuthenticatable() && $indentLevel === 1) {
+            $converted[] = $this->indents($indentLevel) . "Route::get('dashboard', "
+                . "[{$controllerName}::class, 'dashboard'])->name('{$plural}.dashboard');";
+            $converted[] = $this->indents($indentLevel)
+                . "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
         }
 
         // relationがなければここで終了
@@ -179,11 +181,11 @@ class RouteGenerator extends Generator
         return $this->convertEntitiesForRoute($filtered);
     }
 
-    protected function convertEntitiesForRoute(TypedArray $entities)
+    protected function convertEntitiesForRoute(TypedArray $entities, int $indentLevel = 0)
     {
         $entities = $entities->map(
-            function (Entity $entity) {
-                $routes = $this->convertActionName($entity);
+            function (Entity $entity) use ($indentLevel) {
+                $routes = $this->convertActionName($entity, $indentLevel);
                 $entity->routes = $routes;
                 return $entity;
             }
