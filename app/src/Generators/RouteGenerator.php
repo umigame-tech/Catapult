@@ -75,7 +75,7 @@ class RouteGenerator extends Generator
         return $actions;
     }
 
-    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $parent = null)
+    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $authenticatableEntity = null)
     {
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
@@ -91,12 +91,11 @@ class RouteGenerator extends Generator
             }
         }
 
-        // TODO: indentLevelじゃなくてparentを使いたい。。
-        if ($entity->isAuthenticatable() && $indentLevel === 1) {
+        if ($entity->isAuthenticatable() && $authenticatableEntity !== null && $authenticatableEntity->name === $entity->name) {
             $converted[] = $this->indents($indentLevel) . "Route::get('dashboard', "
-                . "[{$controllerName}::class, 'dashboard'])->name('{$plural}.dashboard');";
+                . "[{$controllerName}::class, 'dashboard'])->name('{$entity->name}.dashboard');";
             $converted[] = $this->indents($indentLevel)
-                . "Route::get('/', fn () => redirect()->route('{$plural}.dashboard'));";
+                . "Route::get('/', fn () => redirect()->route('{$plural}.{$entity->name}.dashboard'));";
         }
 
         // relationがなければここで終了
@@ -122,7 +121,7 @@ class RouteGenerator extends Generator
         $this->entities->filter(fn (Entity $entity) => $entity->isAuthenticatable())
             ->each(function (Entity $entity) use (&$loginRoutes) {
                 $authName = $entity->authName();
-                $controllerName = $entity->controllerName();
+                $controllerName = get_class($this) === 'UmigameTech\Catapult\Generators\RouteGenerator' ? $entity->controllerName() : $entity->apiControllerName();
                 $loginRoutes[] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
                 $loginRoutes[] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
                 $loginRoutes[] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
@@ -143,11 +142,11 @@ class RouteGenerator extends Generator
 
     protected function makeAuthList()
     {
-        $authNames = $this->entities
-            ->filter(fn (Entity $entity) => $entity->isAuthenticatable())
-            ->map(fn (Entity $entity) => $this->inflector->pluralize($entity->name));
+        $authenticatableEntities = $this->entities
+            ->filter(fn (Entity $entity) => $entity->isAuthenticatable());
         $authList = [];
-        foreach ($authNames as $authName) {
+        foreach ($authenticatableEntities as $authenticatableEntity) {
+            $authName = $this->inflector->pluralize($authenticatableEntity->name);
             $filtered = $this->entities->filter(
                 function (Entity $entity) use ($authName) {
                     $allowedFor = array_map(
@@ -158,7 +157,11 @@ class RouteGenerator extends Generator
                 }
             );
 
-            $authList[$authName] = $this->convertEntitiesForRoute($filtered, 1);
+            $authList[$authName] = $this->convertEntitiesForRoute(
+                $filtered,
+                1,
+                $authenticatableEntity
+            );
         }
 
         return $authList;
@@ -181,11 +184,11 @@ class RouteGenerator extends Generator
         return $this->convertEntitiesForRoute($filtered);
     }
 
-    protected function convertEntitiesForRoute(TypedArray $entities, int $indentLevel = 0)
+    protected function convertEntitiesForRoute(TypedArray $entities, int $indentLevel = 0, Entity $authenticatableEntity = null)
     {
         $entities = $entities->map(
-            function (Entity $entity) use ($indentLevel) {
-                $routes = $this->convertActionName($entity, $indentLevel);
+            function (Entity $entity) use ($indentLevel, $authenticatableEntity) {
+                $routes = $this->convertActionName($entity, $indentLevel, $authenticatableEntity);
                 $entity->routes = $routes;
                 return $entity;
             }

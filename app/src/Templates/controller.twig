@@ -213,7 +213,7 @@ class {{ controllerName }} extends Controller
 
         if (auth('{{ authName }}')->attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('{{ plural }}.dashboard'));
+            return redirect()->intended(route('{{ plural }}.{{ entity.name }}.dashboard'));
         }
 
         return back()->withErrors([

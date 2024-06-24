@@ -94,17 +94,4 @@ class {{ controllerName }} extends Controller
     }
 {% endif %}
 {% endfor %}
-
-{% for action in subActions %}
-{% if action.actionMethodName ends with 'index' %}
-    public function {{action.actionMethodName}}({{ action.argString }})
-    {
-        return new {{ resourceCollectionName }}(
-{% set related = action.entities[1] %}
-            {{ modelName }}::of{{ related.modelName }}(${{ related.name }})
-            ->get()
-        );
-    }
-{% endif %}
-{% endfor %}
 }
