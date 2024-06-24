@@ -8,7 +8,7 @@ use UmigameTech\Catapult\Templates\Renderer;
 
 class ApiRouteGenerator extends RouteGenerator
 {
-    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $parent = null)
+    protected function convertActionName(Entity $entity, int $indentLevel = 0, Entity $authenticatableEntity = null)
     {
         $converted = [];
         $plural = $this->inflector->pluralize($entity->name);
@@ -44,7 +44,7 @@ class ApiRouteGenerator extends RouteGenerator
         $this->entities->filter(fn (Entity $entity) => $entity->isAuthenticatable())
             ->each(function (Entity $entity) use (&$loginRoutes) {
                 $authName = $entity->authName();
-                $controllerName = $entity->controllerName();
+                $controllerName = $entity->apiControllerName();
                 $loginRoutes[] = "Route::get('{$authName}/login', [{$controllerName}::class, 'login'])->name('{$authName}.login');";
                 $loginRoutes[] = "Route::post('{$authName}/login', [{$controllerName}::class, 'loginSubmit'])->name('{$authName}.loginSubmit');";
                 $loginRoutes[] = "Route::delete('{$authName}/logout', [{$controllerName}::class, 'logout'])->name('{$authName}.logout');";
@@ -63,11 +63,11 @@ class ApiRouteGenerator extends RouteGenerator
         ];
     }
 
-    protected function convertEntitiesForRoute(TypedArray $entities)
+    protected function convertEntitiesForRoute(TypedArray $entities, $indentLevel = 0, Entity $authenticatableEntity = null)
     {
         $entities = $entities->map(
-            function (Entity $entity) {
-                $routes = $this->convertActionName($entity);
+            function (Entity $entity) use ($indentLevel, $authenticatableEntity) {
+                $routes = $this->convertActionName($entity, $indentLevel, $authenticatableEntity);
                 $entity->routes = $routes;
                 return $entity;
             }

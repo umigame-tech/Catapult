@@ -80,7 +80,7 @@ test('authenticatable', function () {
         ->toBeString()
         ->toContain("Route::prefix('users')->name('users.')->middleware('auth:users')->group(function () {")
         ->toContain("    Route::get('users', [UserController::class, 'index'])->name('user.index');")
-        ->toContain("    Route::get('dashboard', [UserController::class, 'dashboard'])->name('dashboard');")
+        ->toContain("    Route::get('dashboard', [UserController::class, 'dashboard'])->name('user.dashboard');")
         ->toContain("Route::get('users/login', [UserController::class, 'login'])->name('users.login');")
         ->toContain("Route::post('users/login', [UserController::class, 'loginSubmit'])->name('users.loginSubmit');")
         ->toContain("Route::delete('users/logout', [UserController::class, 'logout'])->name('users.logout');");

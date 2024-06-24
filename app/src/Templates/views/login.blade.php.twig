@@ -2,7 +2,7 @@
 @section('content')
 <div class="w-4/5 lg:w-2/5 mx-auto">
   <h1>Login for {{ entity.name }}</h1>
-  <form method="post" action="{{ '{{' }} route('{{ plural }}.loginSubmit') {{ '}}' }}">
+  <form method="post" action="{{ '{{' }} $submitUrl {{ '}}' }}">
     {{ '{{' }} csrf_field() {{ '}}' }}
 {% for attribute in loginKeys %}
     <div class="mt-8">
